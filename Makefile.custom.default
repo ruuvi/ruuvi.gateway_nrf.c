@@ -1,0 +1,16 @@
+# These are some sample defaults, if you want to adjust any of them, just
+# make a copy of this file called: Makefile.custom and make the overrides
+
+TOOLCHAIN_CONFIG_FILE ?= toolchain.custom
+SDK_VERSION ?= 15.3
+OUTPUT_NAME ?= ruuvidongle
+HW_REV ?= v1_00
+CHIP ?= nrf52
+CHIP_LONG ?= nrf52832
+TARGETS ?= nrf52832_xxaa
+SD_TYPE ?= s132
+SD_VERSION ?= 6.1.1
+
+CUSTOM_GNU_INSTALL_ROOT ?= /usr/bin/
+CUSTOM_GNU_VERSION ?= 9.2.0
+CUSTOM_GNU_PREFIX ?= arm-none-eabi
