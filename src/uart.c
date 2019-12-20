@@ -20,7 +20,7 @@ NRF_LOG_MODULE_REGISTER();
 #define CTS_PIN_NUMBER NRF_UART_PSEL_DISCONNECTED
 #define RTS_PIN_NUMBER NRF_UART_PSEL_DISCONNECTED
 
-#define UART_TX_BUF_SIZE        256                                     /**< UART TX buffer size. */
+#define UART_TX_BUF_SIZE        512                                     /**< UART TX buffer size. */
 #define UART_RX_BUF_SIZE        256                                     /**< UART RX buffer size. */
 
 uint8_t cmds[2][2] = {
@@ -44,14 +44,21 @@ void process_uart_out(void * p_event_data, uint16_t event_size)
     NRF_LOG_INFO("process_uart_out: len: %d, strlen: %d, advertisement: %s", event_size, len, buf);
 
     for (uint32_t i = 0; i < event_size+1; i++) {
+        bool no_mem = false;
         do {
             err_code = app_uart_put(buf[i]);
-            if ((err_code != NRF_SUCCESS) && (err_code != NRF_ERROR_BUSY)) {
+            if (err_code == NRF_ERROR_NO_MEM) {
+                //print the error only once, otherwise it could repeat too many times
+                if (!no_mem) {
+                    NRF_LOG_ERROR("UART TX buffer full, trying again");
+                    no_mem = true;
+                }
+            } else if ((err_code != NRF_SUCCESS) && (err_code != NRF_ERROR_BUSY)) {
                 NRF_LOG_ERROR("Failed sending data to UART: %d", err_code);
                 APP_ERROR_CHECK(err_code);
             }
 
-        } while (err_code == NRF_ERROR_BUSY);
+        } while (err_code == NRF_ERROR_BUSY || err_code == NRF_ERROR_NO_MEM);
     }
 }
 
