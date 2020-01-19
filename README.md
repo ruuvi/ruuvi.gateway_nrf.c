@@ -1,5 +1,5 @@
-# ruuvi.dongle_nrf.c
-Ruuvi Dongle nRF52 code
+# ruuvi.gateway_nrf.c
+Ruuvi Gateway nRF52 code
 
 IO pins:
 
