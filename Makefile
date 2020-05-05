@@ -212,24 +212,30 @@ LOG_FORMAT=fullhtml
 PVS_LOG=./doxygen/html
 DOXYGEN_DIR=./doxygen
 
+SDK_ROOT := sdk
+PROJ_DIR := src
+include ${PROJ_DIR}/gcc_sources.make
+
 CFLAGS  = -c -Wall -pedantic -Wno-variadic-macros -Wno-long-long -Wno-shadow -std=c11
+CFLAGS += -DBOARD_RUUVITAG_B
+CFLAGS += -DFLOAT_ABI_HARD
+CFLAGS += -DNRF52
+CFLAGS += -DNRF52832_XXAA
 OFLAGS=-g3
-LDFLAGS=-lm
 DFLAGS=
+INCLUDES=${COMMON_INCLUDES}
+INCLUDES+=nRF5_SDK_15.3.0_59ac345/components/softdevice/s132/headers
 INCLUDES+= \
 src/ \
 src/config 
 INC_PARAMS=$(foreach d, $(INCLUDES), -I$d)
-SOURCES=\
-src/ble.c \
-src/main.c \
-src/uart.c
+SOURCES=${RUUVI_PRJ_SOURCES}
 OBJECTS=$(SOURCES:.c=.o)
 ANALYSIS=$(SOURCES:.c=.a)
 IOBJECTS=$(SOURCES:.c=.o.PVS-Studio.i)
 POBJECTS=$(SOURCES:.c=.o.PVS-Studio.log)
-EXECUTABLE=npa-driver
-SONAR=npa-analysis
+EXECUTABLE=gw_nrf
+SONAR=nrf_analysis
 
 .PHONY: clean doxygen pvs sonar astyle
 
