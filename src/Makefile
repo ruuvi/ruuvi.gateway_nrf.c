@@ -7,7 +7,7 @@ PROJECT_NAME     := $(OUTPUT_NAME)_$(SD_TYPE)_$(HW_REV)
 TARGETS          := $(TARGETS)
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ../sdk
+SDK_ROOT := ../nRF5_SDK_15.3.0_59ac345
 PROJ_DIR := .
 TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
 LINKER_PATH := $(SDK_ROOT)/modules/nrfx/mdk

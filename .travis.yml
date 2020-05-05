@@ -11,11 +11,22 @@ install:
   - gem install ceedling
 
 script:
+  - |
+    if [ ! -d "nRF5_SDK_15.3.0_59ac345/modules" ]; then
+      wget -q https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip
+      unzip -q nRF5_SDK_15.3.0_59ac345.zip
+    fi
   - build-wrapper-linux-x86-64 --out-dir bw-output make sonar
   - ceedling test:all
   - ceedling gcov:all utils:gcov
   - gcov -b -c build/gcov/out/*.gcno
   - sonar-scanner -Dsonar.cfamily.build-wrapper-output=bw-output
+
+cache:
+  directories:
+    - nRF5_SDK_15.3.0_59ac345
+    - src/ruuvi.boards.c
+    - src/ruuvi.drivers.c
 
 addons:
   sonarcloud:

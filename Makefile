@@ -212,7 +212,7 @@ LOG_FORMAT=fullhtml
 PVS_LOG=./doxygen/html
 DOXYGEN_DIR=./doxygen
 
-SDK_ROOT := sdk
+SDK_ROOT := nRF5_SDK_15.3.0_59ac345
 PROJ_DIR := src
 include ${PROJ_DIR}/gcc_sources.make
 
