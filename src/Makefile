@@ -7,14 +7,10 @@ PROJECT_NAME     := $(OUTPUT_NAME)_$(SD_TYPE)_$(HW_REV)
 TARGETS          := $(TARGETS)
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ./sdk
+SDK_ROOT := ../sdk
 PROJ_DIR := .
 TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
 LINKER_PATH := $(SDK_ROOT)/modules/nrfx/mdk
-
-override GNU_INSTALL_ROOT = $(CUSTOM_GNU_INSTALL_ROOT)
-override GNU_PREFIX = $(CUSTOM_GNU_PREFIX)
-override GNU_VERSION = $(CUSTOM_GNU_VERSION)
 
 $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
   LINKER_SCRIPT  := ruuvitag_b.ld
@@ -73,9 +69,9 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_wdt.c \
   $(SDK_ROOT)/components/libraries/bsp/bsp.c \
   $(SDK_ROOT)/components/libraries/bsp/bsp_btn_ble.c \
-  $(PROJ_DIR)/src/main.c \
-  $(PROJ_DIR)/src/ble.c \
-  $(PROJ_DIR)/src/uart.c \
+  $(PROJ_DIR)/main.c \
+  $(PROJ_DIR)/ble.c \
+  $(PROJ_DIR)/uart.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_Syscalls_GCC.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_printf.c \
@@ -83,7 +79,7 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/ble_db_discovery/ble_db_discovery.c \
   $(SDK_ROOT)/components/ble/common/ble_srv_common.c \
   $(SDK_ROOT)/components/ble/nrf_ble_gatt/nrf_ble_gatt.c \
-  $(PROJ_DIR)/src/sdk_fixes/nrf_ble_scan.c \
+  $(PROJ_DIR)/sdk_fixes/nrf_ble_scan.c \
   $(SDK_ROOT)/external/utf_converter/utf.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_ble.c \
