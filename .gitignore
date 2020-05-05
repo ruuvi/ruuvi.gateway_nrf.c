@@ -56,3 +56,6 @@ dkms.conf
 
 # Mac OSX files
 .DS_Store
+
+# Astyle backups
+*.orig
