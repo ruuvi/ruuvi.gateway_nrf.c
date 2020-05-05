@@ -68,14 +68,14 @@ NRF_LOG_MODULE_REGISTER();
  * @param[in] p_scan_ctx   Pointer to the Scanning Module instance.
  * @param[in] p_adv_report Advertising data.
  */
-static void nrf_ble_scan_connect_with_target(nrf_ble_scan_t           const * const p_scan_ctx,
-                                             ble_gap_evt_adv_report_t const * const p_adv_report)
+static void nrf_ble_scan_connect_with_target (nrf_ble_scan_t           const * const
+        p_scan_ctx,
+        ble_gap_evt_adv_report_t const * const p_adv_report)
 {
     ret_code_t err_code;
     scan_evt_t scan_evt;
-
     // For readability.
-    ble_gap_addr_t const        * p_addr        = &p_adv_report->peer_addr;
+    ble_gap_addr_t const     *    p_addr        = &p_adv_report->peer_addr;
     ble_gap_scan_params_t const * p_scan_params = &p_scan_ctx->scan_params;
     ble_gap_conn_params_t const * p_conn_params = &p_scan_ctx->conn_params;
     uint8_t                       con_cfg_tag   = p_scan_ctx->conn_cfg_tag;
@@ -88,42 +88,35 @@ static void nrf_ble_scan_connect_with_target(nrf_ble_scan_t           const * co
 
     // Stop scanning.
     nrf_ble_scan_stop();
-
-    memset(&scan_evt, 0, sizeof(scan_evt));
-
+    memset (&scan_evt, 0, sizeof (scan_evt));
     // Establish connection.
-    err_code = sd_ble_gap_connect(p_addr,
-                                  p_scan_params,
-                                  p_conn_params,
-                                  con_cfg_tag);
-
-    NRF_LOG_DEBUG("Connecting");
-
+    err_code = sd_ble_gap_connect (p_addr,
+                                   p_scan_params,
+                                   p_conn_params,
+                                   con_cfg_tag);
+    NRF_LOG_DEBUG ("Connecting");
     scan_evt.scan_evt_id                    = NRF_BLE_SCAN_EVT_CONNECTING_ERROR;
     scan_evt.params.connecting_err.err_code = err_code;
-
-    NRF_LOG_DEBUG("Connection status: %d", err_code);
+    NRF_LOG_DEBUG ("Connection status: %d", err_code);
 
     // If an error occurred, send an event to the event handler.
-    if ((err_code != NRF_SUCCESS) && (p_scan_ctx->evt_handler != NULL))
+    if ( (err_code != NRF_SUCCESS) && (p_scan_ctx->evt_handler != NULL))
     {
-        p_scan_ctx->evt_handler(&scan_evt);
+        p_scan_ctx->evt_handler (&scan_evt);
     }
-
 }
 
 
 /**@brief Function for decoding the BLE address type.
  *
- * @param[in] p_addr 	The BLE address.
+ * @param[in] p_addr    The BLE address.
  *
- * @return    			Address type, or an error if the address type is incorrect, that is it does not match @ref BLE_GAP_ADDR_TYPES.
+ * @return              Address type, or an error if the address type is incorrect, that is it does not match @ref BLE_GAP_ADDR_TYPES.
  *
  */
-static uint16_t nrf_ble_scan_address_type_decode(uint8_t const * p_addr)
+static uint16_t nrf_ble_scan_address_type_decode (uint8_t const * p_addr)
 {
     uint8_t addr_type = p_addr[0];
-
     // See Bluetooth Core Specification Vol 6, Part B, section 1.3.
     addr_type  = addr_type >> 6;
     addr_type &= 0x03;
@@ -165,26 +158,27 @@ static uint16_t nrf_ble_scan_address_type_decode(uint8_t const * p_addr)
 /**@brief Function for searching for the provided address in the advertisement packets.
  *
  * @details Use this function to parse the received advertising data for the provided address.
- *        
+ *
  *
  * @param[in]   p_adv_report   Advertising data to parse.
  * @param[in]   p_addr         Address to search for. The address length must correspond to @ref BLE_GAP_ADDR_LEN.
  *
  * @return   True if the provided address was found, false otherwise.
  */
-static bool find_peer_addr(ble_gap_evt_adv_report_t const * const p_adv_report,
-                           ble_gap_addr_t const                 * p_addr)
+static bool find_peer_addr (ble_gap_evt_adv_report_t const * const p_adv_report,
+                            ble_gap_addr_t const         *         p_addr)
 {
     if (p_addr->addr_type == p_adv_report->peer_addr.addr_type)
     {
         // Compare addresses.
-        if (memcmp(p_addr->addr,
-                   p_adv_report->peer_addr.addr,
-                   sizeof(p_adv_report->peer_addr.addr)) == 0)
+        if (memcmp (p_addr->addr,
+                    p_adv_report->peer_addr.addr,
+                    sizeof (p_adv_report->peer_addr.addr)) == 0)
         {
             return true;
         }
     }
+
     return false;
 }
 
@@ -196,8 +190,8 @@ static bool find_peer_addr(ble_gap_evt_adv_report_t const * const p_adv_report,
  *
  * @retval True when the address matches with the addresses of the advertising devices. False otherwise.
  */
-static bool adv_addr_compare(ble_gap_evt_adv_report_t const * const p_adv_report,
-                             nrf_ble_scan_t const * const           p_scan_ctx)
+static bool adv_addr_compare (ble_gap_evt_adv_report_t const * const p_adv_report,
+                              nrf_ble_scan_t const * const           p_scan_ctx)
 {
     ble_gap_addr_t const * p_addr  = p_scan_ctx->scan_filters.addr_filter.target_addr;
     uint8_t                counter = p_scan_ctx->scan_filters.addr_filter.addr_cnt;
@@ -205,7 +199,7 @@ static bool adv_addr_compare(ble_gap_evt_adv_report_t const * const p_adv_report
     for (uint8_t index = 0; index < counter; index++)
     {
         // Search for address.
-        if (find_peer_addr(p_adv_report, &p_addr[index]))
+        if (find_peer_addr (p_adv_report, &p_addr[index]))
         {
             return true;
         }
@@ -224,11 +218,11 @@ static bool adv_addr_compare(ble_gap_evt_adv_report_t const * const p_adv_report
  * @retval NRF_ERROR_NO_MEMORY            If the number of available filters is exceeded.
  * @retval BLE_ERROR_GAP_INVALID_BLE_ADDR If the BLE address type is invalid.
  */
-static ret_code_t nrf_ble_scan_addr_filter_add(nrf_ble_scan_t * const p_scan_ctx,
-                                               uint8_t        const * p_addr)
+static ret_code_t nrf_ble_scan_addr_filter_add (nrf_ble_scan_t * const p_scan_ctx,
+        uint8_t        const * p_addr)
 {
     ble_gap_addr_t * p_addr_filter = p_scan_ctx->scan_filters.addr_filter.target_addr;
-    uint8_t        * p_counter     = &p_scan_ctx->scan_filters.addr_filter.addr_cnt;
+    uint8_t     *    p_counter     = &p_scan_ctx->scan_filters.addr_filter.addr_cnt;
     uint8_t          index;
     uint16_t         addr_type;
     uint8_t          temp_addr[BLE_GAP_ADDR_LEN];
@@ -242,7 +236,7 @@ static ret_code_t nrf_ble_scan_addr_filter_add(nrf_ble_scan_t * const p_scan_ctx
     // Check for duplicated filter.
     for (index = 0; index < NRF_BLE_SCAN_ADDRESS_CNT; index++)
     {
-        if (!memcmp(p_addr_filter[index].addr, p_addr, BLE_GAP_ADDR_LEN))
+        if (!memcmp (p_addr_filter[index].addr, p_addr, BLE_GAP_ADDR_LEN))
         {
             return NRF_SUCCESS;
         }
@@ -251,11 +245,11 @@ static ret_code_t nrf_ble_scan_addr_filter_add(nrf_ble_scan_t * const p_scan_ctx
     // Inverting the address.
     for (uint8_t i = 0; i < BLE_GAP_ADDR_LEN; i++)
     {
-        temp_addr[i] = p_addr[(BLE_GAP_ADDR_LEN - 1) - i];
+        temp_addr[i] = p_addr[ (BLE_GAP_ADDR_LEN - 1) - i];
     }
 
     // Decode address type.
-    addr_type = nrf_ble_scan_address_type_decode(temp_addr);
+    addr_type = nrf_ble_scan_address_type_decode (temp_addr);
 
     if (addr_type == BLE_ERROR_GAP_INVALID_BLE_ADDR)
     {
@@ -263,26 +257,24 @@ static ret_code_t nrf_ble_scan_addr_filter_add(nrf_ble_scan_t * const p_scan_ctx
     }
 
     // Add target address to filter.
-    p_addr_filter[*p_counter].addr_type = (uint8_t)addr_type;
+    p_addr_filter[*p_counter].addr_type = (uint8_t) addr_type;
 
     for (uint8_t i = 0; i < BLE_GAP_ADDR_LEN; i++)
     {
         p_addr_filter[*p_counter].addr[i] = p_addr[i];
     }
 
-    NRF_LOG_DEBUG("Filter set on address type %i, address 0x",
-                  p_addr_filter[*p_counter].addr_type);
+    NRF_LOG_DEBUG ("Filter set on address type %i, address 0x",
+                   p_addr_filter[*p_counter].addr_type);
 
     for (index = 0; index < BLE_GAP_ADDR_LEN; index++)
     {
-        NRF_LOG_DEBUG("%x", p_addr_filter[*p_counter].addr[index]);
+        NRF_LOG_DEBUG ("%x", p_addr_filter[*p_counter].addr[index]);
     }
 
-    NRF_LOG_DEBUG("\n\r");
-
+    NRF_LOG_DEBUG ("\n\r");
     // Increase the address filter counter.
     *p_counter += 1;
-
     return NRF_SUCCESS;
 }
 
@@ -298,23 +290,22 @@ static ret_code_t nrf_ble_scan_addr_filter_add(nrf_ble_scan_t * const p_scan_ctx
  *
  * @retval True when the names match. False otherwise.
  */
-static bool adv_name_compare(ble_gap_evt_adv_report_t const * p_adv_report,
-                             nrf_ble_scan_t     const * const p_scan_ctx)
+static bool adv_name_compare (ble_gap_evt_adv_report_t const * p_adv_report,
+                              nrf_ble_scan_t     const * const p_scan_ctx)
 {
     nrf_ble_scan_name_filter_t const * p_name_filter = &p_scan_ctx->scan_filters.name_filter;
     uint8_t                            counter       =
         p_scan_ctx->scan_filters.name_filter.name_cnt;
     uint8_t  index;
     uint16_t data_len;
-
     data_len = p_adv_report->data.len;
 
     // Compare the name found with the name filter.
     for (index = 0; index < counter; index++)
     {
-        if (ble_advdata_name_find(p_adv_report->data.p_data,
-                                  data_len,
-                                  p_name_filter->target_name[index]))
+        if (ble_advdata_name_find (p_adv_report->data.p_data,
+                                   data_len,
+                                   p_name_filter->target_name[index]))
         {
             return true;
         }
@@ -334,15 +325,15 @@ static bool adv_name_compare(ble_gap_evt_adv_report_t const * p_adv_report,
  * @retval NRF_ERROR_DATA_SIZE      If the name filter length is too long. The maximum filter name length corresponds to @ref NRF_BLE_SCAN_NAME_MAX_LEN.
  * @retval NRF_ERROR_NO_MEMORY      If the number of available filters is exceeded.
  */
-static ret_code_t nrf_ble_scan_name_filter_add(nrf_ble_scan_t * const p_scan_ctx,
-                                               char           const * p_name)
+static ret_code_t nrf_ble_scan_name_filter_add (nrf_ble_scan_t * const p_scan_ctx,
+        char           const * p_name)
 {
     uint8_t   index;
     uint8_t * counter  = &p_scan_ctx->scan_filters.name_filter.name_cnt;
-    uint8_t   name_len = strlen(p_name);
+    uint8_t   name_len = strlen (p_name);
 
     // Check the name length.
-    if ((name_len == 0) || (name_len > NRF_BLE_SCAN_NAME_MAX_LEN))
+    if ( (name_len == 0) || (name_len > NRF_BLE_SCAN_NAME_MAX_LEN))
     {
         return NRF_ERROR_DATA_SIZE;
     }
@@ -356,19 +347,17 @@ static ret_code_t nrf_ble_scan_name_filter_add(nrf_ble_scan_t * const p_scan_ctx
     // Check for duplicated filter.
     for (index = 0; index < NRF_BLE_SCAN_NAME_CNT; index++)
     {
-        if (!strcmp(p_scan_ctx->scan_filters.name_filter.target_name[index], p_name))
+        if (!strcmp (p_scan_ctx->scan_filters.name_filter.target_name[index], p_name))
         {
             return NRF_SUCCESS;
         }
     }
 
     // Add name to filter.
-    memcpy(p_scan_ctx->scan_filters.name_filter.target_name[(*counter)++],
-           p_name,
-           strlen(p_name));
-
-    NRF_LOG_DEBUG("Adding filter on %s name", p_name);
-
+    memcpy (p_scan_ctx->scan_filters.name_filter.target_name[ (*counter)++],
+            p_name,
+            strlen (p_name));
+    NRF_LOG_DEBUG ("Adding filter on %s name", p_name);
     return NRF_SUCCESS;
 }
 
@@ -384,24 +373,23 @@ static ret_code_t nrf_ble_scan_name_filter_add(nrf_ble_scan_t * const p_scan_ctx
  *
  * @retval True when the names match. False otherwise.
  */
-static bool adv_short_name_compare(ble_gap_evt_adv_report_t const * const p_adv_report,
-                                   nrf_ble_scan_t           const * const p_scan_ctx)
+static bool adv_short_name_compare (ble_gap_evt_adv_report_t const * const p_adv_report,
+                                    nrf_ble_scan_t           const * const p_scan_ctx)
 {
     nrf_ble_scan_short_name_filter_t const * p_name_filter =
         &p_scan_ctx->scan_filters.short_name_filter;
     uint8_t  counter = p_scan_ctx->scan_filters.short_name_filter.name_cnt;
     uint8_t  index;
     uint16_t data_len;
-
     data_len = p_adv_report->data.len;
 
     // Compare the name found with the name filters.
     for (index = 0; index < counter; index++)
     {
-        if (ble_advdata_short_name_find(p_adv_report->data.p_data,
-                                        data_len,
-                                        p_name_filter->short_name[index].short_target_name,
-                                        p_name_filter->short_name[index].short_name_min_len))
+        if (ble_advdata_short_name_find (p_adv_report->data.p_data,
+                                         data_len,
+                                         p_name_filter->short_name[index].short_target_name,
+                                         p_name_filter->short_name[index].short_name_min_len))
         {
             return true;
         }
@@ -421,18 +409,19 @@ static bool adv_short_name_compare(ble_gap_evt_adv_report_t const * const p_adv_
  * @retval NRF_ERROR_DATA_SIZE      If the name filter length is too long. The maximum filter name length corresponds to @ref NRF_BLE_SCAN_SHORT_NAME_MAX_LEN.
  * @retval NRF_ERROR_NO_MEMORY      If the number of available filters is exceeded.
  */
-static ret_code_t nrf_ble_scan_short_name_filter_add(nrf_ble_scan_t            * const p_scan_ctx,
-                                                     nrf_ble_scan_short_name_t const * p_short_name)
+static ret_code_t nrf_ble_scan_short_name_filter_add (nrf_ble_scan_t       *      const
+        p_scan_ctx,
+        nrf_ble_scan_short_name_t const * p_short_name)
 {
     uint8_t   index;
     uint8_t * p_counter =
         &p_scan_ctx->scan_filters.short_name_filter.name_cnt;
     nrf_ble_scan_short_name_filter_t * p_short_name_filter =
         &p_scan_ctx->scan_filters.short_name_filter;
-    uint8_t name_len = strlen(p_short_name->p_short_name);
+    uint8_t name_len = strlen (p_short_name->p_short_name);
 
     // Check the name length.
-    if ((name_len == 0) || (name_len > NRF_BLE_SCAN_SHORT_NAME_MAX_LEN))
+    if ( (name_len == 0) || (name_len > NRF_BLE_SCAN_SHORT_NAME_MAX_LEN))
     {
         return NRF_ERROR_DATA_SIZE;
     }
@@ -446,22 +435,20 @@ static ret_code_t nrf_ble_scan_short_name_filter_add(nrf_ble_scan_t            *
     // Check for duplicated filter.
     for (index = 0; index < NRF_BLE_SCAN_SHORT_NAME_CNT; index++)
     {
-        if (!strcmp(p_short_name_filter->short_name[index].short_target_name,
-                    p_short_name->p_short_name))
+        if (!strcmp (p_short_name_filter->short_name[index].short_target_name,
+                     p_short_name->p_short_name))
         {
             return NRF_SUCCESS;
         }
     }
 
     // Add name to the filter.
-    p_short_name_filter->short_name[(*p_counter)].short_name_min_len =
+    p_short_name_filter->short_name[ (*p_counter)].short_name_min_len =
         p_short_name->short_name_min_len;
-    memcpy(p_short_name_filter->short_name[(*p_counter)++].short_target_name,
-           p_short_name->p_short_name,
-           strlen(p_short_name->p_short_name));
-
-    NRF_LOG_DEBUG("Adding filter on %s name", p_short_name->p_short_name);
-
+    memcpy (p_short_name_filter->short_name[ (*p_counter)++].short_target_name,
+            p_short_name->p_short_name,
+            strlen (p_short_name->p_short_name));
+    NRF_LOG_DEBUG ("Adding filter on %s name", p_short_name->p_short_name);
     return NRF_SUCCESS;
 }
 
@@ -477,25 +464,25 @@ static ret_code_t nrf_ble_scan_short_name_filter_add(nrf_ble_scan_t            *
  *
  * @return      True if the UUIDs match. False otherwise.
  */
-static bool adv_uuid_compare(ble_gap_evt_adv_report_t const * const p_adv_report,
-                             nrf_ble_scan_t           const * const p_scan_ctx)
+static bool adv_uuid_compare (ble_gap_evt_adv_report_t const * const p_adv_report,
+                              nrf_ble_scan_t           const * const p_scan_ctx)
 {
-    nrf_ble_scan_uuid_filter_t const * p_uuid_filter    = &p_scan_ctx->scan_filters.uuid_filter;
-    bool const                         all_filters_mode = p_scan_ctx->scan_filters.all_filters_mode;
+    nrf_ble_scan_uuid_filter_t const * p_uuid_filter    =
+        &p_scan_ctx->scan_filters.uuid_filter;
+    bool const                         all_filters_mode =
+        p_scan_ctx->scan_filters.all_filters_mode;
     uint8_t const                      counter          =
         p_scan_ctx->scan_filters.uuid_filter.uuid_cnt;
     uint8_t  index;
     uint16_t data_len;
     uint8_t  uuid_match_cnt = 0;
-
     data_len = p_adv_report->data.len;
 
     for (index = 0; index < counter; index++)
     {
-
-        if (ble_advdata_uuid_find(p_adv_report->data.p_data,
-                                  data_len,
-                                  &p_uuid_filter->uuid[index]))
+        if (ble_advdata_uuid_find (p_adv_report->data.p_data,
+                                   data_len,
+                                   &p_uuid_filter->uuid[index]))
         {
             uuid_match_cnt++;
 
@@ -516,8 +503,8 @@ static bool adv_uuid_compare(ble_gap_evt_adv_report_t const * const p_adv_report
     }
 
     // In the multifilter mode, all UUIDs must be found in the advertisement packets.
-    if ((all_filters_mode && (uuid_match_cnt == counter)) ||
-        ((!all_filters_mode) && (uuid_match_cnt > 0)))
+    if ( (all_filters_mode && (uuid_match_cnt == counter)) ||
+            ( (!all_filters_mode) && (uuid_match_cnt > 0)))
     {
         return true;
     }
@@ -534,11 +521,11 @@ static bool adv_uuid_compare(ble_gap_evt_adv_report_t const * const p_adv_report
  * @retval NRF_SUCCESS              If the scanning started. Otherwise, an error code is returned, also if you tried to add a filter that was already added before.
  * @retval NRF_ERROR_NO_MEMORY      If the number of available filters is exceeded.
  */
-static ret_code_t nrf_ble_scan_uuid_filter_add(nrf_ble_scan_t * const p_scan_ctx,
-                                               ble_uuid_t     const * p_uuid)
+static ret_code_t nrf_ble_scan_uuid_filter_add (nrf_ble_scan_t * const p_scan_ctx,
+        ble_uuid_t     const * p_uuid)
 {
     ble_uuid_t * p_uuid_filter = p_scan_ctx->scan_filters.uuid_filter.uuid;
-    uint8_t    * p_counter     = &p_scan_ctx->scan_filters.uuid_filter.uuid_cnt;
+    uint8_t   *  p_counter     = &p_scan_ctx->scan_filters.uuid_filter.uuid_cnt;
     uint8_t      index;
 
     // If no memory.
@@ -557,9 +544,8 @@ static ret_code_t nrf_ble_scan_uuid_filter_add(nrf_ble_scan_t * const p_scan_ctx
     }
 
     // Add UUID to the filter.
-    p_uuid_filter[(*p_counter)++] = *p_uuid;
-    NRF_LOG_DEBUG("Added filter on UUID %x", p_uuid->uuid);
-
+    p_uuid_filter[ (*p_counter)++] = *p_uuid;
+    NRF_LOG_DEBUG ("Added filter on UUID %x", p_uuid->uuid);
     return NRF_SUCCESS;
 }
 
@@ -575,8 +561,8 @@ static ret_code_t nrf_ble_scan_uuid_filter_add(nrf_ble_scan_t * const p_scan_ctx
  *
  * @return      True if the appearances match. False otherwise.
  */
-static bool adv_appearance_compare(ble_gap_evt_adv_report_t const * const p_adv_report,
-                                   nrf_ble_scan_t           const * const p_scan_ctx)
+static bool adv_appearance_compare (ble_gap_evt_adv_report_t const * const p_adv_report,
+                                    nrf_ble_scan_t           const * const p_scan_ctx)
 {
     nrf_ble_scan_appearance_filter_t const * p_appearance_filter =
         &p_scan_ctx->scan_filters.appearance_filter;
@@ -584,19 +570,19 @@ static bool adv_appearance_compare(ble_gap_evt_adv_report_t const * const p_adv_
         p_scan_ctx->scan_filters.appearance_filter.appearance_cnt;
     uint8_t  index;
     uint16_t data_len;
-
     data_len = p_adv_report->data.len;
 
     // Verify if the advertised appearance matches the provided appearance.
     for (index = 0; index < counter; index++)
     {
-        if (ble_advdata_appearance_find(p_adv_report->data.p_data,
-                                        data_len,
-                                        &p_appearance_filter->appearance[index]))
+        if (ble_advdata_appearance_find (p_adv_report->data.p_data,
+                                         data_len,
+                                         &p_appearance_filter->appearance[index]))
         {
             return true;
         }
     }
+
     return false;
 }
 
@@ -610,11 +596,12 @@ static bool adv_appearance_compare(ble_gap_evt_adv_report_t const * const p_adv_
  * @retval NRF_ERROR_NULL          If a NULL pointer is passed as input.
  * @retval NRF_ERROR_NO_MEMORY     If the number of available filters is exceeded.
  */
-static ret_code_t nrf_ble_scan_appearance_filter_add(nrf_ble_scan_t * const p_scan_ctx,
-                                                     uint16_t               appearance)
+static ret_code_t nrf_ble_scan_appearance_filter_add (nrf_ble_scan_t * const p_scan_ctx,
+        uint16_t               appearance)
 {
     uint16_t * p_appearance_filter = p_scan_ctx->scan_filters.appearance_filter.appearance;
-    uint8_t  * p_counter           = &p_scan_ctx->scan_filters.appearance_filter.appearance_cnt;
+    uint8_t  * p_counter           =
+        &p_scan_ctx->scan_filters.appearance_filter.appearance_cnt;
     uint8_t    index;
 
     // If no memory.
@@ -624,7 +611,7 @@ static ret_code_t nrf_ble_scan_appearance_filter_add(nrf_ble_scan_t * const p_sc
     }
 
     // Check for duplicated filter.
-    for ( index = 0; index < NRF_BLE_SCAN_APPEARANCE_CNT; index++)
+    for (index = 0; index < NRF_BLE_SCAN_APPEARANCE_CNT; index++)
     {
         if (p_appearance_filter[index] == appearance)
         {
@@ -633,8 +620,8 @@ static ret_code_t nrf_ble_scan_appearance_filter_add(nrf_ble_scan_t * const p_sc
     }
 
     // Add appearance to the filter.
-    p_appearance_filter[(*p_counter)++] = appearance;
-    NRF_LOG_DEBUG("Added filter on appearance %x", appearance);
+    p_appearance_filter[ (*p_counter)++] = appearance;
+    NRF_LOG_DEBUG ("Added filter on appearance %x", appearance);
     return NRF_SUCCESS;
 }
 
@@ -642,53 +629,59 @@ static ret_code_t nrf_ble_scan_appearance_filter_add(nrf_ble_scan_t * const p_sc
 #endif // NRF_BLE_SCAN_APPEARANCE_CNT
 
 
-ret_code_t nrf_ble_scan_filter_set(nrf_ble_scan_t     * const p_scan_ctx,
-                                   nrf_ble_scan_filter_type_t type,
-                                   void const               * p_data)
+ret_code_t nrf_ble_scan_filter_set (nrf_ble_scan_t   *   const p_scan_ctx,
+                                    nrf_ble_scan_filter_type_t type,
+                                    void const        *        p_data)
 {
-    VERIFY_PARAM_NOT_NULL(p_scan_ctx);
-    VERIFY_PARAM_NOT_NULL(p_data);
+    VERIFY_PARAM_NOT_NULL (p_scan_ctx);
+    VERIFY_PARAM_NOT_NULL (p_data);
 
     switch (type)
     {
 #if (NRF_BLE_SCAN_NAME_CNT > 0)
+
         case SCAN_NAME_FILTER:
         {
-            char * p_name = (char *)p_data;
-            return nrf_ble_scan_name_filter_add(p_scan_ctx, p_name);
+            char * p_name = (char *) p_data;
+            return nrf_ble_scan_name_filter_add (p_scan_ctx, p_name);
         }
-#endif
 
+#endif
 #if (NRF_BLE_SCAN_SHORT_NAME_CNT > 0)
+
         case SCAN_SHORT_NAME_FILTER:
         {
-            nrf_ble_scan_short_name_t * p_short_name = (nrf_ble_scan_short_name_t *)p_data;
-            return nrf_ble_scan_short_name_filter_add(p_scan_ctx, p_short_name);
+            nrf_ble_scan_short_name_t * p_short_name = (nrf_ble_scan_short_name_t *) p_data;
+            return nrf_ble_scan_short_name_filter_add (p_scan_ctx, p_short_name);
         }
-#endif
 
+#endif
 #if (NRF_BLE_SCAN_ADDRESS_CNT > 0)
+
         case SCAN_ADDR_FILTER:
         {
-            uint8_t * p_addr = (uint8_t *)p_data;
-            return nrf_ble_scan_addr_filter_add(p_scan_ctx, p_addr);
+            uint8_t * p_addr = (uint8_t *) p_data;
+            return nrf_ble_scan_addr_filter_add (p_scan_ctx, p_addr);
         }
-#endif
 
+#endif
 #if (NRF_BLE_SCAN_UUID_CNT > 0)
+
         case SCAN_UUID_FILTER:
         {
-            ble_uuid_t * p_uuid = (ble_uuid_t *)p_data;
-            return nrf_ble_scan_uuid_filter_add(p_scan_ctx, p_uuid);
+            ble_uuid_t * p_uuid = (ble_uuid_t *) p_data;
+            return nrf_ble_scan_uuid_filter_add (p_scan_ctx, p_uuid);
         }
-#endif
 
+#endif
 #if (NRF_BLE_SCAN_APPEARANCE_CNT > 0)
+
         case SCAN_APPEARANCE_FILTER:
         {
-            uint16_t appearance = *((uint16_t *)p_data);
-            return nrf_ble_scan_appearance_filter_add(p_scan_ctx, appearance);
+            uint16_t appearance = * ( (uint16_t *) p_data);
+            return nrf_ble_scan_appearance_filter_add (p_scan_ctx, appearance);
         }
+
 #endif
 
         default:
@@ -697,149 +690,138 @@ ret_code_t nrf_ble_scan_filter_set(nrf_ble_scan_t     * const p_scan_ctx,
 }
 
 
-ret_code_t nrf_ble_scan_all_filter_remove(nrf_ble_scan_t * const p_scan_ctx)
+ret_code_t nrf_ble_scan_all_filter_remove (nrf_ble_scan_t * const p_scan_ctx)
 {
 #if (NRF_BLE_SCAN_NAME_CNT > 0)
     nrf_ble_scan_name_filter_t * p_name_filter = &p_scan_ctx->scan_filters.name_filter;
-    memset(p_name_filter->target_name, 0, sizeof(p_name_filter->target_name));
+    memset (p_name_filter->target_name, 0, sizeof (p_name_filter->target_name));
     p_name_filter->name_cnt = 0;
 #endif
-
 #if (NRF_BLE_SCAN_SHORT_NAME_CNT > 0)
     nrf_ble_scan_short_name_filter_t * p_short_name_filter =
         &p_scan_ctx->scan_filters.short_name_filter;
-    memset(p_short_name_filter->short_name, 0, sizeof(p_short_name_filter->short_name));
+    memset (p_short_name_filter->short_name, 0, sizeof (p_short_name_filter->short_name));
     p_short_name_filter->name_cnt = 0;
 #endif
-
 #if (NRF_BLE_SCAN_ADDRESS_CNT > 0)
     nrf_ble_scan_addr_filter_t * p_addr_filter = &p_scan_ctx->scan_filters.addr_filter;
-    memset(p_addr_filter->target_addr, 0, sizeof(p_addr_filter->target_addr));
+    memset (p_addr_filter->target_addr, 0, sizeof (p_addr_filter->target_addr));
     p_addr_filter->addr_cnt = 0;
 #endif
-
 #if (NRF_BLE_SCAN_UUID_CNT > 0)
     nrf_ble_scan_uuid_filter_t * p_uuid_filter = &p_scan_ctx->scan_filters.uuid_filter;
-    memset(p_uuid_filter->uuid, 0, sizeof(p_uuid_filter->uuid));
+    memset (p_uuid_filter->uuid, 0, sizeof (p_uuid_filter->uuid));
     p_uuid_filter->uuid_cnt = 0;
 #endif
-
 #if (NRF_BLE_SCAN_APPEARANCE_CNT > 0)
     nrf_ble_scan_appearance_filter_t * p_appearance_filter =
         &p_scan_ctx->scan_filters.appearance_filter;
-    memset(p_appearance_filter->appearance, 0, sizeof(p_appearance_filter->appearance));
+    memset (p_appearance_filter->appearance, 0, sizeof (p_appearance_filter->appearance));
     p_appearance_filter->appearance_cnt = 0;
 #endif
-
     return NRF_SUCCESS;
 }
 
 
-ret_code_t nrf_ble_scan_filters_enable(nrf_ble_scan_t * const p_scan_ctx,
-                                       uint8_t                mode,
-                                       bool                   match_all)
+ret_code_t nrf_ble_scan_filters_enable (nrf_ble_scan_t * const p_scan_ctx,
+                                        uint8_t                mode,
+                                        bool                   match_all)
 {
-    VERIFY_PARAM_NOT_NULL(p_scan_ctx);
+    VERIFY_PARAM_NOT_NULL (p_scan_ctx);
 
     // Check if the mode is correct.
-    if ((!(mode & NRF_BLE_SCAN_ADDR_FILTER)) &&
-        (!(mode & NRF_BLE_SCAN_NAME_FILTER)) &&
-        (!(mode & NRF_BLE_SCAN_UUID_FILTER)) &&
-        (!(mode & NRF_BLE_SCAN_SHORT_NAME_FILTER)) &&
-        (!(mode & NRF_BLE_SCAN_APPEARANCE_FILTER)))
+    if ( (! (mode & NRF_BLE_SCAN_ADDR_FILTER)) &&
+            (! (mode & NRF_BLE_SCAN_NAME_FILTER)) &&
+            (! (mode & NRF_BLE_SCAN_UUID_FILTER)) &&
+            (! (mode & NRF_BLE_SCAN_SHORT_NAME_FILTER)) &&
+            (! (mode & NRF_BLE_SCAN_APPEARANCE_FILTER)))
     {
         return NRF_ERROR_INVALID_PARAM;
     }
 
     ret_code_t err_code;
-
     // Disable filters.
-    err_code = nrf_ble_scan_filters_disable(p_scan_ctx);
-    ASSERT(err_code == NRF_SUCCESS);
-
+    err_code = nrf_ble_scan_filters_disable (p_scan_ctx);
+    ASSERT (err_code == NRF_SUCCESS);
     nrf_ble_scan_filters_t * p_filters = &p_scan_ctx->scan_filters;
-
     // Turn on the filters of your choice.
 #if (NRF_BLE_SCAN_ADDRESS_CNT > 0)
+
     if (mode & NRF_BLE_SCAN_ADDR_FILTER)
     {
         p_filters->addr_filter.addr_filter_enabled = true;
     }
-#endif
 
+#endif
 #if (NRF_BLE_SCAN_NAME_CNT > 0)
+
     if (mode & NRF_BLE_SCAN_NAME_FILTER)
     {
         p_filters->name_filter.name_filter_enabled = true;
     }
-#endif
 
+#endif
 #if (NRF_BLE_SCAN_SHORT_NAME_CNT > 0)
+
     if (mode & NRF_BLE_SCAN_SHORT_NAME_FILTER)
     {
         p_filters->short_name_filter.short_name_filter_enabled = true;
     }
-#endif
 
+#endif
 #if (NRF_BLE_SCAN_UUID_CNT > 0)
+
     if (mode & NRF_BLE_SCAN_UUID_FILTER)
     {
         p_filters->uuid_filter.uuid_filter_enabled = true;
     }
-#endif
 
+#endif
 #if (NRF_BLE_SCAN_APPEARANCE_CNT > 0)
+
     if (mode & NRF_BLE_SCAN_APPEARANCE_FILTER)
     {
         p_filters->appearance_filter.appearance_filter_enabled = true;
     }
-#endif
 
+#endif
     // Select the filter mode.
     p_filters->all_filters_mode = match_all;
-
     return NRF_SUCCESS;
 }
 
 
-ret_code_t nrf_ble_scan_filters_disable(nrf_ble_scan_t * const p_scan_ctx)
+ret_code_t nrf_ble_scan_filters_disable (nrf_ble_scan_t * const p_scan_ctx)
 {
-    VERIFY_PARAM_NOT_NULL(p_scan_ctx);
-
+    VERIFY_PARAM_NOT_NULL (p_scan_ctx);
     // Disable all filters.
 #if (NRF_BLE_SCAN_NAME_CNT > 0)
     bool * p_name_filter_enabled = &p_scan_ctx->scan_filters.name_filter.name_filter_enabled;
     *p_name_filter_enabled = false;
 #endif
-
 #if (NRF_BLE_SCAN_ADDRESS_CNT > 0)
     bool * p_addr_filter_enabled = &p_scan_ctx->scan_filters.addr_filter.addr_filter_enabled;
     *p_addr_filter_enabled = false;
 #endif
-
 #if (NRF_BLE_SCAN_UUID_CNT > 0)
     bool * p_uuid_filter_enabled = &p_scan_ctx->scan_filters.uuid_filter.uuid_filter_enabled;
     *p_uuid_filter_enabled = false;
 #endif
-
 #if (NRF_BLE_SCAN_APPEARANCE_CNT > 0)
     bool * p_appearance_filter_enabled =
         &p_scan_ctx->scan_filters.appearance_filter.appearance_filter_enabled;
     *p_appearance_filter_enabled = false;
 #endif
-
     return NRF_SUCCESS;
 }
 
 
-ret_code_t nrf_ble_scan_filter_get(nrf_ble_scan_t * const   p_scan_ctx,
-                                   nrf_ble_scan_filters_t * p_status)
+ret_code_t nrf_ble_scan_filter_get (nrf_ble_scan_t * const   p_scan_ctx,
+                                    nrf_ble_scan_filters_t * p_status)
 {
-    VERIFY_PARAM_NOT_NULL(p_scan_ctx);
-    VERIFY_PARAM_NOT_NULL(p_status);
-
+    VERIFY_PARAM_NOT_NULL (p_scan_ctx);
+    VERIFY_PARAM_NOT_NULL (p_status);
     *p_status = p_scan_ctx->scan_filters;
-
     return NRF_SUCCESS;
 }
 
@@ -852,67 +834,57 @@ ret_code_t nrf_ble_scan_filter_get(nrf_ble_scan_t * const   p_scan_ctx,
  * @param[in] p_scan_ctx    Pointer to the Scanning Module instance.
  * @param[in] p_adv_report  Advertising report.
  */
-static void nrf_ble_scan_on_adv_report(nrf_ble_scan_t           const * const p_scan_ctx,
-                                       ble_gap_evt_adv_report_t const * const p_adv_report)
+static void nrf_ble_scan_on_adv_report (nrf_ble_scan_t           const * const p_scan_ctx,
+                                        ble_gap_evt_adv_report_t const * const p_adv_report)
 {
     scan_evt_t scan_evt;
-
 #if (NRF_BLE_SCAN_FILTER_ENABLE == 1)
     uint8_t filter_cnt       = 0;
     uint8_t filter_match_cnt = 0;
 #endif
-
-    memset(&scan_evt, 0, sizeof(scan_evt));
-
+    memset (&scan_evt, 0, sizeof (scan_evt));
     scan_evt.p_scan_params = &p_scan_ctx->scan_params;
 
     // If the whitelist is used, do not check the filters and return.
-    if (is_whitelist_used(p_scan_ctx))
+    if (is_whitelist_used (p_scan_ctx))
     {
         scan_evt.scan_evt_id        = NRF_BLE_SCAN_EVT_WHITELIST_ADV_REPORT;
         scan_evt.params.p_not_found = p_adv_report;
-        p_scan_ctx->evt_handler(&scan_evt);
-
-        UNUSED_RETURN_VALUE(sd_ble_gap_scan_start(NULL, &p_scan_ctx->scan_buffer));
-        nrf_ble_scan_connect_with_target(p_scan_ctx, p_adv_report);
-
+        p_scan_ctx->evt_handler (&scan_evt);
+        UNUSED_RETURN_VALUE (sd_ble_gap_scan_start (NULL, &p_scan_ctx->scan_buffer));
+        nrf_ble_scan_connect_with_target (p_scan_ctx, p_adv_report);
         return;
     }
 
 #if (NRF_BLE_SCAN_FILTER_ENABLE == 1)
     bool const all_filter_mode   = p_scan_ctx->scan_filters.all_filters_mode;
     bool       is_filter_matched = false;
-
 #if (NRF_BLE_SCAN_ADDRESS_CNT > 0)
     bool const addr_filter_enabled = p_scan_ctx->scan_filters.addr_filter.addr_filter_enabled;
 #endif
-
 #if (NRF_BLE_SCAN_NAME_CNT > 0)
     bool const name_filter_enabled = p_scan_ctx->scan_filters.name_filter.name_filter_enabled;
 #endif
-
 #if (NRF_BLE_SCAN_SHORT_NAME_CNT > 0)
     bool const short_name_filter_enabled =
         p_scan_ctx->scan_filters.short_name_filter.short_name_filter_enabled;
 #endif
-
 #if (NRF_BLE_SCAN_UUID_CNT > 0)
     bool const uuid_filter_enabled = p_scan_ctx->scan_filters.uuid_filter.uuid_filter_enabled;
 #endif
-
 #if (NRF_BLE_SCAN_APPEARANCE_CNT > 0)
     bool const appearance_filter_enabled =
         p_scan_ctx->scan_filters.appearance_filter.appearance_filter_enabled;
 #endif
-
-
 #if (NRF_BLE_SCAN_ADDRESS_CNT > 0)
+
     // Check the address filter.
     if (addr_filter_enabled)
     {
         // Number of active filters.
         filter_cnt++;
-        if (adv_addr_compare(p_adv_report, p_scan_ctx))
+
+        if (adv_addr_compare (p_adv_report, p_scan_ctx))
         {
             // Number of filters matched.
             filter_match_cnt++;
@@ -921,45 +893,49 @@ static void nrf_ble_scan_on_adv_report(nrf_ble_scan_t           const * const p_
             is_filter_matched = true;
         }
     }
-#endif
 
+#endif
 #if (NRF_BLE_SCAN_NAME_CNT > 0)
+
     // Check the name filter.
     if (name_filter_enabled)
     {
         filter_cnt++;
-        if (adv_name_compare(p_adv_report, p_scan_ctx))
+
+        if (adv_name_compare (p_adv_report, p_scan_ctx))
         {
             filter_match_cnt++;
-
             // Information about the filters matched.
             scan_evt.params.filter_match.filter_match.name_filter_match = true;
             is_filter_matched = true;
         }
     }
-#endif
 
+#endif
 #if (NRF_BLE_SCAN_SHORT_NAME_CNT > 0)
+
     if (short_name_filter_enabled)
     {
         filter_cnt++;
-        if (adv_short_name_compare(p_adv_report, p_scan_ctx))
+
+        if (adv_short_name_compare (p_adv_report, p_scan_ctx))
         {
             filter_match_cnt++;
-
             // Information about the filters matched.
             scan_evt.params.filter_match.filter_match.short_name_filter_match = true;
             is_filter_matched = true;
         }
     }
-#endif
 
+#endif
 #if (NRF_BLE_SCAN_UUID_CNT > 0)
+
     // Check the UUID filter.
     if (uuid_filter_enabled)
     {
         filter_cnt++;
-        if (adv_uuid_compare(p_adv_report, p_scan_ctx))
+
+        if (adv_uuid_compare (p_adv_report, p_scan_ctx))
         {
             filter_match_cnt++;
             // Information about the filters matched.
@@ -967,14 +943,16 @@ static void nrf_ble_scan_on_adv_report(nrf_ble_scan_t           const * const p_
             is_filter_matched = true;
         }
     }
-#endif
 
+#endif
 #if (NRF_BLE_SCAN_APPEARANCE_CNT > 0)
+
     // Check the appearance filter.
     if (appearance_filter_enabled)
     {
         filter_cnt++;
-        if (adv_appearance_compare(p_adv_report, p_scan_ctx))
+
+        if (adv_appearance_compare (p_adv_report, p_scan_ctx))
         {
             filter_match_cnt++;
             // Information about the filters matched.
@@ -985,26 +963,24 @@ static void nrf_ble_scan_on_adv_report(nrf_ble_scan_t           const * const p_
 
     scan_evt.scan_evt_id = NRF_BLE_SCAN_EVT_NOT_FOUND;
 #endif
-
     scan_evt.params.filter_match.p_adv_report = p_adv_report;
 
     // In the multifilter mode, the number of the active filters must equal the number of the filters matched to generate the notification.
     if (all_filter_mode && (filter_match_cnt == filter_cnt))
     {
         scan_evt.scan_evt_id = NRF_BLE_SCAN_EVT_FILTER_MATCH;
-        nrf_ble_scan_connect_with_target(p_scan_ctx, p_adv_report);
+        nrf_ble_scan_connect_with_target (p_scan_ctx, p_adv_report);
     }
     // In the normal filter mode, only one filter match is needed to generate the notification to the main application.
-    else if ((!all_filter_mode) && is_filter_matched)
+    else if ( (!all_filter_mode) && is_filter_matched)
     {
         scan_evt.scan_evt_id = NRF_BLE_SCAN_EVT_FILTER_MATCH;
-        nrf_ble_scan_connect_with_target(p_scan_ctx, p_adv_report);
+        nrf_ble_scan_connect_with_target (p_scan_ctx, p_adv_report);
     }
     else
     {
         scan_evt.scan_evt_id        = NRF_BLE_SCAN_EVT_NOT_FOUND;
         scan_evt.params.p_not_found = p_adv_report;
-
     }
 
 #else // NRF_BLE_SCAN_FILTER_ENABLE
@@ -1015,11 +991,11 @@ static void nrf_ble_scan_on_adv_report(nrf_ble_scan_t           const * const p_
     // If the event handler is not NULL, notify the main application.
     if (p_scan_ctx->evt_handler != NULL)
     {
-        p_scan_ctx->evt_handler(&scan_evt);
+        p_scan_ctx->evt_handler (&scan_evt);
     }
 
     // Resume the scanning.
-    UNUSED_RETURN_VALUE(sd_ble_gap_scan_start(NULL, &p_scan_ctx->scan_buffer));
+    UNUSED_RETURN_VALUE (sd_ble_gap_scan_start (NULL, &p_scan_ctx->scan_buffer));
 }
 
 
@@ -1027,10 +1003,10 @@ static void nrf_ble_scan_on_adv_report(nrf_ble_scan_t           const * const p_
  *
  * @param[in] p_scan_ctx   Scanning Module instance.
  */
-bool is_whitelist_used(nrf_ble_scan_t const * const p_scan_ctx)
+bool is_whitelist_used (nrf_ble_scan_t const * const p_scan_ctx)
 {
     if (p_scan_ctx->scan_params.filter_policy == BLE_GAP_SCAN_FP_WHITELIST ||
-        p_scan_ctx->scan_params.filter_policy == BLE_GAP_SCAN_FP_WHITELIST_NOT_RESOLVED_DIRECTED)
+            p_scan_ctx->scan_params.filter_policy == BLE_GAP_SCAN_FP_WHITELIST_NOT_RESOLVED_DIRECTED)
     {
         return true;
     }
@@ -1043,7 +1019,7 @@ bool is_whitelist_used(nrf_ble_scan_t const * const p_scan_ctx)
  *
  * @param[out] p_scan_ctx    Pointer to the Scanning Module instance.
  */
-static void nrf_ble_scan_default_param_set(nrf_ble_scan_t * const p_scan_ctx)
+static void nrf_ble_scan_default_param_set (nrf_ble_scan_t * const p_scan_ctx)
 {
     // Set the default parameters.
     p_scan_ctx->scan_params.active        = 1;
@@ -1059,16 +1035,16 @@ static void nrf_ble_scan_default_param_set(nrf_ble_scan_t * const p_scan_ctx)
  *
  * @param[out] p_scan_ctx    Pointer to the Scanning Module instance.
  */
-static void nrf_ble_scan_default_conn_param_set(nrf_ble_scan_t * const p_scan_ctx)
+static void nrf_ble_scan_default_conn_param_set (nrf_ble_scan_t * const p_scan_ctx)
 {
     p_scan_ctx->conn_params.conn_sup_timeout =
-        (uint16_t)MSEC_TO_UNITS(NRF_BLE_SCAN_SUPERVISION_TIMEOUT, UNIT_10_MS);
+        (uint16_t) MSEC_TO_UNITS (NRF_BLE_SCAN_SUPERVISION_TIMEOUT, UNIT_10_MS);
     p_scan_ctx->conn_params.min_conn_interval =
-        (uint16_t)MSEC_TO_UNITS(NRF_BLE_SCAN_MIN_CONNECTION_INTERVAL, UNIT_1_25_MS);
+        (uint16_t) MSEC_TO_UNITS (NRF_BLE_SCAN_MIN_CONNECTION_INTERVAL, UNIT_1_25_MS);
     p_scan_ctx->conn_params.max_conn_interval =
-        (uint16_t)MSEC_TO_UNITS(NRF_BLE_SCAN_MAX_CONNECTION_INTERVAL, UNIT_1_25_MS);
+        (uint16_t) MSEC_TO_UNITS (NRF_BLE_SCAN_MAX_CONNECTION_INTERVAL, UNIT_1_25_MS);
     p_scan_ctx->conn_params.slave_latency =
-        (uint16_t)NRF_BLE_SCAN_SLAVE_LATENCY;
+        (uint16_t) NRF_BLE_SCAN_SLAVE_LATENCY;
 }
 
 
@@ -1077,24 +1053,23 @@ static void nrf_ble_scan_default_conn_param_set(nrf_ble_scan_t * const p_scan_ct
  * @param[in] p_scan_ctx  Pointer to the Scanning Module instance.
  * @param[in] p_gap       GAP event structure.
  */
-static void nrf_ble_scan_on_timeout(nrf_ble_scan_t const * const p_scan_ctx,
-                                    ble_gap_evt_t  const * const p_gap)
+static void nrf_ble_scan_on_timeout (nrf_ble_scan_t const * const p_scan_ctx,
+                                     ble_gap_evt_t  const * const p_gap)
 {
     ble_gap_evt_timeout_t const * p_timeout = &p_gap->params.timeout;
     scan_evt_t                    scan_evt;
-
-    memset(&scan_evt, 0, sizeof(scan_evt));
+    memset (&scan_evt, 0, sizeof (scan_evt));
 
     if (p_timeout->src == BLE_GAP_TIMEOUT_SRC_SCAN)
     {
-        NRF_LOG_DEBUG("BLE_GAP_SCAN_TIMEOUT");
+        NRF_LOG_DEBUG ("BLE_GAP_SCAN_TIMEOUT");
+
         if (p_scan_ctx->evt_handler != NULL)
         {
             scan_evt.scan_evt_id        = NRF_BLE_SCAN_EVT_SCAN_TIMEOUT;
             scan_evt.p_scan_params      = &p_scan_ctx->scan_params;
             scan_evt.params.timeout.src = p_timeout->src;
-
-            p_scan_ctx->evt_handler(&scan_evt);
+            p_scan_ctx->evt_handler (&scan_evt);
         }
     }
 }
@@ -1105,46 +1080,42 @@ static void nrf_ble_scan_on_timeout(nrf_ble_scan_t const * const p_scan_ctx,
  * @param[in] p_scan_ctx  Pointer to the Scanning Module instance.
  * @param[in] p_gap       GAP event structure.
  */
-static void nrf_ble_scan_on_req_report(nrf_ble_scan_t const * const p_scan_ctx,
-                                       ble_gap_evt_t  const * const p_gap)
+static void nrf_ble_scan_on_req_report (nrf_ble_scan_t const * const p_scan_ctx,
+                                        ble_gap_evt_t  const * const p_gap)
 {
     ble_gap_evt_scan_req_report_t const * p_req_report = &p_gap->params.scan_req_report;
     scan_evt_t                            scan_evt;
-
-    memset(&scan_evt, 0, sizeof(scan_evt));
+    memset (&scan_evt, 0, sizeof (scan_evt));
 
     if (p_scan_ctx->evt_handler != NULL)
     {
         scan_evt.scan_evt_id       = NRF_BLE_SCAN_EVT_SCAN_REQ_REPORT;
         scan_evt.p_scan_params     = &p_scan_ctx->scan_params;
         scan_evt.params.req_report = *p_req_report;
-
-        p_scan_ctx->evt_handler(&scan_evt);
+        p_scan_ctx->evt_handler (&scan_evt);
     }
 }
 
 
 /**@brief Function for stopping the scanning.
  */
-void nrf_ble_scan_stop(void)
+void nrf_ble_scan_stop (void)
 {
     // It is ok to ignore the function return value here, because this function can return NRF_SUCCESS or
     // NRF_ERROR_INVALID_STATE, when app is not in the scanning state.
-    UNUSED_RETURN_VALUE(sd_ble_gap_scan_stop());
+    UNUSED_RETURN_VALUE (sd_ble_gap_scan_stop());
 }
 
 
-ret_code_t nrf_ble_scan_init(nrf_ble_scan_t            * const p_scan_ctx,
-                             nrf_ble_scan_init_t const * const p_init,
-                             nrf_ble_scan_evt_handler_t        evt_handler)
+ret_code_t nrf_ble_scan_init (nrf_ble_scan_t       *      const p_scan_ctx,
+                              nrf_ble_scan_init_t const * const p_init,
+                              nrf_ble_scan_evt_handler_t        evt_handler)
 {
-    VERIFY_PARAM_NOT_NULL(p_scan_ctx);
-
+    VERIFY_PARAM_NOT_NULL (p_scan_ctx);
     p_scan_ctx->evt_handler = evt_handler;
-
 #if (NRF_BLE_SCAN_FILTER_ENABLE == 1)
     // Disable all scanning filters.
-    memset(&p_scan_ctx->scan_filters, 0, sizeof(p_scan_ctx->scan_filters));
+    memset (&p_scan_ctx->scan_filters, 0, sizeof (p_scan_ctx->scan_filters));
 #endif
 
     // If the pointer to the initialization structure exist, use it to scan the configuration.
@@ -1160,7 +1131,7 @@ ret_code_t nrf_ble_scan_init(nrf_ble_scan_t            * const p_scan_ctx,
         else
         {
             // Use the default static configuration.
-            nrf_ble_scan_default_param_set(p_scan_ctx);
+            nrf_ble_scan_default_param_set (p_scan_ctx);
         }
 
         if (p_init->p_conn_param != NULL)
@@ -1170,67 +1141,61 @@ ret_code_t nrf_ble_scan_init(nrf_ble_scan_t            * const p_scan_ctx,
         else
         {
             // Use the default static configuration.
-            nrf_ble_scan_default_conn_param_set(p_scan_ctx);
+            nrf_ble_scan_default_conn_param_set (p_scan_ctx);
         }
     }
     // If pointer is NULL, use the static default configuration.
     else
     {
-        nrf_ble_scan_default_param_set(p_scan_ctx);
-        nrf_ble_scan_default_conn_param_set(p_scan_ctx);
-
+        nrf_ble_scan_default_param_set (p_scan_ctx);
+        nrf_ble_scan_default_conn_param_set (p_scan_ctx);
         p_scan_ctx->connect_if_match = false;
     }
 
     // Assign a buffer where the advertising reports are to be stored by the SoftDevice.
     p_scan_ctx->scan_buffer.p_data = p_scan_ctx->scan_buffer_data;
     p_scan_ctx->scan_buffer.len    = NRF_BLE_SCAN_BUFFER;
-
     return NRF_SUCCESS;
 }
 
 
-ret_code_t nrf_ble_scan_start(nrf_ble_scan_t const * const p_scan_ctx)
+ret_code_t nrf_ble_scan_start (nrf_ble_scan_t const * const p_scan_ctx)
 {
-    VERIFY_PARAM_NOT_NULL(p_scan_ctx);
-
+    VERIFY_PARAM_NOT_NULL (p_scan_ctx);
     ret_code_t err_code;
     scan_evt_t scan_evt;
-
-    memset(&scan_evt, 0, sizeof(scan_evt));
-
+    memset (&scan_evt, 0, sizeof (scan_evt));
     nrf_ble_scan_stop();
 
     // If the whitelist is used and the event handler is not NULL, send the whitelist request to the main application.
-    if (is_whitelist_used(p_scan_ctx))
+    if (is_whitelist_used (p_scan_ctx))
     {
         if (p_scan_ctx->evt_handler != NULL)
         {
             scan_evt.scan_evt_id = NRF_BLE_SCAN_EVT_WHITELIST_REQUEST;
-            p_scan_ctx->evt_handler(&scan_evt);
+            p_scan_ctx->evt_handler (&scan_evt);
         }
     }
 
     // Start the scanning.
-    err_code = sd_ble_gap_scan_start(&p_scan_ctx->scan_params, &p_scan_ctx->scan_buffer);
+    err_code = sd_ble_gap_scan_start (&p_scan_ctx->scan_params, &p_scan_ctx->scan_buffer);
 
     // It is okay to ignore this error, because the scan stopped earlier.
-    if ((err_code != NRF_ERROR_INVALID_STATE) && (err_code != NRF_SUCCESS))
+    if ( (err_code != NRF_ERROR_INVALID_STATE) && (err_code != NRF_SUCCESS))
     {
-        NRF_LOG_ERROR("sd_ble_gap_scan_start returned 0x%x", err_code);
+        NRF_LOG_ERROR ("sd_ble_gap_scan_start returned 0x%x", err_code);
         return (err_code);
     }
-    NRF_LOG_DEBUG("Scanning");
 
+    NRF_LOG_DEBUG ("Scanning");
     return NRF_SUCCESS;
 }
 
 
-ret_code_t nrf_ble_scan_params_set(nrf_ble_scan_t              * const p_scan_ctx,
-                                   ble_gap_scan_params_t const * const p_scan_param)
+ret_code_t nrf_ble_scan_params_set (nrf_ble_scan_t        *       const p_scan_ctx,
+                                    ble_gap_scan_params_t const * const p_scan_param)
 {
-    VERIFY_PARAM_NOT_NULL(p_scan_ctx);
-
+    VERIFY_PARAM_NOT_NULL (p_scan_ctx);
     nrf_ble_scan_stop();
 
     if (p_scan_param != NULL)
@@ -1241,11 +1206,10 @@ ret_code_t nrf_ble_scan_params_set(nrf_ble_scan_t              * const p_scan_ct
     else
     {
         // If NULL, use the default static configuration.
-        nrf_ble_scan_default_param_set(p_scan_ctx);
+        nrf_ble_scan_default_param_set (p_scan_ctx);
     }
 
-    NRF_LOG_DEBUG("Scanning parameters have been changed successfully");
-
+    NRF_LOG_DEBUG ("Scanning parameters have been changed successfully");
     return NRF_SUCCESS;
 }
 
@@ -1255,12 +1219,11 @@ ret_code_t nrf_ble_scan_params_set(nrf_ble_scan_t              * const p_scan_ct
  * @param[in] p_scan_ctx  Pointer to the Scanning Module instance.
  * @param[in] p_gap_evt   GAP event structure.
  */
-static void nrf_ble_scan_on_connected_evt(nrf_ble_scan_t const * const p_scan_ctx,
-                                          ble_gap_evt_t  const * const p_gap_evt)
+static void nrf_ble_scan_on_connected_evt (nrf_ble_scan_t const * const p_scan_ctx,
+        ble_gap_evt_t  const * const p_gap_evt)
 {
     scan_evt_t scan_evt;
-
-    memset(&scan_evt, 0, sizeof(scan_evt));
+    memset (&scan_evt, 0, sizeof (scan_evt));
     scan_evt.scan_evt_id                  = NRF_BLE_SCAN_EVT_CONNECTED;
     scan_evt.params.connected.p_connected = &p_gap_evt->params.connected;
     scan_evt.params.connected.conn_handle = p_gap_evt->conn_handle;
@@ -1268,17 +1231,16 @@ static void nrf_ble_scan_on_connected_evt(nrf_ble_scan_t const * const p_scan_ct
 
     if (p_scan_ctx->evt_handler != NULL)
     {
-        p_scan_ctx->evt_handler(&scan_evt);
+        p_scan_ctx->evt_handler (&scan_evt);
     }
 }
 
 
-ret_code_t nrf_ble_scan_copy_addr_to_sd_gap_addr(ble_gap_addr_t * p_gap_addr,
-                                                 const uint8_t    addr[BLE_GAP_ADDR_LEN])
+ret_code_t nrf_ble_scan_copy_addr_to_sd_gap_addr (ble_gap_addr_t * p_gap_addr,
+        const uint8_t    addr[BLE_GAP_ADDR_LEN])
 {
     uint16_t addr_type;
-
-    addr_type = nrf_ble_scan_address_type_decode(addr);
+    addr_type = nrf_ble_scan_address_type_decode (addr);
 
     if (addr_type == BLE_ERROR_GAP_INVALID_BLE_ADDR)
     {
@@ -1296,29 +1258,28 @@ ret_code_t nrf_ble_scan_copy_addr_to_sd_gap_addr(ble_gap_addr_t * p_gap_addr,
 }
 
 
-void nrf_ble_scan_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_contex)
+void nrf_ble_scan_on_ble_evt (ble_evt_t const * p_ble_evt, void * p_contex)
 {
-    nrf_ble_scan_t                 * p_scan_data  = (nrf_ble_scan_t *)p_contex;
+    nrf_ble_scan_t         *         p_scan_data  = (nrf_ble_scan_t *) p_contex;
     ble_gap_evt_adv_report_t const * p_adv_report = &p_ble_evt->evt.gap_evt.params.adv_report;
-    ble_gap_evt_t const            * p_gap_evt    = &p_ble_evt->evt.gap_evt;
+    ble_gap_evt_t const       *      p_gap_evt    = &p_ble_evt->evt.gap_evt;
 
     switch (p_ble_evt->header.evt_id)
     {
         case BLE_GAP_EVT_ADV_REPORT:
-            nrf_ble_scan_on_adv_report(p_scan_data, p_adv_report);
+            nrf_ble_scan_on_adv_report (p_scan_data, p_adv_report);
             break;
 
         case BLE_GAP_EVT_TIMEOUT:
-            nrf_ble_scan_on_timeout(p_scan_data, p_gap_evt);
+            nrf_ble_scan_on_timeout (p_scan_data, p_gap_evt);
             break;
 
         case BLE_GAP_EVT_SCAN_REQ_REPORT:
-            nrf_ble_scan_on_req_report(p_scan_data, p_gap_evt);
-
+            nrf_ble_scan_on_req_report (p_scan_data, p_gap_evt);
             break;
 
         case BLE_GAP_EVT_CONNECTED:
-            nrf_ble_scan_on_connected_evt(p_scan_data, p_gap_evt);
+            nrf_ble_scan_on_connected_evt (p_scan_data, p_gap_evt);
             break;
 
         default:

@@ -53,3 +53,12 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Mac OSX files
+.DS_Store
+
+# Astyle backups
+*.orig
+
+ # SDK
+nRF5_SDK_15.3.0_59ac345

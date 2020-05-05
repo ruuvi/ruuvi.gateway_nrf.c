@@ -11,7 +11,7 @@
 #define CMD1_LEN 3
 #define CMD2_LEN 1
 
-void uart_init(void);
-void uart_send_broadcast(const uint8_t* mac, uint8_t* data, int len, int rssi);
+void uart_init (void);
+void uart_send_broadcast (const uint8_t * mac, uint8_t * data, int len, int rssi);
 
 #endif
