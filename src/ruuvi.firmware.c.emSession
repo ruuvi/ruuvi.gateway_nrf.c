@@ -1,0 +1,74 @@
+<!DOCTYPE CrossStudio_Session_File>
+<session>
+ <Bookmarks/>
+ <Breakpoints groups="Breakpoints" active_group="Breakpoints">
+  <Exceptions set="MemManage;UsageFault_Coprocessor;UsageFault_CheckingError;UsageFault_StateError;BusFault;ExceptionEntryReturnFault;HardFault"/>
+ </Breakpoints>
+ <ExecutionProfileWindow/>
+ <FrameBufferWindow>
+  <FrameBufferWindow bufferHeight="-1" addressSpace="" addressText="" bufferWidth="-1"/>
+ </FrameBufferWindow>
+ <Memory1/>
+ <Memory2/>
+ <Memory3/>
+ <Memory4/>
+ <Project>
+  <ProjectSessionItem path="ruuvi.gateway_nrf.c"/>
+  <ProjectSessionItem path="ruuvi.gateway_nrf.c;pca10040"/>
+  <ProjectSessionItem path="ruuvi.gateway_nrf.c;pca10040;Application"/>
+  <ProjectSessionItem path="ruuvi.gateway_nrf.c;pca10040;ruuvi.drivers.c"/>
+  <ProjectSessionItem path="ruuvi.gateway_nrf.c;pca10040;ruuvi.drivers.c;interfaces"/>
+  <ProjectSessionItem path="ruuvi.gateway_nrf.c;pca10040;ruuvi.drivers.c;interfaces;communication"/>
+  <ProjectSessionItem path="ruuvi.gateway_nrf.c;pca10040;ruuvi.drivers.c;nrf5_sdk15_platform"/>
+  <ProjectSessionItem path="ruuvi.gateway_nrf.c;pca10040;ruuvi.drivers.c;nrf5_sdk15_platform;communication"/>
+  <ProjectSessionItem path="ruuvi.gateway_nrf.c;pca10040;ruuvi.drivers.c;nrf5_sdk15_platform;ruuvi.nrf_sdk15_3_overrides.c"/>
+  <ProjectSessionItem path="ruuvi.gateway_nrf.c;pca10040;ruuvi.drivers.c;nrf5_sdk15_platform;watchdog"/>
+  <ProjectSessionItem path="ruuvi.gateway_nrf.c;pca10040;ruuvi.drivers.c;tasks"/>
+ </Project>
+ <Register1/>
+ <Register2/>
+ <Register3/>
+ <Register4/>
+ <Threads>
+  <ThreadsWindow showLists=""/>
+ </Threads>
+ <TraceWindow>
+  <Trace enabled="Yes"/>
+ </TraceWindow>
+ <Watch1>
+  <Watches active="1" update="Never"/>
+ </Watch1>
+ <Watch2>
+  <Watches active="0" update="Never"/>
+ </Watch2>
+ <Watch3>
+  <Watches active="0" update="Never"/>
+ </Watch3>
+ <Watch4>
+  <Watches active="0" update="Never"/>
+ </Watch4>
+ <Files>
+  <SessionOpenFile windowGroup="DockEditLeft" x="55" y="66" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="main.c" selected="0" top="45" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="278" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="uart.c" selected="0" top="252" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="41" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/nrf_ble_scan.c" selected="0" top="9" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="605" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" selected="0" top="574" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="158" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="ruuvi.drivers.c/src/nrf5_sdk15_platform/nrf5_sdk15_config.h" selected="0" top="158" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="203" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../nRF5_SDK_15.3.0_59ac345/components/libraries/serial/nrf_serial.c" selected="0" top="179" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="196" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_uart.h" selected="0" top="189" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="39" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/include/nrfx_uart.h" selected="0" top="37" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="87" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="ruuvi.drivers.c/src/nrf5_sdk15_platform/uart/ruuvi_nrf5_sdk15_uart.c" selected="0" top="87" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="5336" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="ruuvi.drivers.c/src/nrf5_sdk15_platform/sdk_config.h" selected="0" top="5298" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="72" y="14" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="ruuvi.boards.c/ruuvi_board_pca10040.h" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="81" useTextEdit="1" openedFrom="/Users/otsojousimaa/git/ruuvi.gateway_nrf.c/src/main.c" useBinaryEdit="0" left="0" path="ruuvi.drivers.c/src/nrf5_sdk15_platform/watchdog/ruuvi_nrf5_sdk15_watchdog.c" selected="0" top="66" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="43" useTextEdit="1" openedFrom="/Users/otsojousimaa/git/ruuvi.gateway_nrf.c/src/ruuvi.drivers.c/src/nrf5_sdk15_platform/watchdog/ruuvi_nrf5_sdk15_watchdog.c" useBinaryEdit="0" left="0" path="ruuvi.drivers.c/src/interfaces/watchdog/ruuvi_interface_watchdog.h" selected="0" top="28" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="6" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="main.h" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="102" y="25" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="app_ble.h" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="55" y="29" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="app_ble.c" selected="1" top="14" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="50" useTextEdit="1" openedFrom="/Users/otsojousimaa/git/ruuvi.gateway_nrf.c/src/app_ble.c" useBinaryEdit="0" left="0" path="ruuvi.drivers.c/src/interfaces/communication/ruuvi_interface_communication_radio.h" selected="0" top="35" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="28" y="50" useTextEdit="1" openedFrom="/Users/otsojousimaa/git/ruuvi.gateway_nrf.c/src/app_ble.c" useBinaryEdit="0" left="0" path="ruuvi.drivers.c/src/tasks/ruuvi_task_advertisement.h" selected="0" top="33" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="22" y="36" useTextEdit="1" openedFrom="/Users/otsojousimaa/git/ruuvi.gateway_nrf.c/src/app_ble.c" useBinaryEdit="0" left="0" path="ruuvi.drivers.c/src/tasks/ruuvi_task_advertisement.c" selected="0" top="6" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="541" useTextEdit="1" openedFrom="/Users/otsojousimaa/git/ruuvi.gateway_nrf.c/src/ruuvi.drivers.c/src/tasks/ruuvi_task_advertisement.c" useBinaryEdit="0" left="0" path="ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_ble_advertising.c" selected="0" top="598" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="92" useTextEdit="1" openedFrom="/Users/otsojousimaa/git/ruuvi.gateway_nrf.c/src/ruuvi.drivers.c/src/tasks/ruuvi_task_advertisement.c" useBinaryEdit="0" left="0" path="ruuvi.drivers.c/src/interfaces/communication/ruuvi_interface_communication.h" selected="0" top="76" codecName="Default"/>
+ </Files>
+ <ARMCrossStudioWindow activeProject="pca10040" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="/Users/otsojousimaa/git/ruuvi.gateway_nrf.c/src" debugSearchPath="" autoConnectCapabilities="3199"/>
+</session>

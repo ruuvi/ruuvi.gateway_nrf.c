@@ -6,7 +6,7 @@
 #include "ble.h"
 #include "nrf_drv_uart.h"
 #include <app_fifo.h>
-
+#if 0
 #define NRF_LOG_MODULE_NAME uart
 #define NRF_LOG_LEVEL 4
 #include "nrf_log.h"
@@ -267,7 +267,6 @@ void uart_init (void)
         .flow_control = APP_UART_FLOW_CONTROL_DISABLED,
         .use_parity   = false,
         .baud_rate    = UART_BAUDRATE_BAUDRATE_Baud115200
-        //.baud_rate    = UART_BAUDRATE_BAUDRATE_Baud1M
     };
     APP_UART_FIFO_INIT (&comm_params,
                         UART_RX_BUF_SIZE,
@@ -277,3 +276,4 @@ void uart_init (void)
                         err_code);
     APP_ERROR_CHECK (err_code);
 }
+#endif
