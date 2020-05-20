@@ -15,6 +15,7 @@
 #include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
+#include "ruuvi_interface_watchdog.h"
 #include "ruuvi_task_advertisement.h"
 
 #include <string.h>
@@ -24,11 +25,17 @@ static inline void LOG (const char * const msg)
     ri_log (RI_LOG_LEVEL_INFO, msg);
 }
 
+static inline void LOGD (const char * const msg)
+{
+    ri_log (RI_LOG_LEVEL_DEBUG, msg);
+}
+
+
 app_ble_scan_t m_scan_params;  //!< Configured scan
 app_ble_on_scan_fp_t m_on_ble; //!< Callback for scans
 
 /** @brief Pass scan data on application via this FP */
-static void app_ble_set_on_scan(const app_ble_on_scan_fp_t callback)
+void app_ble_set_on_scan(const app_ble_on_scan_fp_t callback)
 {
     m_on_ble = callback;
 }
@@ -36,7 +43,23 @@ static void app_ble_set_on_scan(const app_ble_on_scan_fp_t callback)
 /** @brief Handle driver events */
 static rd_status_t on_scan_isr(const ri_comm_evt_t evt, void * p_data, size_t data_len)
 {
-  
+    rd_status_t err_code = RD_SUCCESS;
+    switch(evt)
+    {
+        case RI_COMM_RECEIVED:
+          LOGD("DATA\r\n");
+          break;
+
+        case RI_COMM_TIMEOUT:
+          LOG("Timeout\r\n");
+          err_code |= app_ble_scan_start();
+          break;
+        
+        default:
+          LOG("Unknown event\r\n");
+          break;
+    }
+    return err_code;
 }
 
 /**
@@ -176,15 +199,18 @@ rd_status_t app_ble_scan_start(void)
         .channels = m_scan_params.scan_channels,
         .adv_interval_ms = (1000U), //!< Unused
         .adv_pwr_dbm     = (0),     //!< Unused
-        .manufacturer_id = RB_BLE_MANUFACTURER_ID // default
+        .manufacturer_id = RB_BLE_MANUFACTURER_ID //!< default
     };
     if(RD_SUCCESS == err_code)
     {
         next_modulation_select();
         err_code |= ri_radio_init(m_scan_params.current_modulation);
-        err_code |= rt_adv_init(&adv_params);
-        err_code |= rt_adv_scan_start()
-
+        if(RD_SUCCESS == err_code)
+        {
+            err_code |= rt_adv_init(&adv_params);
+            err_code |= rt_adv_scan_start(&on_scan_isr);
+            err_code |= ri_watchdog_feed();
+        }
     }
     return err_code;
 }

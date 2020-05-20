@@ -47,6 +47,10 @@
 #   define RI_ADV_EXTENDED_ENABLED (1U)
 #endif
 
+#ifndef RT_GATT_ENABLED
+#   define RT_GATT_ENABLED APP_GATT_ENABLED
+#endif
+
 /** @brief enable nRF15 SDK implementation of drivers */
 #define RUUVI_NRF5_SDK15_ENABLED (1U)
 
@@ -143,13 +147,18 @@
 
 /** @brief Logs reserve lot of flash, enable only on debug builds */
 #ifndef RI_LOG_ENABLED
-#define RI_LOG_ENABLED (0U)
-#define APP_LOG_LEVEL RI_LOG_LEVEL_NONE
+#   ifdef DEBUG
+#       define RI_LOG_ENABLED ((RB_APP_PAGES > 0U))
+#       define APP_LOG_LEVEL RI_LOG_LEVEL_INFO
+#   else
+#       define RI_LOG_ENABLED (0)
+#       define APP_LOG_LEVEL RI_LOG_LEVEL_NONE
+#   endif
 #endif
 
 #define RI_LIS2DH12_ENABLED 0
 #define RI_BME280_ENABLED 0
 #define RI_SHTCX_ENABLED 0
 
-/*@}*/
+/** @} */
 #endif

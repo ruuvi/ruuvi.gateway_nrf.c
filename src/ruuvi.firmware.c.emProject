@@ -269,11 +269,11 @@
         filter="*.h"
         path="application_config"
         recurse="Yes" />
-      <file file_name="ble.c" />
-      <file file_name="ble.h" />
       <file file_name="main.h" />
       <file file_name="uart.c" />
       <file file_name="uart.h" />
+      <file file_name="app_ble.c" />
+      <file file_name="app_ble.h" />
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c" />
@@ -378,6 +378,7 @@
     gcc_optimization_level="Optimize For Size" />
   <configuration
     Name="Debug"
+    c_additional_options=""
     c_preprocessor_definitions="DEBUG; DEBUG_NRF; RUUVI_RUN_TESTS"
     gcc_optimization_level="None" />
   <configuration

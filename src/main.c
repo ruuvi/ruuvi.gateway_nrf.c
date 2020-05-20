@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "main.h"
-#include "ble.h"
+#include "app_ble.h"
 #include "uart.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
@@ -21,6 +21,7 @@
 #include "ruuvi_interface_timer.h"
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_yield.h"
+#include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_task_led.h"
 
 /**
@@ -50,10 +51,23 @@ void on_wdt(void)
 #ifndef CEEDLING
 static
 #endif
+void modulations_setup(void)
+{
+    if(ri_radio_supports(RI_RADIO_BLE_125KBPS))
+    {
+        app_ble_modulation_enable(RI_RADIO_BLE_125KBPS, true);
+    }
+    app_ble_modulation_enable(RI_RADIO_BLE_1MBPS, true);
+    app_ble_modulation_enable(RI_RADIO_BLE_2MBPS, true);
+}
+
+#ifndef CEEDLING
+static
+#endif
 void setup(void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    err_code |= ri_log_init(RI_LOG_LEVEL_INFO);
+    err_code |= ri_log_init(APP_LOG_LEVEL);
     err_code |= ri_watchdog_init(APP_WDT_INTERVAL_MS, on_wdt);
     err_code |= ri_yield_init();
     err_code |= ri_timer_init();
@@ -65,13 +79,17 @@ void setup(void)
     err_code |= ri_yield_low_power_enable(true);
     // Requires LEDs
     ri_yield_indication_set(&rt_led_activity_indicate);
+    modulations_setup();
     RD_ERROR_CHECK(err_code, ~RD_ERROR_FATAL);
 }
 
 int main (void)
 {
+    rd_status_t err_code = RD_SUCCESS;
     setup();
     // Enter main loop.
+    err_code |= app_ble_scan_start();
+    RD_ERROR_CHECK(err_code, ~RD_ERROR_FATAL);
     do 
     {
         ri_scheduler_execute();
