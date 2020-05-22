@@ -48,10 +48,13 @@ static rd_status_t on_scan_isr(const ri_comm_evt_t evt, void * p_data, size_t da
     {
         case RI_COMM_RECEIVED:
           LOGD("DATA\r\n");
+          // TODO: Buffer data
+          // TODO: IF buffer full, stop scan, trigger send/repeat
           break;
 
         case RI_COMM_TIMEOUT:
-          LOG("Timeout\r\n");
+          LOGD("Timeout\r\n");
+          // TODO: trigger send/repeat
           err_code |= app_ble_scan_start();
           break;
         

@@ -57,7 +57,11 @@ void modulations_setup(void)
     {
         app_ble_modulation_enable(RI_RADIO_BLE_125KBPS, true);
     }
-    app_ble_modulation_enable(RI_RADIO_BLE_1MBPS, true);
+    // 2Mbit/s scans primary advertisements at 1 Mbit/s, and
+    // secondary advertisements are scanned on all support PHYs
+    // Therefore 1 Mbit/s scanning should be enabled only if
+    // 2 Mbit/s is not enabled.
+    // app_ble_modulation_enable(RI_RADIO_BLE_1MBPS, true);
     app_ble_modulation_enable(RI_RADIO_BLE_2MBPS, true);
 }
 

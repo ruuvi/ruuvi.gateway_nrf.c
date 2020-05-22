@@ -103,7 +103,6 @@
         path="config"
         recurse="Yes" />
       <file file_name="main.h" />
-      <file file_name="dongle.h" />
       <file file_name="uart.c" />
       <file file_name="uart.h" />
       <file file_name="app_ble.c" />

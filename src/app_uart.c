@@ -1,24 +1,13 @@
-#include "app_uart.h"
-#include "app_scheduler.h"
-#include "nrf_error.h"
-#include "nrf_queue.h"
-#include "uart.h"
-#include "ble.h"
-#include "nrf_drv_uart.h"
-#include <app_fifo.h>
+/** 
+ *  @file app_uart.c
+ *  @author Otso Jousimaa <otso@ojousima.net>
+ *  @date 2020-05-21
+ *  @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
+ *
+ *  Application UART control, processing incoming data and sending data out.
+ */
+
 #if 0
-#define NRF_LOG_MODULE_NAME uart
-#define NRF_LOG_LEVEL 4
-#include "nrf_log.h"
-#include "nrf_log_ctrl.h"
-#include "nrf_log_default_backends.h"
-NRF_LOG_MODULE_REGISTER();
-
-
-#define RX_PIN_NUMBER  11
-#define TX_PIN_NUMBER  12
-#define CTS_PIN_NUMBER NRF_UART_PSEL_DISCONNECTED
-#define RTS_PIN_NUMBER NRF_UART_PSEL_DISCONNECTED
 
 #define UART_TX_BUF_SIZE        512                                     /**< UART TX buffer size. */
 #define UART_RX_BUF_SIZE        256                                     /**< UART RX buffer size. */
