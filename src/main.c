@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include "main.h"
 #include "app_ble.h"
-#include "uart.h"
+#include "app_uart.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
 #include "ruuvi_interface_gpio.h"
@@ -84,6 +84,7 @@ void setup(void)
     // Requires LEDs
     ri_yield_indication_set(&rt_led_activity_indicate);
     modulations_setup();
+    err_code |= app_uart_init();
     RD_ERROR_CHECK(err_code, ~RD_ERROR_FATAL);
 }
 

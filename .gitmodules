@@ -4,3 +4,6 @@
 [submodule "ruuvi.boards.c"]
 	path = src/ruuvi.boards.c
 	url = https://github.com/ruuvi/ruuvi.boards.c.git
+[submodule "src/ruuvi.endpoints.c"]
+	path = src/ruuvi.endpoints.c
+	url = https://github.com/ruuvi/ruuvi.endpoints.c.git

@@ -1,6 +1,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+
 #ifdef CEEDLING
 #   define LOOP_FOREVER (0)
 #else

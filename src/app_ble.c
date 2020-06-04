@@ -8,13 +8,15 @@
  */
  
 #include "app_ble.h"
-#include "uart.h"
+#include "app_uart.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
+#include "ruuvi_interface_gpio.h"
+#include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_task_advertisement.h"
 
@@ -32,12 +34,21 @@ static inline void LOGD (const char * const msg)
 
 
 app_ble_scan_t m_scan_params;  //!< Configured scan
-app_ble_on_scan_fp_t m_on_ble; //!< Callback for scans
 
-/** @brief Pass scan data on application via this FP */
-void app_ble_set_on_scan(const app_ble_on_scan_fp_t callback)
+static void repeat_adv(void * p_data, uint16_t data_len)
 {
-    m_on_ble = callback;
+    //rt_adv_scan_stop();
+    rd_status_t err_code = RD_SUCCESS;
+    if(sizeof(ri_adv_scan_t) == data_len)
+    {
+        err_code |= app_uart_send_broadcast ((ri_adv_scan_t*) p_data);
+        if(RD_SUCCESS == err_code)
+        {
+            ri_watchdog_feed();
+        }
+        
+    }
+    //app_ble_scan_start();
 }
 
 /** @brief Handle driver events */
@@ -48,13 +59,11 @@ static rd_status_t on_scan_isr(const ri_comm_evt_t evt, void * p_data, size_t da
     {
         case RI_COMM_RECEIVED:
           LOGD("DATA\r\n");
-          // TODO: Buffer data
-          // TODO: IF buffer full, stop scan, trigger send/repeat
+          err_code |= ri_scheduler_event_put(p_data, (uint16_t)data_len, repeat_adv);
           break;
 
         case RI_COMM_TIMEOUT:
           LOGD("Timeout\r\n");
-          // TODO: trigger send/repeat
           err_code |= app_ble_scan_start();
           break;
         
@@ -62,6 +71,7 @@ static rd_status_t on_scan_isr(const ri_comm_evt_t evt, void * p_data, size_t da
           LOG("Unknown event\r\n");
           break;
     }
+    RD_ERROR_CHECK(err_code, ~RD_ERROR_FATAL);
     return err_code;
 }
 
@@ -184,6 +194,20 @@ static inline void next_modulation_select(void)
     }
 }
 
+static void pa_lna_ctrl(void)
+{
+#if RB_PA_ENABLED
+    if(!ri_gpio_is_init())
+    {
+        (void)ri_gpio_init();
+    }
+    ri_gpio_configure(RB_PA_CRX_PIN, RI_GPIO_MODE_OUTPUT_STANDARD);
+    ri_gpio_configure(RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD);
+    ri_gpio_write(RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE);
+    ri_gpio_write(RB_PA_CRX_PIN, RB_PA_CRX_RX_MODE);
+#endif
+}
+
 /**
  * @brief Start a scan sequence.
  *
@@ -207,6 +231,7 @@ rd_status_t app_ble_scan_start(void)
     if(RD_SUCCESS == err_code)
     {
         next_modulation_select();
+        pa_lna_ctrl();
         err_code |= ri_radio_init(m_scan_params.current_modulation);
         if(RD_SUCCESS == err_code)
         {
@@ -217,7 +242,3 @@ rd_status_t app_ble_scan_start(void)
     }
     return err_code;
 }
-
-#ifdef CEEDLING
-rd_status_t on_scan(const ri_comm_evt_t evt, void * p_data, size_t data_len);
-#endif

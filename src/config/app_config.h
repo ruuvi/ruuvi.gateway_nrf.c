@@ -41,6 +41,16 @@
 #   define APP_GATT_ENABLED (0U)
 #endif
 
+#ifndef APP_USBUART_ENABLED
+#   if defined (BOARD_PCA10040)
+#       define APP_USBUART_ENABLED (1U)
+#   elif defined (BOARD_PCA10056E)
+#       define APP_USBUART_ENABLED (1U)
+#   else 
+#       define APP_USBUART_ENABLED (0U)
+#   endif
+#endif
+
 #define RT_ADV_ENABLED APP_ADV_ENABLED
 
 #ifndef RI_ADV_EXTENDED_ENABLED
@@ -119,7 +129,16 @@
 
 #ifndef RI_SCHEDULER_ENABLED
 #   define RI_SCHEDULER_ENABLED (1U)
-#endif 
+#endif
+
+#ifndef RI_SCHEDULER_LENGTH
+#   define RI_SCHEDULER_LENGTH (10U)
+#endif
+
+#ifndef RI_SCHEDULER_SIZE
+#  define RI_SCHEDULER_SIZE (255U) //!< must accomodate extended scan.
+#endif
+
 
 /** @brief Enable Ruuvi Timer interface. */
 #ifndef RI_TIMER_ENABLED

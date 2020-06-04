@@ -27,15 +27,6 @@ typedef struct
     ri_radio_modulation_t current_modulation; //!< Modulation used currently.
 }app_ble_scan_t; 
 
-typedef void(*app_ble_on_scan_fp_t)(ri_adv_scan_t * const scan);
-
-/** 
- * @brief Set a function to call when scan result is received.
- *
- * @param[in] callback Function to call on scan result. 
- */
-void app_ble_set_on_scan(const app_ble_on_scan_fp_t callback);
-
 /**
  * @brief Enable or disable given channels.
  *
