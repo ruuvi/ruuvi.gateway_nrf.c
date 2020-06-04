@@ -221,6 +221,7 @@ rd_status_t app_ble_scan_start(void)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_radio_uninit();
+    err_code |= rt_adv_uninit();
     rt_adv_init_t adv_params = 
     {
         .channels = m_scan_params.scan_channels,
