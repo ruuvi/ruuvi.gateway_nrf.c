@@ -1,23 +1,16 @@
-# Try to include local overrides first
--include Makefile.custom
-# Apply defaults
--include Makefile.custom.default
--include ../../gcc_sources.make 
-
-PROJECT_NAME     := $(OUTPUT_NAME)_$(SD_TYPE)_$(HW_REV)
-TARGETS          := $(TARGETS)
+PROJECT_NAME     := ruuvigw
+TARGETS          := nrf52832_xxaa
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ../nRF5_SDK_15.3.0_59ac345
-PROJ_DIR := .
+SDK_ROOT := ../../../nRF5_SDK_15.3.0_59ac345
+PROJ_DIR := ../../
 TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
 LINKER_PATH := $(SDK_ROOT)/modules/nrfx/mdk
 
+include ${PROJ_DIR}/gcc_sources.make
+
 $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
   LINKER_SCRIPT  := pca10040.ld
-
-#Application versions for DFU packages
-DFU_APP_VERSION ?= 1
 
 # make DEBUG=1 for debug build with traces
 DEBUG ?= 1
@@ -26,13 +19,13 @@ OPT ?= 3
 # make DBGSYM=1 to include debug symbols
 DBGSYM ?=0
 
-# Source files common to all targets
+# Source files
 SRC_FILES += \
-  $(common_sources)
+  $(common_sources) \
+  $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S
 
 # Include folders common to all targets
-INC_FOLDERS += \
-  $(common_includes)
+INC_FOLDERS += $(common_includes)
 
 # Libraries common to all targets
 LIB_FILES += \

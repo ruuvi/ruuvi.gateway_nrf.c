@@ -81,6 +81,7 @@ rd_status_t app_uart_init (void)
     snprintf((char*)msg.data, sizeof(msg.data), INIT_STRING);
     msg.data_length = strlen(INIT_STRING);
     err_code |= m_uart.send(&msg);
+    return err_code;
 }
 
 rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)

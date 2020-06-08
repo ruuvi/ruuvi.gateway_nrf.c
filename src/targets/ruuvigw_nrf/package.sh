@@ -15,7 +15,7 @@ v) VERSION=${OPTARG};;
 esac
 done
 
-BINNAME=kalervo\_armgcc\_${NAME}\_${VERSION}
+BINNAME=ruuvigw_nrf\_armgcc\_${NAME}\_${VERSION}
 
 rm kalervoo_armgcc*${NAME}*
 

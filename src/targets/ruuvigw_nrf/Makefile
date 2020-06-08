@@ -1,11 +1,11 @@
-PROJECT_NAME     := ruuvigw_s140
+PROJECT_NAME     := ruuvigw
 TARGETS          := nrf52811_xxaa
 OUTPUT_DIRECTORY := _build
 
 SDK_ROOT := ../../../nRF5_SDK_15.3.0_59ac345
-PROJ_DIR := ../../
+PROJ_DIR := ../..
 
-LDSCRIPT := $(if $(LDSCRIPT),$(LDSCRIPT),kalervo.ld)
+LDSCRIPT := $(if $(LDSCRIPT),$(LDSCRIPT),ruuvigw_nrf.ld)
 
 $(OUTPUT_DIRECTORY)/nrf52811_xxaa.out: \
   LINKER_SCRIPT  := $(LDSCRIPT)
@@ -29,6 +29,7 @@ CFLAGS += $(MODE)
 CFLAGS += $(DEBUG)
 # C flags common to all targets
 CFLAGS += $(OPT)
+CFLAGS += -DAPPLICATION_DRIVER_CONFIGURED
 CFLAGS += -DBL_SETTINGS_ACCESS_ONLY
 CFLAGS += -DBOARD_RUUVIGW_NRF
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
