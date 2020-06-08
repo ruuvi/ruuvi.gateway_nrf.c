@@ -162,8 +162,8 @@ RUUVI_LIB_SOURCES= \
   
 RUUVI_PRJ_SOURCES= \
   $(PROJ_DIR)/main.c \
-  $(PROJ_DIR)/ble.c \
-  $(PROJ_DIR)/uart.c
+  $(PROJ_DIR)/app_ble.c \
+  $(PROJ_DIR)/app_uart.c
 
 COMMON_SOURCES= \
   $(RUUVI_LIB_SOURCES) \
