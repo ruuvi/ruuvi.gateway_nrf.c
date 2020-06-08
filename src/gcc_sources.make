@@ -11,7 +11,6 @@ NRF_LIB_SOURCES= \
   $(SDK_ROOT)/components/ble/common/ble_srv_common.c \
   $(SDK_ROOT)/components/ble/nrf_ble_gatt/nrf_ble_gatt.c \
   $(SDK_ROOT)/components/ble/nrf_ble_qwr/nrf_ble_qwr.c \
-  $(SDK_ROOT)/components/ble/nrf_ble_scan/nrf_ble_scan.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatt_cache_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatts_cache_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/id_manager.c \
@@ -124,10 +123,8 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/rtc/ruuvi_nrf5_sdk15_rtc_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi_nrf5_sdk15_error.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/scheduler/ruuvi_nrf5_sdk15_scheduler.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/nrfx_ble_scan.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/nrfx_wdt.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/ble_dfu.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/ble_dfu_bonded.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/ble_dfu_unbonded.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/spi/ruuvi_nrf5_sdk15_spi.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/timer/ruuvi_nrf5_sdk15_timer.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/watchdog/ruuvi_nrf5_sdk15_watchdog.c \
