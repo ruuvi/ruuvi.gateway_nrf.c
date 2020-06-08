@@ -99,7 +99,7 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
         adv.cmd = RE_CA_UART_ADV_RPRT;
         msg.data_length = sizeof(msg);
         re_code = re_ca_uart_encode(msg.data, &msg.data_length, &adv);
-        msg.repeat_count = 0; 
+        msg.repeat_count = 1; 
         if(RE_SUCCESS == re_code)
         {
             err_code |= m_uart.send(&msg);
