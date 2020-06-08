@@ -123,7 +123,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/rtc/ruuvi_nrf5_sdk15_rtc_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi_nrf5_sdk15_error.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/scheduler/ruuvi_nrf5_sdk15_scheduler.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/nrfx_ble_scan.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/nrf_ble_scan.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/nrfx_wdt.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/spi/ruuvi_nrf5_sdk15_spi.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/timer/ruuvi_nrf5_sdk15_timer.c \
