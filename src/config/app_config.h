@@ -31,7 +31,7 @@
 
 #ifndef APP_NFC_ENABLED
 #   define APP_NFC_ENABLED RB_NFC_INTERNAL_INSTALLED
-#endif 
+#endif
 
 #ifndef APP_ADV_ENABLED
 #   define APP_ADV_ENABLED (1U)
@@ -46,7 +46,7 @@
 #       define APP_USBUART_ENABLED (1U)
 #   elif defined (BOARD_PCA10056E)
 #       define APP_USBUART_ENABLED (1U)
-#   else 
+#   else
 #       define APP_USBUART_ENABLED (0U)
 #   endif
 #endif
@@ -71,7 +71,7 @@
 
 #ifndef RI_COMM_ENABLED
 #define RI_COMM_ENABLED (1U)
-#endif 
+#endif
 
 /** @brief enable Ruuvi GPIO tasks. */
 #ifndef RT_GPIO_ENABLED
@@ -125,7 +125,7 @@
 
 #ifndef RI_RADIO_ENABLED
 #    define RI_RADIO_ENABLED (1U)
-#endif 
+#endif
 
 #ifndef RI_SCHEDULER_ENABLED
 #   define RI_SCHEDULER_ENABLED (1U)

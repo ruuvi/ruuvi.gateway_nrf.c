@@ -11,18 +11,19 @@
 /** https://stackoverflow.com/questions/3553296/sizeof-single-struct-member-in-c Joey Adams*/
 #define MEMBER_SIZE(type, member) sizeof(((type *)0)->member)
 
-STATIC_ASSERT(MEMBER_SIZE(ri_adv_scan_t, addr) == MEMBER_SIZE(re_ca_uart_ble_adv_t, mac),\
-              Size_mismatch);
+STATIC_ASSERT (MEMBER_SIZE (ri_adv_scan_t, addr) == MEMBER_SIZE (re_ca_uart_ble_adv_t,
+               mac), \
+               Size_mismatch);
 
-void setUp(void)
+void setUp (void)
 {
 }
 
-void tearDown(void)
+void tearDown (void)
 {
 }
 
-void test_app_uart_NeedToImplement(void)
+void test_app_uart_NeedToImplement (void)
 {
-    TEST_IGNORE_MESSAGE("Need to Implement app_uart");
+    TEST_IGNORE_MESSAGE ("Need to Implement app_uart");
 }

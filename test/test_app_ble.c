@@ -7,14 +7,14 @@
 
 size_t num_mock_scans;
 
-void setUp(void)
+void setUp (void)
 {
     num_mock_scans = 0;
 }
 
-void tearDown(void)
+void tearDown (void)
 {
-    app_ble_set_on_scan(NULL);
+    app_ble_set_on_scan (NULL);
 }
 
 ri_adv_scan_t mock_scan =
@@ -25,11 +25,10 @@ ri_adv_scan_t mock_scan =
     .data_len = 10
 };
 
-size_t mock_scan_len = sizeof(mock_scan);
+size_t mock_scan_len = sizeof (mock_scan);
 
-void mock_on_scan(ri_adv_scan_t * const scan)
+void mock_on_scan (ri_adv_scan_t * const scan)
 {
-
 }
 
 /**
@@ -44,12 +43,12 @@ void mock_on_scan(ri_adv_scan_t * const scan)
  * @retval RD_ERROR_INVALID_PARAM If no channels are enabled.
  */
 
-void test_app_ble_channels_invalid(void)
+void test_app_ble_channels_invalid (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     const ri_radio_channels_t channels = { 0 };
-    err_code |= app_ble_channels_select(channels);
-    TEST_ASSERT(RD_ERROR_INVALID_PARAM == err_code);
+    err_code |= app_ble_channels_select (channels);
+    TEST_ASSERT (RD_ERROR_INVALID_PARAM == err_code);
 }
 
 /**
@@ -58,15 +57,15 @@ void test_app_ble_channels_invalid(void)
  * @param[in] modulation Modulation to enable / disable.
  * @param[in] enable True to enable, false to disable.
  * @retval RD_SUCCESS on success.
- * @retval RD_ERROR_INVALID_PARAM If given invalid modulation. 
+ * @retval RD_ERROR_INVALID_PARAM If given invalid modulation.
  * @retval RD_ERROR_NOT_SUPPORTED If given modulation not supported by board.
  */
-void test_app_ble_modulation_invalid(void)
+void test_app_ble_modulation_invalid (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    ri_radio_modulation_t modulation = (ri_radio_modulation_t)53;
-    app_ble_modulation_enable(modulation, true);
-    TEST_ASSERT(RD_ERROR_INVALID_PARAM == err_code);
+    ri_radio_modulation_t modulation = (ri_radio_modulation_t) 53;
+    app_ble_modulation_enable (modulation, true);
+    TEST_ASSERT (RD_ERROR_INVALID_PARAM == err_code);
 }
 
 /**
@@ -78,16 +77,16 @@ void test_app_ble_modulation_invalid(void)
  * @retval RD_SUCCESS on success.
  *
  */
-void test_app_ble_scan_1mbps(void)
+void test_app_ble_scan_1mbps (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    const ri_radio_channels_t channels = 
+    const ri_radio_channels_t channels =
     {
         1,
         1,
         1
     };
-    err_code |= app_ble_modulation_enable(RI_RADIO_BLE_1MBPS, true);
-    err_code |= app_ble_channels_select(channels);
-    on_scan(RI_COMM_RECEIVED, mock_scan, mock_scan_len);
+    err_code |= app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    err_code |= app_ble_channels_select (channels);
+    on_scan (RI_COMM_RECEIVED, mock_scan, mock_scan_len);
 }

@@ -1,4 +1,4 @@
-/** 
+/**
  *  @file main.c
  *  @author Otso Jousimaa <otso@ojousima.net>
  *  @date 2020-05-12
@@ -25,25 +25,25 @@
 #include "ruuvi_task_led.h"
 
 /**
- * @brief Configure LEDs as outputs, turn them off. 
+ * @brief Configure LEDs as outputs, turn them off.
  */
 #ifndef CEEDLING
 static
 #endif
-rd_status_t leds_init(void)
+rd_status_t leds_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     static const ri_gpio_id_t led_list[] = RB_LEDS_LIST;
     static const ri_gpio_state_t leds_active[] = RB_LEDS_ACTIVE_STATE;
-    err_code |= rt_led_init(led_list, leds_active, sizeof(led_list)/ sizeof(led_list[0]));
-    err_code |= rt_led_activity_led_set(RB_LED_ACTIVITY);
+    err_code |= rt_led_init (led_list, leds_active, sizeof (led_list) / sizeof (led_list[0]));
+    err_code |= rt_led_activity_led_set (RB_LED_ACTIVITY);
     return err_code;
 }
 
 #ifndef CEEDLING
 static
 #endif
-void on_wdt(void)
+void on_wdt (void)
 {
     // No action required
 }
@@ -51,28 +51,29 @@ void on_wdt(void)
 #ifndef CEEDLING
 static
 #endif
-void modulations_setup(void)
+void modulations_setup (void)
 {
-    if(ri_radio_supports(RI_RADIO_BLE_125KBPS))
+    if (ri_radio_supports (RI_RADIO_BLE_125KBPS))
     {
-        app_ble_modulation_enable(RI_RADIO_BLE_125KBPS, true);
+        app_ble_modulation_enable (RI_RADIO_BLE_125KBPS, true);
     }
+
     // 2Mbit/s scans primary advertisements at 1 Mbit/s, and
     // secondary advertisements are scanned on all support PHYs
     // Therefore 1 Mbit/s scanning should be enabled only if
     // 2 Mbit/s is not enabled.
     // app_ble_modulation_enable(RI_RADIO_BLE_1MBPS, true);
-    app_ble_modulation_enable(RI_RADIO_BLE_2MBPS, true);
+    app_ble_modulation_enable (RI_RADIO_BLE_2MBPS, true);
 }
 
 #ifndef CEEDLING
 static
 #endif
-void setup(void)
+void setup (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    err_code |= ri_log_init(APP_LOG_LEVEL);
-    err_code |= ri_watchdog_init(APP_WDT_INTERVAL_MS, on_wdt);
+    err_code |= ri_log_init (APP_LOG_LEVEL);
+    err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, on_wdt);
     err_code |= ri_yield_init();
     err_code |= ri_timer_init();
     err_code |= ri_scheduler_init();
@@ -80,12 +81,12 @@ void setup(void)
     // Requires GPIO
     err_code |= leds_init();
     // Requires timers
-    err_code |= ri_yield_low_power_enable(true);
+    err_code |= ri_yield_low_power_enable (true);
     // Requires LEDs
-    ri_yield_indication_set(&rt_led_activity_indicate);
+    ri_yield_indication_set (&rt_led_activity_indicate);
     modulations_setup();
     err_code |= app_uart_init();
-    RD_ERROR_CHECK(err_code, ~RD_ERROR_FATAL);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
 
 int main (void)
@@ -94,10 +95,11 @@ int main (void)
     setup();
     // Enter main loop.
     err_code |= app_ble_scan_start();
-    RD_ERROR_CHECK(err_code, ~RD_ERROR_FATAL);
-    do 
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+
+    do
     {
         ri_scheduler_execute();
         ri_yield();
-    }while(LOOP_FOREVER);
+    } while (LOOP_FOREVER);
 }

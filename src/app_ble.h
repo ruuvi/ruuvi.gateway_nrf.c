@@ -1,7 +1,7 @@
 #ifndef BLE_H_
 #define BLE_H_
 
-/** 
+/**
  *  @file app_ble.h
  *  @author Otso Jousimaa <otso@ojousima.net>
  *  @date 2020-05-11
@@ -25,7 +25,7 @@ typedef struct
     bool manufacturer_filter_enabled;  //!< True to scan only data of one manufacturer.
     uint16_t manufacturer_id;          //!< Set to manufacturer id to scan, in MSB format. e.g. 0x0499 for Ruuvi.
     ri_radio_modulation_t current_modulation; //!< Modulation used currently.
-}app_ble_scan_t; 
+} app_ble_scan_t;
 
 /**
  * @brief Enable or disable given channels.
@@ -38,7 +38,7 @@ typedef struct
  * @retval RD_SUCCESS on success.
  * @retval RD_ERROR_INVALID_PARAM If no channels are enabled.
  */
-rd_status_t app_ble_channels_select(const ri_radio_channels_t channels);
+rd_status_t app_ble_channels_select (const ri_radio_channels_t channels);
 
 /**
  * @brief Enable or disable given modulation.
@@ -46,10 +46,11 @@ rd_status_t app_ble_channels_select(const ri_radio_channels_t channels);
  * @param[in] modulation Modulation to enable / disable.
  * @param[in] enable True to enable, false to disable.
  * @retval RD_SUCCESS on success.
- * @retval RD_ERROR_INVALID_PARAM If given invalid modulation. 
+ * @retval RD_ERROR_INVALID_PARAM If given invalid modulation.
  * @retval RD_ERROR_NOT_SUPPORTED If given modulation not supported by board.
  */
-rd_status_t app_ble_modulation_enable(const ri_radio_modulation_t modulation, const bool enable);
+rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
+                                       const bool enable);
 
 /**
  * @brief Start a scan sequence.
@@ -60,10 +61,10 @@ rd_status_t app_ble_modulation_enable(const ri_radio_modulation_t modulation, co
  * @retval RD_SUCCESS on success.
  *
  */
-rd_status_t app_ble_scan_start(void);
+rd_status_t app_ble_scan_start (void);
 
 #ifdef CEEDLING
-rd_status_t on_scan(const ri_comm_evt_t evt, void * p_data, size_t data_len);
+rd_status_t on_scan (const ri_comm_evt_t evt, void * p_data, size_t data_len);
 #endif
 
 #endif
