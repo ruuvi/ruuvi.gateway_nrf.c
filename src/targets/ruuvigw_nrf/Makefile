@@ -12,8 +12,10 @@ $(OUTPUT_DIRECTORY)/nrf52811_xxaa.out: \
 
 include ${PROJ_DIR}/gcc_sources.make
 
-# Source files common to all targets
-SRC_FILES += ${COMMON_SOURCES} $(STARTUP)
+# Source files
+SRC_FILES += \
+  $(COMMON_SOURCES) \
+  $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S
 # Include folders common to all targets
 INC_FOLDERS += ${COMMON_INCLUDES}
 
@@ -103,14 +105,12 @@ nrf52811_xxaa: ASMFLAGS += -D__STACK_SIZE=4096
 # that may need symbols provided by these libraries.
 LIB_FILES += -lc -lnosys -lm
 
-
 .PHONY: default print_cflags
 
 # Default target - first one defined
 default: nrf52811_xxaa
 
 TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
-
 
 include $(TEMPLATE_PATH)/Makefile.common
 $(foreach target, $(TARGETS), $(call define_target, $(target)))

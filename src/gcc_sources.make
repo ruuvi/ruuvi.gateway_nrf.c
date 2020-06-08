@@ -57,6 +57,7 @@ NRF_LIB_SOURCES= \
   $(SDK_ROOT)/components/libraries/queue/nrf_queue.c \
   $(SDK_ROOT)/components/libraries/ringbuf/nrf_ringbuf.c \
   $(SDK_ROOT)/components/libraries/scheduler/app_scheduler.c \
+  $(SDK_ROOT)/components/libraries/serial/nrf_serial.c \
   $(SDK_ROOT)/components/libraries/strerror/nrf_strerror.c \
   $(SDK_ROOT)/components/libraries/timer/app_timer.c \
   $(SDK_ROOT)/components/libraries/util/app_error.c \
@@ -87,6 +88,7 @@ NRF_LIB_SOURCES= \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_rng.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_spi.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_twi.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_nfct.c \
@@ -98,17 +100,21 @@ NRF_LIB_SOURCES= \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_timer.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twi.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twim.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uarte.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c
 
 RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/log/ruuvi_interface_log.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/communication/ruuvi_interface_communication_radio.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/adc/ruuvi_nrf5_sdk15_adc_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/atomic/ruuvi_nrf5_sdk15_atomic.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_radio.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_ble_advertising.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_ble_gatt.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_uart.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/environmental/ruuvi_nrf5_sdk15_environmental_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/flash/ruuvi_nrf5_sdk15_flash.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/gpio/ruuvi_nrf5_sdk15_gpio.c \
@@ -128,7 +134,9 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/yield/ruuvi_nrf5_sdk15_yield.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/ruuvi_driver_error.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/ruuvi_driver_sensor.c \
-  $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_ca_uart.c 
+  $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_ca_uart.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/tasks/ruuvi_task_advertisement.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/tasks/ruuvi_task_led.c \
 
 RUUVI_PRJ_SOURCES= \
   $(PROJ_DIR)/main.c \
@@ -181,6 +189,7 @@ COMMON_INCLUDES= \
   $(SDK_ROOT)/components/libraries/pwr_mgmt \
   $(SDK_ROOT)/components/libraries/queue/ \
   $(SDK_ROOT)/components/libraries/scheduler \
+  $(SDK_ROOT)/components/libraries/serial/ \
   $(SDK_ROOT)/components/libraries/stack_info/ \
   $(SDK_ROOT)/components/libraries/strerror \
   $(SDK_ROOT)/components/libraries/svc \

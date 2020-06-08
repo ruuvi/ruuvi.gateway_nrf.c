@@ -22,7 +22,7 @@ pca10040:
 	@echo build FW ${VERSION}
 	$(MAKE) -C targets/pca10040 clean
 	$(MAKE) -C targets/pca10040 DEBUG=-DDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
-	targets/ruuvitag_b/package.sh -n ruuvigw_debug
+	targets/pca10040/package.sh -n ruuvigw_debug
 	$(MAKE) -C targets/pca10040 clean
 	$(MAKE) -C targets/pca10040 DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/pca10040/package.sh -n ruuvigw_release

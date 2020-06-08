@@ -3,7 +3,7 @@ TARGETS          := nrf52832_xxaa
 OUTPUT_DIRECTORY := _build
 
 SDK_ROOT := ../../../nRF5_SDK_15.3.0_59ac345
-PROJ_DIR := ../../
+PROJ_DIR := ../..
 TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
 LINKER_PATH := $(SDK_ROOT)/modules/nrfx/mdk
 
@@ -21,11 +21,11 @@ DBGSYM ?=0
 
 # Source files
 SRC_FILES += \
-  $(common_sources) \
+  $(COMMON_SOURCES) \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S
 
 # Include folders common to all targets
-INC_FOLDERS += $(common_includes)
+INC_FOLDERS += $(COMMON_INCLUDES)
 
 # Libraries common to all targets
 LIB_FILES += \
@@ -50,6 +50,7 @@ endif
 
 # C flags common to all targets
 CFLAGS += $(INTOPT)
+CFLAGS += -DAPPLICATION_DRIVER_CONFIGURED
 CFLAGS += -DBOARD_CUSTOM
 CFLAGS += -DBOARD_PCA10040
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
@@ -115,38 +116,14 @@ nrf52832_xxaa: ASMFLAGS += -D__STACK_SIZE=8192
 LIB_FILES += -lc -lnosys -lm
 
 
-.PHONY: default help
+.PHONY: default
 
 # Default target - first one defined
 default: nrf52832_xxaa
 
-# Print all targets that can be built
-help:
-	@echo following targets are available:
-	@echo		nrf52832_xxaa
-	@echo		flash_softdevice
-	@echo		flash      - flashing binary
 
 TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
-
 
 include $(TEMPLATE_PATH)/Makefile.common
 
 $(foreach target, $(TARGETS), $(call define_target, $(target)))
-
-.PHONY: flash flash_softdevice erase
-
-# Flash the program
-flash: default
-	@echo Flashing: $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex
-	nrfjprog -f nrf52 --program $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex --sectorerase
-	nrfjprog -f nrf52 --reset
-
-# Flash softdevice
-flash_softdevice:
-	@echo Flashing: s132_nrf52_6.1.1_softdevice.hex
-	nrfjprog -f nrf52 --program $(SDK_ROOT)/components/softdevice/s132/hex/s132_nrf52_6.1.1_softdevice.hex --sectorerase
-	nrfjprog -f nrf52 --reset
-
-erase:
-	nrfjprog -f nrf52 --eraseall
