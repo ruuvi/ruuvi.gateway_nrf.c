@@ -95,8 +95,8 @@ rd_status_t app_ble_channels_select (const ri_radio_channels_t channels)
     rd_status_t err_code = RD_SUCCESS;
 
     if ( (0 == channels.channel_37)
-            ( && 0 == channels.channel_38)
-            ( && 0 == channels.channel_39))
+            && (0 == channels.channel_38)
+            && (0 == channels.channel_39))
     {
         err_code |= RD_ERROR_INVALID_PARAM;
     }
