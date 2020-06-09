@@ -95,7 +95,11 @@ void setup (void)
  *
  * @retval 0 After unit test run. Does not return when running on embedded target.
  */
+#ifdef CEEDLING
+int app_main (void)
+#else
 int main (void)
+#endif
 {
     rd_status_t err_code = RD_SUCCESS;
     setup();

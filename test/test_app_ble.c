@@ -1,20 +1,20 @@
 #include "unity.h"
 
 #include "app_ble.h"
+#include "mock_app_uart.h"
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_interface_communication_radio.h"
+#include "mock_ruuvi_interface_log.h"
+#include "mock_ruuvi_interface_scheduler.h"
+#include "mock_ruuvi_interface_watchdog.h"
 #include "mock_ruuvi_task_advertisement.h"
-
-size_t num_mock_scans;
 
 void setUp (void)
 {
-    num_mock_scans = 0;
 }
 
 void tearDown (void)
 {
-    app_ble_set_on_scan (NULL);
 }
 
 ri_adv_scan_t mock_scan =
@@ -26,10 +26,6 @@ ri_adv_scan_t mock_scan =
 };
 
 size_t mock_scan_len = sizeof (mock_scan);
-
-void mock_on_scan (ri_adv_scan_t * const scan)
-{
-}
 
 /**
  * @brief Enable or disable given channels.
@@ -64,7 +60,7 @@ void test_app_ble_modulation_invalid (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_radio_modulation_t modulation = (ri_radio_modulation_t) 53;
-    app_ble_modulation_enable (modulation, true);
+    err_code |= app_ble_modulation_enable (modulation, true);
     TEST_ASSERT (RD_ERROR_INVALID_PARAM == err_code);
 }
 
@@ -88,5 +84,4 @@ void test_app_ble_scan_1mbps (void)
     };
     err_code |= app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
     err_code |= app_ble_channels_select (channels);
-    on_scan (RI_COMM_RECEIVED, mock_scan, mock_scan_len);
 }

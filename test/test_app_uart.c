@@ -5,6 +5,8 @@
 #include "ruuvi_endpoint_ca_uart.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
 
+#include "mock_ruuvi_interface_communication_uart.h"
+
 /** https://stackoverflow.com/questions/3385515/static-assert-in-c, Nordic Mainframe */
 #define STATIC_ASSERT(COND,MSG) typedef char static_assertion_##MSG[(COND)?1:-1]
 
