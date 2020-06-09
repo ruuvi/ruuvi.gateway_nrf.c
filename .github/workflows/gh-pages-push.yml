@@ -22,6 +22,10 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
+    - name: Checkout submodules
+      uses: textbook/git-checkout-submodule-action@2.1.1
+
+
     # Install Doxygen
     - name: Install Doxygen
       run: sudo apt-get install -qq doxygen 
