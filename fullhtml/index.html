@@ -1,0 +1,235 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>PVS-Studio HTML Report</title>
+<style type="text/css">
+   TABLE {
+    width: 100%;
+   }
+   #col_group, #col_level, #col_code, #col_cwe, #col_misra {
+    text-align: center;
+    white-space: nowrap;
+    width: 0;
+   }
+   #col_file, #col_info, #col_projects {
+    white-space: nowrap;
+    text-align: left;
+    width: 0;
+   }
+   #col_info {
+    width: 120px;
+   }
+   #col_message {
+    text-align: left;
+   }
+  </style>
+<link rel="stylesheet" href="style.css" />
+<script type="text/javascript" src="script.js"></script>
+</head>
+<body>
+  <div class="header">
+    <img src="images/logo.png" alt=""/>
+    <h1>PVS-Studio Analysis Results</h1>
+    <br class="clear">
+  </div>
+
+  <table cellpadding="0" cellspacing="0" border="0" class="infotopic">
+     <tr><th id="col_info">Date:</th><td>Tue Jun  9 17:29:50 2020</td></tr>
+     <tr><th id="col_info">PVS-Studio Version:</th><td>7.07.38234.46</td></tr>
+     <tr><th id="col_info">Command Line:</th><td>plog-converter -a GA\:1,2,3\;OP\:1,2,3\;CS\:1,2,3\;MISRA\:1,2,3 -t fullhtml src/main.o.PVS-Studio.log src/app_ble.o.PVS-Studio.log src/app_uart.o.PVS-Studio.log -o ./doxygen/html </td></tr>
+     <tr><th id="col_info">Total Warnings (MISRA):</th><td>25</td></tr>
+  </table>
+  <table cellpadding="0" cellspacing="0" border="0" class="sortable" id="sorter">
+    <tr>
+      <th class="gsort">Group</th>
+      <th>Location</th>
+      <th class="lsort">Level</th>
+      <th class="vsort">Code</th>
+      <th>Message</th>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/ruuvi_driver_sensor.h_0.html#ln117">ruuvi_driver_sensor.h:117</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '1U' expression should not be converted from the essential 'unsigned' type to the essential 'rd_bus_t' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/ruuvi_driver_sensor.h_0.html#ln118">ruuvi_driver_sensor.h:118</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '2U' expression should not be converted from the essential 'unsigned' type to the essential 'rd_bus_t' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/ruuvi_driver_sensor.h_0.html#ln119">ruuvi_driver_sensor.h:119</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '3U' expression should not be converted from the essential 'unsigned' type to the essential 'rd_bus_t' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/ruuvi_driver_sensor.h_0.html#ln120">ruuvi_driver_sensor.h:120</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '4U' expression should not be converted from the essential 'unsigned' type to the essential 'rd_bus_t' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/ruuvi_driver_sensor.h_0.html#ln121">ruuvi_driver_sensor.h:121</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '5U' expression should not be converted from the essential 'unsigned' type to the essential 'rd_bus_t' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/main.c_1.html#ln40">main.c:40</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '(((0U) &lt;&lt; 8U) + (13U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln45">app_ble.c:45</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2571/">V2571</td>
+      <td id="col_message">Pointer to void should not be converted to a pointer to object. Consider inspecting the expression: '(ri_adv_scan_t *) p_data'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln103">app_ble.c:103</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln104">app_ble.c:104</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln105">app_ble.c:105</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln219">app_ble.c:219</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '(((0U) &lt;&lt; 8U) + (23U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln220">app_ble.c:220</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '(((0U) &lt;&lt; 8U) + (22U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln221">app_ble.c:221</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '(((0U) &lt;&lt; 8U) + (22U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln221">app_ble.c:221</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '(1U)' expression should not be converted from the essential 'unsigned' type to the essential 'ri_gpio_state_t' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln222">app_ble.c:222</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '(((0U) &lt;&lt; 8U) + (23U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln222">app_ble.c:222</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '(1U)' expression should not be converted from the essential 'unsigned' type to the essential 'ri_gpio_state_t' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_uart.c_3.html#ln63">app_uart.c:63</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_uart.c_3.html#ln64">app_uart.c:64</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_uart.c_3.html#ln65">app_uart.c:65</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '(0xFFFFU)' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_uart.c_3.html#ln66">app_uart.c:66</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '(0xFFFFU)' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_uart.c_3.html#ln67">app_uart.c:67</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '(((0U) &lt;&lt; 8U) + (31U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_uart.c_3.html#ln68">app_uart.c:68</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the '(((0U) &lt;&lt; 8U) + (12U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_uart.c_3.html#ln95">app_uart.c:95</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the 'scan-&gt;data_len' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_uart.c_3.html#ln97">app_uart.c:97</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2572/">V2572</td>
+      <td id="col_message">The value of the 'sizeof (msg)' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_uart.c_3.html#ln99">app_uart.c:99</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://www.viva64.com/en/w/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
+    </tr>
+
+  </table>
+<script type="text/javascript">
+var sorter=new table.sorter("sorter");
+sorter.init("sorter",0);
+</script>
+</body>
+</html>
+

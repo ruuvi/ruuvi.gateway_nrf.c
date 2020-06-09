@@ -1,0 +1,162 @@
+
+<html>
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+  <title>main.c</title>
+
+  <link rel="stylesheet" href="../style.css"/>
+  <script src="../jquery-3.2.1.min.js"></script>
+</head>
+<body>
+
+<pre><code class = "cpp">
+<a name="ln1">/**</a>
+<a name="ln2"> *  @file main.c</a>
+<a name="ln3"> *  @author Otso Jousimaa &lt;otso@ojousima.net&gt;</a>
+<a name="ln4"> *  @date 2020-05-12</a>
+<a name="ln5"> *  @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.</a>
+<a name="ln6"> *</a>
+<a name="ln7"> *  Application main.</a>
+<a name="ln8"> */</a>
+<a name="ln9"> </a>
+<a name="ln10">#include &lt;stdio.h&gt;</a>
+<a name="ln11">#include &lt;stdint.h&gt;</a>
+<a name="ln12">#include &lt;stdbool.h&gt;</a>
+<a name="ln13">#include &quot;app_config.h&quot;</a>
+<a name="ln14">#include &quot;main.h&quot;</a>
+<a name="ln15">#include &quot;app_ble.h&quot;</a>
+<a name="ln16">#include &quot;app_uart.h&quot;</a>
+<a name="ln17">#include &quot;ruuvi_driver_error.h&quot;</a>
+<a name="ln18">#include &quot;ruuvi_interface_communication_ble_advertising.h&quot;</a>
+<a name="ln19">#include &quot;ruuvi_interface_gpio.h&quot;</a>
+<a name="ln20">#include &quot;ruuvi_interface_log.h&quot;</a>
+<a name="ln21">#include &quot;ruuvi_interface_scheduler.h&quot;</a>
+<a name="ln22">#include &quot;ruuvi_interface_timer.h&quot;</a>
+<a name="ln23">#include &quot;ruuvi_interface_watchdog.h&quot;</a>
+<a name="ln24">#include &quot;ruuvi_interface_yield.h&quot;</a>
+<a name="ln25">#include &quot;ruuvi_interface_communication_radio.h&quot;</a>
+<a name="ln26">#include &quot;ruuvi_task_led.h&quot;</a>
+<a name="ln27"> </a>
+<a name="ln28">/**</a>
+<a name="ln29"> * @brief Configure LEDs as outputs, turn them off.</a>
+<a name="ln30"> */</a>
+<a name="ln31">#ifndef CEEDLING</a>
+<a name="ln32">static</a>
+<a name="ln33">#endif</a>
+<a name="ln34">rd_status_t leds_init (void)</a>
+<a name="ln35">{</a>
+<a name="ln36">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln37">    static const ri_gpio_id_t led_list[] = RB_LEDS_LIST;</a>
+<a name="ln38">    static const ri_gpio_state_t leds_active[] = RB_LEDS_ACTIVE_STATE;</a>
+<a name="ln39">    err_code |= rt_led_init (led_list, leds_active, sizeof (led_list) / sizeof (led_list[0]));</a>
+<a name="ln40">    err_code |= rt_led_activity_led_set (RB_LED_ACTIVITY);</a>
+<a name="ln41">    return err_code;</a>
+<a name="ln42">}</a>
+<a name="ln43"> </a>
+<a name="ln44">#ifndef CEEDLING</a>
+<a name="ln45">static</a>
+<a name="ln46">#endif</a>
+<a name="ln47">void on_wdt (void)</a>
+<a name="ln48">{</a>
+<a name="ln49">    // No action required</a>
+<a name="ln50">}</a>
+<a name="ln51"> </a>
+<a name="ln52">#ifndef CEEDLING</a>
+<a name="ln53">static</a>
+<a name="ln54">#endif</a>
+<a name="ln55">void modulations_setup (void)</a>
+<a name="ln56">{</a>
+<a name="ln57">    if (ri_radio_supports (RI_RADIO_BLE_125KBPS))</a>
+<a name="ln58">    {</a>
+<a name="ln59">        app_ble_modulation_enable (RI_RADIO_BLE_125KBPS, true);</a>
+<a name="ln60">    }</a>
+<a name="ln61"> </a>
+<a name="ln62">    // 2Mbit/s scans primary advertisements at 1 Mbit/s, and</a>
+<a name="ln63">    // secondary advertisements are scanned on all support PHYs</a>
+<a name="ln64">    // Therefore 1 Mbit/s scanning should be enabled only if</a>
+<a name="ln65">    // 2 Mbit/s is not enabled.</a>
+<a name="ln66">    // app_ble_modulation_enable(RI_RADIO_BLE_1MBPS, true);</a>
+<a name="ln67">    app_ble_modulation_enable (RI_RADIO_BLE_2MBPS, true);</a>
+<a name="ln68">}</a>
+<a name="ln69"> </a>
+<a name="ln70">#ifndef CEEDLING</a>
+<a name="ln71">static</a>
+<a name="ln72">#endif</a>
+<a name="ln73">void setup (void)</a>
+<a name="ln74">{</a>
+<a name="ln75">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln76">    err_code |= ri_log_init (APP_LOG_LEVEL);</a>
+<a name="ln77">    err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, on_wdt);</a>
+<a name="ln78">    err_code |= ri_yield_init();</a>
+<a name="ln79">    err_code |= ri_timer_init();</a>
+<a name="ln80">    err_code |= ri_scheduler_init();</a>
+<a name="ln81">    err_code |= ri_gpio_init();</a>
+<a name="ln82">    // Requires GPIO</a>
+<a name="ln83">    err_code |= leds_init();</a>
+<a name="ln84">    // Requires timers</a>
+<a name="ln85">    err_code |= ri_yield_low_power_enable (true);</a>
+<a name="ln86">    // Requires LEDs</a>
+<a name="ln87">    ri_yield_indication_set (&amp;rt_led_activity_indicate);</a>
+<a name="ln88">    modulations_setup();</a>
+<a name="ln89">    err_code |= app_uart_init();</a>
+<a name="ln90">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln91">}</a>
+<a name="ln92"> </a>
+<a name="ln93">/**</a>
+<a name="ln94"> * @brief Application main</a>
+<a name="ln95"> *</a>
+<a name="ln96"> * @retval 0 After unit test run. Does not return when running on embedded target.</a>
+<a name="ln97"> */</a>
+<a name="ln98">#ifdef CEEDLING</a>
+<a name="ln99">int app_main (void)</a>
+<a name="ln100">#else</a>
+<a name="ln101">int main (void)</a>
+<a name="ln102">#endif</a>
+<a name="ln103">{</a>
+<a name="ln104">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln105">    setup();</a>
+<a name="ln106">    err_code |= app_ble_scan_start();</a>
+<a name="ln107">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln108"> </a>
+<a name="ln109">    do</a>
+<a name="ln110">    {</a>
+<a name="ln111">        ri_scheduler_execute();</a>
+<a name="ln112">        ri_yield();</a>
+<a name="ln113">    } while (LOOP_FOREVER);</a>
+<a name="ln114"> </a>
+<a name="ln115">    return 0; // Unreachable code unless running unit tests.</a>
+<a name="ln116">}</a>
+
+</code></pre>
+<div class="balloon" rel="40"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (13U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+
+<link rel="stylesheet" href="highlight.css">
+<script src="highlight.pack.js"></script>
+<script src="highlightjs-line-numbers.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>hljs.initLineNumbersOnLoad();</script>
+<script>
+  $(document).ready(function() {
+      $('.balloon').each(function () {
+          var bl = $(this);
+          var line = bl.attr('rel');
+          var text = $('a[name="ln'+line+'"]').text();
+
+          var space_count = 0;
+          for(var i = 0; i<text.length; i++){
+              var char = text[i];
+              if((char !== ' ')&&(char !== '\t'))break;
+              if(char === '\t')space_count++;
+              space_count++;
+          }
+
+          bl.css('margin-left', space_count*8);
+          $('a[name="ln'+line+'"]').after(bl);
+      });
+
+      window.location = window.location;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+
+<html>
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+  <title>app_ble.c</title>
+
+  <link rel="stylesheet" href="../style.css"/>
+  <script src="../jquery-3.2.1.min.js"></script>
+</head>
+<body>
+
+<pre><code class = "cpp">
+<a name="ln1">/**</a>
+<a name="ln2"> *  @file app_ble.c</a>
+<a name="ln3"> *  @author Otso Jousimaa &lt;otso@ojousima.net&gt;</a>
+<a name="ln4"> *  @date 2020-05-12</a>
+<a name="ln5"> *  @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.</a>
+<a name="ln6"> *</a>
+<a name="ln7"> *  Application BLE control, selecting PHYs and channels to scan on.</a>
+<a name="ln8"> */</a>
+<a name="ln9"> </a>
+<a name="ln10">#include &quot;app_ble.h&quot;</a>
+<a name="ln11">#include &quot;app_uart.h&quot;</a>
+<a name="ln12">#include &quot;ruuvi_driver_error.h&quot;</a>
+<a name="ln13">#include &quot;ruuvi_boards.h&quot;</a>
+<a name="ln14">#include &quot;ruuvi_interface_log.h&quot;</a>
+<a name="ln15">#include &quot;ruuvi_interface_communication.h&quot;</a>
+<a name="ln16">#include &quot;ruuvi_interface_communication_radio.h&quot;</a>
+<a name="ln17">#include &quot;ruuvi_interface_communication_ble_advertising.h&quot;</a>
+<a name="ln18">#include &quot;ruuvi_interface_gpio.h&quot;</a>
+<a name="ln19">#include &quot;ruuvi_interface_scheduler.h&quot;</a>
+<a name="ln20">#include &quot;ruuvi_interface_watchdog.h&quot;</a>
+<a name="ln21">#include &quot;ruuvi_task_advertisement.h&quot;</a>
+<a name="ln22"> </a>
+<a name="ln23">#include &lt;string.h&gt;</a>
+<a name="ln24"> </a>
+<a name="ln25">static inline void LOG (const char * const msg)</a>
+<a name="ln26">{</a>
+<a name="ln27">    ri_log (RI_LOG_LEVEL_INFO, msg);</a>
+<a name="ln28">}</a>
+<a name="ln29"> </a>
+<a name="ln30">static inline void LOGD (const char * const msg)</a>
+<a name="ln31">{</a>
+<a name="ln32">    ri_log (RI_LOG_LEVEL_DEBUG, msg);</a>
+<a name="ln33">}</a>
+<a name="ln34"> </a>
+<a name="ln35"> </a>
+<a name="ln36">app_ble_scan_t m_scan_params;  //!&lt; Configured scan</a>
+<a name="ln37"> </a>
+<a name="ln38">static void repeat_adv (void * p_data, uint16_t data_len)</a>
+<a name="ln39">{</a>
+<a name="ln40">    //rt_adv_scan_stop();</a>
+<a name="ln41">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln42"> </a>
+<a name="ln43">    if (sizeof (ri_adv_scan_t) == data_len)</a>
+<a name="ln44">    {</a>
+<a name="ln45">        err_code |= app_uart_send_broadcast ( (ri_adv_scan_t *) p_data);</a>
+<a name="ln46"> </a>
+<a name="ln47">        if (RD_SUCCESS == err_code)</a>
+<a name="ln48">        {</a>
+<a name="ln49">            ri_watchdog_feed();</a>
+<a name="ln50">        }</a>
+<a name="ln51">    }</a>
+<a name="ln52"> </a>
+<a name="ln53">    //app_ble_scan_start();</a>
+<a name="ln54">}</a>
+<a name="ln55"> </a>
+<a name="ln56">/**</a>
+<a name="ln57"> * @brief Handle Scan events.</a>
+<a name="ln58"> *</a>
+<a name="ln59"> * Received data is put to scheduler queue, new scan with new PHY is started on timeout.</a>
+<a name="ln60"> *</a>
+<a name="ln61"> * @param[in] evt Type of event, either RI_COMM_RECEIVED on data or</a>
+<a name="ln62"> *                RI_COMM_TIMEOUT on scan timeout.</a>
+<a name="ln63"> * @param[in] p_data NULL on timeout, ri_adv_scan_t* on received.</a>
+<a name="ln64"> * @param[in] data_len 0 on timeout, size of ri_adv_scan_t on received.</a>
+<a name="ln65"> * @retval RD_SUCCESS on successful handling on event.</a>
+<a name="ln66"> * @retval RD_ERR_NO_MEM if received event could not be put to scheduler queue.</a>
+<a name="ln67"> * @return Error code from scanning if scan cannot be started.</a>
+<a name="ln68"> *</a>
+<a name="ln69"> * @note parameters are not const to maintain compatibility with the event handler</a>
+<a name="ln70"> *       signature.</a>
+<a name="ln71"> **/</a>
+<a name="ln72">static rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, // -V2009</a>
+<a name="ln73">                                size_t data_len)</a>
+<a name="ln74">{</a>
+<a name="ln75">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln76"> </a>
+<a name="ln77">    switch (evt)</a>
+<a name="ln78">    {</a>
+<a name="ln79">        case RI_COMM_RECEIVED:</a>
+<a name="ln80">            LOGD (&quot;DATA\r\n&quot;);</a>
+<a name="ln81">            err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, repeat_adv);</a>
+<a name="ln82">            break;</a>
+<a name="ln83"> </a>
+<a name="ln84">        case RI_COMM_TIMEOUT:</a>
+<a name="ln85">            LOGD (&quot;Timeout\r\n&quot;);</a>
+<a name="ln86">            err_code |= app_ble_scan_start();</a>
+<a name="ln87">            break;</a>
+<a name="ln88"> </a>
+<a name="ln89">        default:</a>
+<a name="ln90">            LOG (&quot;Unknown event\r\n&quot;);</a>
+<a name="ln91">            break;</a>
+<a name="ln92">    }</a>
+<a name="ln93"> </a>
+<a name="ln94">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln95">    return err_code;</a>
+<a name="ln96">}</a>
+<a name="ln97"> </a>
+<a name="ln98"> </a>
+<a name="ln99">rd_status_t app_ble_channels_select (const ri_radio_channels_t channels)</a>
+<a name="ln100">{</a>
+<a name="ln101">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln102"> </a>
+<a name="ln103">    if ( (0 == channels.channel_37)</a>
+<a name="ln104">            &amp;&amp; (0 == channels.channel_38)</a>
+<a name="ln105">            &amp;&amp; (0 == channels.channel_39))</a>
+<a name="ln106">    {</a>
+<a name="ln107">        err_code |= RD_ERROR_INVALID_PARAM;</a>
+<a name="ln108">    }</a>
+<a name="ln109">    else</a>
+<a name="ln110">    {</a>
+<a name="ln111">        m_scan_params.scan_channels = channels;</a>
+<a name="ln112">    }</a>
+<a name="ln113"> </a>
+<a name="ln114">    return err_code;</a>
+<a name="ln115">}</a>
+<a name="ln116"> </a>
+<a name="ln117">rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,</a>
+<a name="ln118">                                       const bool enable)</a>
+<a name="ln119">{</a>
+<a name="ln120">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln121"> </a>
+<a name="ln122">    switch (modulation)</a>
+<a name="ln123">    {</a>
+<a name="ln124">        case RI_RADIO_BLE_125KBPS:</a>
+<a name="ln125">            if (RB_BLE_CODED_SUPPORTED)</a>
+<a name="ln126">            {</a>
+<a name="ln127">                m_scan_params.modulation_125kbps_enabled = enable;</a>
+<a name="ln128">            }</a>
+<a name="ln129">            else</a>
+<a name="ln130">            {</a>
+<a name="ln131">                err_code |= RD_ERROR_NOT_SUPPORTED;</a>
+<a name="ln132">            }</a>
+<a name="ln133"> </a>
+<a name="ln134">            break;</a>
+<a name="ln135"> </a>
+<a name="ln136">        case RI_RADIO_BLE_1MBPS:</a>
+<a name="ln137">            m_scan_params.modulation_1mbit_enabled = enable;</a>
+<a name="ln138">            break;</a>
+<a name="ln139"> </a>
+<a name="ln140">        case RI_RADIO_BLE_2MBPS:</a>
+<a name="ln141">            m_scan_params.modulation_2mbit_enabled = enable;</a>
+<a name="ln142">            break;</a>
+<a name="ln143"> </a>
+<a name="ln144">        default:</a>
+<a name="ln145">            err_code |= RD_ERROR_INVALID_PARAM;</a>
+<a name="ln146">            break;</a>
+<a name="ln147">    }</a>
+<a name="ln148"> </a>
+<a name="ln149">    return err_code;</a>
+<a name="ln150">}</a>
+<a name="ln151"> </a>
+<a name="ln152">static inline void next_modulation_select (void)</a>
+<a name="ln153">{</a>
+<a name="ln154">    switch (m_scan_params.current_modulation)</a>
+<a name="ln155">    {</a>
+<a name="ln156">        case RI_RADIO_BLE_125KBPS:</a>
+<a name="ln157">            if (m_scan_params.modulation_1mbit_enabled)</a>
+<a name="ln158">            {</a>
+<a name="ln159">                m_scan_params.current_modulation = RI_RADIO_BLE_1MBPS;</a>
+<a name="ln160">            }</a>
+<a name="ln161">            else if (m_scan_params.modulation_2mbit_enabled)</a>
+<a name="ln162">            {</a>
+<a name="ln163">                m_scan_params.current_modulation = RI_RADIO_BLE_2MBPS;</a>
+<a name="ln164">            }</a>
+<a name="ln165">            else</a>
+<a name="ln166">            {</a>
+<a name="ln167">                // No action needed.</a>
+<a name="ln168">            }</a>
+<a name="ln169"> </a>
+<a name="ln170">            break;</a>
+<a name="ln171"> </a>
+<a name="ln172">        case RI_RADIO_BLE_1MBPS:</a>
+<a name="ln173">            if (m_scan_params.modulation_2mbit_enabled)</a>
+<a name="ln174">            {</a>
+<a name="ln175">                m_scan_params.current_modulation = RI_RADIO_BLE_2MBPS;</a>
+<a name="ln176">            }</a>
+<a name="ln177">            else if (m_scan_params.modulation_125kbps_enabled)</a>
+<a name="ln178">            {</a>
+<a name="ln179">                m_scan_params.current_modulation = RI_RADIO_BLE_125KBPS;</a>
+<a name="ln180">            }</a>
+<a name="ln181">            else</a>
+<a name="ln182">            {</a>
+<a name="ln183">                // No action needed.</a>
+<a name="ln184">            }</a>
+<a name="ln185"> </a>
+<a name="ln186">            break;</a>
+<a name="ln187"> </a>
+<a name="ln188">        case RI_RADIO_BLE_2MBPS:</a>
+<a name="ln189">            if (m_scan_params.modulation_125kbps_enabled)</a>
+<a name="ln190">            {</a>
+<a name="ln191">                m_scan_params.current_modulation = RI_RADIO_BLE_125KBPS;</a>
+<a name="ln192">            }</a>
+<a name="ln193">            else if (m_scan_params.modulation_1mbit_enabled)</a>
+<a name="ln194">            {</a>
+<a name="ln195">                m_scan_params.current_modulation = RI_RADIO_BLE_1MBPS;</a>
+<a name="ln196">            }</a>
+<a name="ln197">            else</a>
+<a name="ln198">            {</a>
+<a name="ln199">                // No action needed.</a>
+<a name="ln200">            }</a>
+<a name="ln201"> </a>
+<a name="ln202">            break;</a>
+<a name="ln203"> </a>
+<a name="ln204">        default:</a>
+<a name="ln205">            // No action needed.</a>
+<a name="ln206">            break;</a>
+<a name="ln207">    }</a>
+<a name="ln208">}</a>
+<a name="ln209"> </a>
+<a name="ln210">static void pa_lna_ctrl (void)</a>
+<a name="ln211">{</a>
+<a name="ln212">#if RB_PA_ENABLED</a>
+<a name="ln213"> </a>
+<a name="ln214">    if (!ri_gpio_is_init())</a>
+<a name="ln215">    {</a>
+<a name="ln216">        (void) ri_gpio_init();</a>
+<a name="ln217">    }</a>
+<a name="ln218"> </a>
+<a name="ln219">    ri_gpio_configure (RB_PA_CRX_PIN, RI_GPIO_MODE_OUTPUT_STANDARD);</a>
+<a name="ln220">    ri_gpio_configure (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD);</a>
+<a name="ln221">    ri_gpio_write (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE);</a>
+<a name="ln222">    ri_gpio_write (RB_PA_CRX_PIN, RB_PA_CRX_RX_MODE);</a>
+<a name="ln223">#endif</a>
+<a name="ln224">}</a>
+<a name="ln225"> </a>
+<a name="ln226">rd_status_t app_ble_scan_start (void)</a>
+<a name="ln227">{</a>
+<a name="ln228">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln229">    err_code |= ri_radio_uninit();</a>
+<a name="ln230">    err_code |= rt_adv_uninit();</a>
+<a name="ln231">    rt_adv_init_t adv_params =</a>
+<a name="ln232">    {</a>
+<a name="ln233">        .channels = m_scan_params.scan_channels,</a>
+<a name="ln234">        .adv_interval_ms = (1000U), //!&lt; Unused</a>
+<a name="ln235">        .adv_pwr_dbm     = (0),     //!&lt; Unused</a>
+<a name="ln236">        .manufacturer_id = RB_BLE_MANUFACTURER_ID //!&lt; default</a>
+<a name="ln237">    };</a>
+<a name="ln238"> </a>
+<a name="ln239">    if (RD_SUCCESS == err_code)</a>
+<a name="ln240">    {</a>
+<a name="ln241">        next_modulation_select();</a>
+<a name="ln242">        pa_lna_ctrl();</a>
+<a name="ln243">        err_code |= ri_radio_init (m_scan_params.current_modulation);</a>
+<a name="ln244"> </a>
+<a name="ln245">        if (RD_SUCCESS == err_code)</a>
+<a name="ln246">        {</a>
+<a name="ln247">            err_code |= rt_adv_init (&amp;adv_params);</a>
+<a name="ln248">            err_code |= rt_adv_scan_start (&amp;on_scan_isr);</a>
+<a name="ln249">            err_code |= ri_watchdog_feed();</a>
+<a name="ln250">        }</a>
+<a name="ln251">    }</a>
+<a name="ln252"> </a>
+<a name="ln253">    return err_code;</a>
+<a name="ln254">}</a>
+
+</code></pre>
+<div class="balloon" rel="45"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2571/" target="_blank">V2571</a> Pointer to void should not be converted to a pointer to object. Consider inspecting the expression: '(ri_adv_scan_t *) p_data'.</p></div>
+<div class="balloon" rel="103"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="104"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="105"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="219"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (23U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="220"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (22U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="221"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (22U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="221"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(1U)' expression should not be converted from the essential 'unsigned' type to the essential 'ri_gpio_state_t' type.</p></div>
+<div class="balloon" rel="222"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (23U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="222"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(1U)' expression should not be converted from the essential 'unsigned' type to the essential 'ri_gpio_state_t' type.</p></div>
+
+<link rel="stylesheet" href="highlight.css">
+<script src="highlight.pack.js"></script>
+<script src="highlightjs-line-numbers.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>hljs.initLineNumbersOnLoad();</script>
+<script>
+  $(document).ready(function() {
+      $('.balloon').each(function () {
+          var bl = $(this);
+          var line = bl.attr('rel');
+          var text = $('a[name="ln'+line+'"]').text();
+
+          var space_count = 0;
+          for(var i = 0; i<text.length; i++){
+              var char = text[i];
+              if((char !== ' ')&&(char !== '\t'))break;
+              if(char === '\t')space_count++;
+              space_count++;
+          }
+
+          bl.css('margin-left', space_count*8);
+          $('a[name="ln'+line+'"]').after(bl);
+      });
+
+      window.location = window.location;
+  });
+</script>
+</body>
+</html>
