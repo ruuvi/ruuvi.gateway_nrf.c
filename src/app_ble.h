@@ -34,7 +34,7 @@ typedef struct
  * scanning for primary advertisement at 1 MBit / s rate.
  * The extended payload at 2 MBit / s.
  *
- * @param[in] enabled_channels Channels to enable.
+ * @param[in] channels Channels to enable.
  * @retval RD_SUCCESS on success.
  * @retval RD_ERROR_INVALID_PARAM If no channels are enabled.
  */

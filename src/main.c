@@ -90,11 +90,15 @@ void setup (void)
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
 
+/**
+ * @brief Application main
+ *
+ * @retval 0 After unit test run. Does not return when running on embedded target.
+ */
 int main (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     setup();
-    // Enter main loop.
     err_code |= app_ble_scan_start();
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 
@@ -103,4 +107,6 @@ int main (void)
         ri_scheduler_execute();
         ri_yield();
     } while (LOOP_FOREVER);
+
+    return 0; // Unreachable code unless running unit tests.
 }

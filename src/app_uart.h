@@ -35,6 +35,7 @@ rd_status_t app_uart_init (void);
  *
  * The format is defined by ruuvi.endpoints.c/
  *
+ * @param[in] scan Scan result from BLE advertisement module.
  * @retval RD_SUCCESS If encoding and queuing data to UART was successful.
  * @retval RD_ERROR_NULL If scan was NULL.
  * @retval RD_ERROR_INVALID_DATA If scan cannot be encoded for any reason.

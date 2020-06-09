@@ -95,17 +95,7 @@ static rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, // -V200
     return err_code;
 }
 
-/**
- * @brief Enable or disable given channels.
- *
- * On 2 MBit / s modulation, the channels only enable / disable
- * scanning for primary advertisement at 1 MBit / s rate.
- * The extended payload at 2 MBit / s.
- *
- * @param[in] enabled_channels Channels to enable.
- * @retval RD_SUCCESS on success.
- * @retval RD_ERROR_INVALID_PARAM If no channels are enabled.
- */
+
 rd_status_t app_ble_channels_select (const ri_radio_channels_t channels)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -124,15 +114,6 @@ rd_status_t app_ble_channels_select (const ri_radio_channels_t channels)
     return err_code;
 }
 
-/**
- * @brief Enable or disable given modulation.
- *
- * @param[in] modulation Modulation to enable / disable.
- * @param[in] enable True to enable, false to disable.
- * @retval RD_SUCCESS on success.
- * @retval RD_ERROR_INVALID_PARAM If given invalid modulation.
- * @retval RD_ERROR_NOT_SUPPORTED If given modulation not supported by board.
- */
 rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
                                        const bool enable)
 {
@@ -242,15 +223,6 @@ static void pa_lna_ctrl (void)
 #endif
 }
 
-/**
- * @brief Start a scan sequence.
- *
- * Runs through enabled modulations and channels, automatically starting
- * on next after one has finished. Calls given scan callback on data.
- *
- * @retval RD_SUCCESS on success.
- *
- */
 rd_status_t app_ble_scan_start (void)
 {
     rd_status_t err_code = RD_SUCCESS;

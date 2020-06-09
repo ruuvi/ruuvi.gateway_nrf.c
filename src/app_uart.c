@@ -21,9 +21,8 @@
 
 #include <string.h>
 #include <stdio.h>
-#define INIT_STRING "Ave Mundi!\n" // Hello world to send via UART.
 
-static ri_comm_channel_t m_uart; // UART communication interface.
+static ri_comm_channel_t m_uart; //!< UART communication interface.
 
 /** @brief convert baudrate from board definition for driver. */
 static ri_uart_baudrate_t rb_to_ri_baud (const uint32_t rb_baud)
@@ -75,14 +74,9 @@ rd_status_t app_uart_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_uart_init_t config = { 0 };
-    ri_comm_message_t msg = { 0 };
     setup_uart_init (&config);
     err_code |= ri_uart_init (&m_uart);
     err_code |= ri_uart_config (&config);
-    msg.repeat_count = 1;
-    snprintf ( (char *) msg.data, sizeof (msg.data), INIT_STRING);
-    msg.data_length = strlen (INIT_STRING);
-    err_code |= m_uart.send (&msg);
     return err_code;
 }
 
