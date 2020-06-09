@@ -236,13 +236,9 @@ POBJECTS=$(SOURCES:.c=.o.PVS-Studio.log)
 EXECUTABLE=gw_nrf
 SONAR=nrf_analysis
 
-.PHONY: clean doxygen pvs sonar astyle
+.PHONY: clean doxygen pvs sonar astyle all
 
-pvs: $(SOURCES) $(EXECUTABLE) 
-
-$(EXECUTABLE): $(OBJECTS)
-# Converting
-	plog-converter -a 'GA:1,2,3;OP:1,2,3;CS:1,2,3;MISRA:1,2,3' -t $(LOG_FORMAT) $(POBJECTS) -o $(PVS_LOG)
+all: astyle clean doxygen pvs sonar 
 
 .c.o:
 # Build
@@ -252,10 +248,17 @@ $(EXECUTABLE): $(OBJECTS)
 # Analysis
 	pvs-studio --cfg $(PVS_CFG) --source-file $< --i-file $@.PVS-Studio.i --output-file $@.PVS-Studio.log
 
-doxygen: clean
+doxygen:
 	doxygen
 
-sonar: clean $(SOURCES) $(SONAR) 
+pvs: $(SOURCES) $(EXECUTABLE) 
+
+$(EXECUTABLE): $(OBJECTS)
+# Converting
+	plog-converter -a 'GA:1,2,3;OP:1,2,3;CS:1,2,3;MISRA:1,2,3' -t $(LOG_FORMAT) $(POBJECTS) -o $(PVS_LOG)
+	plog-converter -a 'GA:1,2,3;OP:1,2,3;CS:1,2,3;MISRA:1,2,3' -t errorfile $(POBJECTS) -o ./pvs.error
+
+sonar: $(SOURCES) $(SONAR) 
 $(SONAR): $(ANALYSIS)
 
 .c.a:
@@ -271,4 +274,5 @@ clean:
 	rm -rf $(DOXYGEN_DIR)/html
 	rm -rf $(DOXYGEN_DIR)/latex
 	rm -f *.gcov
+	mkdir -p $(DOXYGEN_DIR)
 

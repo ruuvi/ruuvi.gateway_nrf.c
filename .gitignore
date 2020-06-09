@@ -69,3 +69,9 @@ nRF5_SDK_15.3.0_59ac345
 *.emSession
 *.jlink
 *.i
+
+# Doxygen, PVS error files
+*.error
+
+# Doxygen output
+doxygen/*

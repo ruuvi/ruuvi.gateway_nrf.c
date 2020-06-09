@@ -53,8 +53,24 @@ static void repeat_adv (void * p_data, uint16_t data_len)
     //app_ble_scan_start();
 }
 
-/** @brief Handle driver events */
-static rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, size_t data_len)
+/**
+ * @brief Handle Scan events.
+ *
+ * Received data is put to scheduler queue, new scan with new PHY is started on timeout.
+ *
+ * @param[in] evt Type of event, either RI_COMM_RECEIVED on data or
+ *                RI_COMM_TIMEOUT on scan timeout.
+ * @param[in] p_data NULL on timeout, ri_adv_scan_t* on received.
+ * @param[in] data_len 0 on timeout, size of ri_adv_scan_t on received.
+ * @retval RD_SUCCESS on successful handling on event.
+ * @retval RD_ERR_NO_MEM if received event could not be put to scheduler queue.
+ * @return Error code from scanning if scan cannot be started.
+ *
+ * @note parameters are not const to maintain compatibility with the event handler
+ *       signature.
+ **/
+static rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, // -V2009
+                                size_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
 
