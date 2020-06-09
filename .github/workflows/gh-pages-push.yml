@@ -7,8 +7,6 @@ name: GH-Pages
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -53,6 +51,15 @@ jobs:
 
     - name: Run PVS Studio
       run: make pvs
+
+    # Error if pvs.error has content
+    - name: Check PVS has no errors
+      run: |
+          if [[ $(wc -l <doxygen.error) -gt 1 ]]
+          then
+              cat pvs.error
+              exit 1
+          fi
 
     - name: Install SSH Client 🔑
       uses: webfactory/ssh-agent@v0.2.0

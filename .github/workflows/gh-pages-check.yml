@@ -55,12 +55,3 @@ jobs:
     - name: Install SSH Client 🔑
       uses: webfactory/ssh-agent@v0.2.0
       with:
-          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
-
-    # Deploy documents
-    - name: Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@3.4.6
-      with:
-          SSH: true
-          BRANCH: gh-pages-check # The branch the action should deploy to.
-          FOLDER: doxygen/html # The folder the action should deploy.
