@@ -266,7 +266,7 @@ $(SONAR): $(ANALYSIS)
 	$(CXX) $(CFLAGS) $< $(DFLAGS) $(INC_PARAMS) $(OFLAGS) -o $@
 
 astyle:
-	astyle --project=".astylerc" "src/*.c" "src/*.h" "test/*.c"
+	astyle --project=".astylerc" "src/*.c" "src/*.h" "src/config/*.h" "test/*.c"
 
 clean:
 	rm -f $(OBJECTS) $(IOBJECTS) $(POBJECTS)

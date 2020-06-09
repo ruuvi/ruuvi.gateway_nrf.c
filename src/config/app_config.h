@@ -58,8 +58,8 @@
 /** @brief Enable Ruuvi advertising tasks. */
 #define RT_ADV_ENABLED APP_ADV_ENABLED
 
-/** 
- * @brief Enable extended advertising, i.e. Long Range and 2 MBit / s. 
+/**
+ * @brief Enable extended advertising, i.e. Long Range and 2 MBit / s.
  *
  * Reserves a lot of memory for data payloads in program, 255 bytes vs 31 bytes.
  */
@@ -150,23 +150,23 @@
 #   define RI_SCHEDULER_LENGTH (10U)
 #endif
 
-/** 
- * @brief Maximum data length of scheduled task. 
+/**
+ * @brief Maximum data length of scheduled task.
  *
- * Must accomodate extended advertisement. 
+ * Must accomodate extended advertisement.
  */
 #ifndef RI_SCHEDULER_SIZE
-#  define RI_SCHEDULER_SIZE (255U) 
+#  define RI_SCHEDULER_SIZE (255U)
 #endif
 
 
-/** 
- * @brief Enable Ruuvi Timer interface. 
+/**
+ * @brief Enable Ruuvi Timer interface.
  */
 #ifndef RI_TIMER_ENABLED
 #   define RI_TIMER_ENABLED (1U)
 /** @brief Each instance reserves RAM, runs on same physical timer. */
-#   define RI_TIMER_MAX_INSTANCES (5U) 
+#   define RI_TIMER_MAX_INSTANCES (5U)
 #endif
 
 /** @brief Enable Ruuvi UART interface */
