@@ -217,14 +217,13 @@ PROJ_DIR := src
 include ${PROJ_DIR}/gcc_sources.make
 
 CFLAGS  = -c -Wall -pedantic -Wno-variadic-macros -Wno-long-long -Wno-shadow -std=c11
-CFLAGS += -DBOARD_RUUVITAG_B
-CFLAGS += -DFLOAT_ABI_HARD
-CFLAGS += -DNRF52
-CFLAGS += -DNRF52832_XXAA
+CFLAGS += -DBOARD_CUSTOM
+CFLAGS += -DBOARD_RUUVIGW_NRF
+CFLAGS += -DNRF52811_XXAA
 OFLAGS=-g3
 DFLAGS=
 INCLUDES=${COMMON_INCLUDES}
-INCLUDES+=nRF5_SDK_15.3.0_59ac345/components/softdevice/s132/headers
+INCLUDES+=nRF5_SDK_15.3.0_59ac345/components/softdevice/s140/headers
 INCLUDES+= \
 src/ \
 src/config 
