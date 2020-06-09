@@ -70,7 +70,7 @@ jobs:
 
     # Deploy documents
     - name: Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@3.4.6
+      uses: JamesIves/github-pages-deploy-action@3.5.5
       with:
           SSH: true
           BRANCH: gh-pages # The branch the action should deploy to.
