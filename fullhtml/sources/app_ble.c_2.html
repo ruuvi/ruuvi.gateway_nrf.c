@@ -229,10 +229,10 @@
 <a name="ln216">        (void) ri_gpio_init();</a>
 <a name="ln217">    }</a>
 <a name="ln218"> </a>
-<a name="ln219">    ri_gpio_configure (RB_PA_CRX_PIN, RI_GPIO_MODE_OUTPUT_STANDARD);</a>
-<a name="ln220">    ri_gpio_configure (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD);</a>
-<a name="ln221">    ri_gpio_write (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE);</a>
-<a name="ln222">    ri_gpio_write (RB_PA_CRX_PIN, RB_PA_CRX_RX_MODE);</a>
+<a name="ln219">    // Allow ESP32 to force LNA off for WiFi TX bursts</a>
+<a name="ln220">    ri_gpio_configure (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP);</a>
+<a name="ln221">    ri_gpio_configure (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD);</a>
+<a name="ln222">    ri_gpio_write (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE);</a>
 <a name="ln223">#endif</a>
 <a name="ln224">}</a>
 <a name="ln225"> </a>
@@ -271,11 +271,9 @@
 <div class="balloon" rel="103"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
 <div class="balloon" rel="104"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
 <div class="balloon" rel="105"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
-<div class="balloon" rel="219"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (23U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="220"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (22U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="220"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (23U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
 <div class="balloon" rel="221"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (22U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="221"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(1U)' expression should not be converted from the essential 'unsigned' type to the essential 'ri_gpio_state_t' type.</p></div>
-<div class="balloon" rel="222"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (23U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="222"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (22U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
 <div class="balloon" rel="222"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(1U)' expression should not be converted from the essential 'unsigned' type to the essential 'ri_gpio_state_t' type.</p></div>
 
 <link rel="stylesheet" href="highlight.css">
