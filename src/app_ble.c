@@ -216,10 +216,10 @@ static void pa_lna_ctrl (void)
         (void) ri_gpio_init();
     }
 
-    ri_gpio_configure (RB_PA_CRX_PIN, RI_GPIO_MODE_OUTPUT_STANDARD);
+    // Allow ESP32 to force LNA off for WiFi TX bursts
+    ri_gpio_configure (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP);
     ri_gpio_configure (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD);
     ri_gpio_write (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE);
-    ri_gpio_write (RB_PA_CRX_PIN, RB_PA_CRX_RX_MODE);
 #endif
 }
 
