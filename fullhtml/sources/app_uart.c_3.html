@@ -89,46 +89,55 @@
 <a name="ln76">    ri_uart_init_t config = { 0 };</a>
 <a name="ln77">    setup_uart_init (&amp;config);</a>
 <a name="ln78">    err_code |= ri_uart_init (&amp;m_uart);</a>
-<a name="ln79">    err_code |= ri_uart_config (&amp;config);</a>
-<a name="ln80">    return err_code;</a>
-<a name="ln81">}</a>
-<a name="ln82"> </a>
-<a name="ln83">rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)</a>
-<a name="ln84">{</a>
-<a name="ln85">    re_ca_uart_payload_t adv = {0};</a>
-<a name="ln86">    ri_comm_message_t msg = {0};</a>
-<a name="ln87">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln88">    re_status_t re_code = RE_SUCCESS;</a>
-<a name="ln89"> </a>
-<a name="ln90">    if (RE_CA_UART_ADV_BYTES &gt;= scan-&gt;data_len)</a>
-<a name="ln91">    {</a>
-<a name="ln92">        memcpy (adv.params.adv.mac, scan-&gt;addr, sizeof (adv.params.adv.mac));</a>
-<a name="ln93">        memcpy (adv.params.adv.adv, scan-&gt;data, scan-&gt;data_len);</a>
-<a name="ln94">        adv.params.adv.rssi_db = scan-&gt;rssi;</a>
-<a name="ln95">        adv.params.adv.adv_len = scan-&gt;data_len;</a>
-<a name="ln96">        adv.cmd = RE_CA_UART_ADV_RPRT;</a>
-<a name="ln97">        msg.data_length = sizeof (msg);</a>
-<a name="ln98">        re_code = re_ca_uart_encode (msg.data, &amp;msg.data_length, &amp;adv);</a>
-<a name="ln99">        msg.repeat_count = 1;</a>
-<a name="ln100"> </a>
-<a name="ln101">        if (RE_SUCCESS == re_code)</a>
-<a name="ln102">        {</a>
-<a name="ln103">            err_code |= m_uart.send (&amp;msg);</a>
-<a name="ln104">        }</a>
-<a name="ln105">        else</a>
-<a name="ln106">        {</a>
-<a name="ln107">            err_code |= RD_ERROR_INVALID_DATA;</a>
-<a name="ln108">        }</a>
-<a name="ln109">    }</a>
-<a name="ln110">    else</a>
-<a name="ln111">    {</a>
-<a name="ln112">        err_code |= RD_ERROR_DATA_SIZE;</a>
-<a name="ln113">    }</a>
-<a name="ln114"> </a>
-<a name="ln115">    return err_code;</a>
-<a name="ln116">}</a>
-<a name="ln117"> </a>
-<a name="ln118">/** @} */</a>
+<a name="ln79"> </a>
+<a name="ln80">    if (RD_SUCCESS == err_code)</a>
+<a name="ln81">    {</a>
+<a name="ln82">        err_code |= ri_uart_config (&amp;config);</a>
+<a name="ln83">    }</a>
+<a name="ln84"> </a>
+<a name="ln85">    return err_code;</a>
+<a name="ln86">}</a>
+<a name="ln87"> </a>
+<a name="ln88">rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)</a>
+<a name="ln89">{</a>
+<a name="ln90">    re_ca_uart_payload_t adv = {0};</a>
+<a name="ln91">    ri_comm_message_t msg = {0};</a>
+<a name="ln92">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln93">    re_status_t re_code = RE_SUCCESS;</a>
+<a name="ln94"> </a>
+<a name="ln95">    if (NULL == scan)</a>
+<a name="ln96">    {</a>
+<a name="ln97">        err_code |= RD_ERROR_NULL;</a>
+<a name="ln98">    }</a>
+<a name="ln99">    else if (RE_CA_UART_ADV_BYTES &gt;= scan-&gt;data_len)</a>
+<a name="ln100">    {</a>
+<a name="ln101">        memcpy (adv.params.adv.mac, scan-&gt;addr, sizeof (adv.params.adv.mac));</a>
+<a name="ln102">        memcpy (adv.params.adv.adv, scan-&gt;data, scan-&gt;data_len);</a>
+<a name="ln103">        adv.params.adv.rssi_db = scan-&gt;rssi;</a>
+<a name="ln104">        adv.params.adv.adv_len = scan-&gt;data_len;</a>
+<a name="ln105">        adv.cmd = RE_CA_UART_ADV_RPRT;</a>
+<a name="ln106">        msg.data_length = sizeof (msg);</a>
+<a name="ln107">        re_code = re_ca_uart_encode (msg.data, &amp;msg.data_length, &amp;adv);</a>
+<a name="ln108">        msg.repeat_count = 1;</a>
+<a name="ln109"> </a>
+<a name="ln110">        if (RE_SUCCESS == re_code)</a>
+<a name="ln111">        {</a>
+<a name="ln112">            err_code |= m_uart.send (&amp;msg);</a>
+<a name="ln113">        }</a>
+<a name="ln114">        else</a>
+<a name="ln115">        {</a>
+<a name="ln116">            err_code |= RD_ERROR_INVALID_DATA;</a>
+<a name="ln117">        }</a>
+<a name="ln118">    }</a>
+<a name="ln119">    else</a>
+<a name="ln120">    {</a>
+<a name="ln121">        err_code |= RD_ERROR_DATA_SIZE;</a>
+<a name="ln122">    }</a>
+<a name="ln123"> </a>
+<a name="ln124">    return err_code;</a>
+<a name="ln125">}</a>
+<a name="ln126"> </a>
+<a name="ln127">/** @} */</a>
 
 </code></pre>
 <div class="balloon" rel="63"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
@@ -137,9 +146,9 @@
 <div class="balloon" rel="66"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(0xFFFFU)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
 <div class="balloon" rel="67"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (31U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
 <div class="balloon" rel="68"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (12U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="95"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the 'scan->data_len' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="97"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the 'sizeof (msg)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="99"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="104"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the 'scan->data_len' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="106"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the 'sizeof (msg)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="108"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>
