@@ -46,44 +46,44 @@
 <a name="ln33">}</a>
 <a name="ln34"> </a>
 <a name="ln35"> </a>
-<a name="ln36">app_ble_scan_t m_scan_params;  //!&lt; Configured scan</a>
+<a name="ln36">static app_ble_scan_t m_scan_params;  //!&lt; Configured scan</a>
 <a name="ln37"> </a>
 <a name="ln38">static void repeat_adv (void * p_data, uint16_t data_len)</a>
 <a name="ln39">{</a>
-<a name="ln40">    //rt_adv_scan_stop();</a>
-<a name="ln41">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln42"> </a>
-<a name="ln43">    if (sizeof (ri_adv_scan_t) == data_len)</a>
-<a name="ln44">    {</a>
-<a name="ln45">        err_code |= app_uart_send_broadcast ( (ri_adv_scan_t *) p_data);</a>
-<a name="ln46"> </a>
-<a name="ln47">        if (RD_SUCCESS == err_code)</a>
-<a name="ln48">        {</a>
-<a name="ln49">            ri_watchdog_feed();</a>
-<a name="ln50">        }</a>
-<a name="ln51">    }</a>
+<a name="ln40">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln41"> </a>
+<a name="ln42">    if (sizeof (ri_adv_scan_t) == data_len)</a>
+<a name="ln43">    {</a>
+<a name="ln44">        err_code |= app_uart_send_broadcast ( (ri_adv_scan_t *) p_data);</a>
+<a name="ln45"> </a>
+<a name="ln46">        if (RD_SUCCESS == err_code)</a>
+<a name="ln47">        {</a>
+<a name="ln48">            ri_watchdog_feed();</a>
+<a name="ln49">        }</a>
+<a name="ln50">    }</a>
+<a name="ln51">}</a>
 <a name="ln52"> </a>
-<a name="ln53">    //app_ble_scan_start();</a>
-<a name="ln54">}</a>
-<a name="ln55"> </a>
-<a name="ln56">/**</a>
-<a name="ln57"> * @brief Handle Scan events.</a>
-<a name="ln58"> *</a>
-<a name="ln59"> * Received data is put to scheduler queue, new scan with new PHY is started on timeout.</a>
-<a name="ln60"> *</a>
-<a name="ln61"> * @param[in] evt Type of event, either RI_COMM_RECEIVED on data or</a>
-<a name="ln62"> *                RI_COMM_TIMEOUT on scan timeout.</a>
-<a name="ln63"> * @param[in] p_data NULL on timeout, ri_adv_scan_t* on received.</a>
-<a name="ln64"> * @param[in] data_len 0 on timeout, size of ri_adv_scan_t on received.</a>
-<a name="ln65"> * @retval RD_SUCCESS on successful handling on event.</a>
-<a name="ln66"> * @retval RD_ERR_NO_MEM if received event could not be put to scheduler queue.</a>
-<a name="ln67"> * @return Error code from scanning if scan cannot be started.</a>
-<a name="ln68"> *</a>
-<a name="ln69"> * @note parameters are not const to maintain compatibility with the event handler</a>
-<a name="ln70"> *       signature.</a>
-<a name="ln71"> **/</a>
-<a name="ln72">static rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, // -V2009</a>
-<a name="ln73">                                size_t data_len)</a>
+<a name="ln53">/**</a>
+<a name="ln54"> * @brief Handle Scan events.</a>
+<a name="ln55"> *</a>
+<a name="ln56"> * Received data is put to scheduler queue, new scan with new PHY is started on timeout.</a>
+<a name="ln57"> *</a>
+<a name="ln58"> * @param[in] evt Type of event, either RI_COMM_RECEIVED on data or</a>
+<a name="ln59"> *                RI_COMM_TIMEOUT on scan timeout.</a>
+<a name="ln60"> * @param[in] p_data NULL on timeout, ri_adv_scan_t* on received.</a>
+<a name="ln61"> * @param[in] data_len 0 on timeout, size of ri_adv_scan_t on received.</a>
+<a name="ln62"> * @retval RD_SUCCESS on successful handling on event.</a>
+<a name="ln63"> * @retval RD_ERR_NO_MEM if received event could not be put to scheduler queue.</a>
+<a name="ln64"> * @return Error code from scanning if scan cannot be started.</a>
+<a name="ln65"> *</a>
+<a name="ln66"> * @note parameters are not const to maintain compatibility with the event handler</a>
+<a name="ln67"> *       signature.</a>
+<a name="ln68"> **/</a>
+<a name="ln69">#ifndef CEEDLING</a>
+<a name="ln70">static</a>
+<a name="ln71">#endif</a>
+<a name="ln72">rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, // -V2009</a>
+<a name="ln73">                         size_t data_len)</a>
 <a name="ln74">{</a>
 <a name="ln75">    rd_status_t err_code = RD_SUCCESS;</a>
 <a name="ln76"> </a>
@@ -220,61 +220,63 @@
 <a name="ln207">    }</a>
 <a name="ln208">}</a>
 <a name="ln209"> </a>
-<a name="ln210">static void pa_lna_ctrl (void)</a>
+<a name="ln210">static rd_status_t pa_lna_ctrl (void)</a>
 <a name="ln211">{</a>
-<a name="ln212">#if RB_PA_ENABLED</a>
-<a name="ln213"> </a>
-<a name="ln214">    if (!ri_gpio_is_init())</a>
-<a name="ln215">    {</a>
-<a name="ln216">        (void) ri_gpio_init();</a>
-<a name="ln217">    }</a>
-<a name="ln218"> </a>
-<a name="ln219">    // Allow ESP32 to force LNA off for WiFi TX bursts</a>
-<a name="ln220">    ri_gpio_configure (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP);</a>
-<a name="ln221">    ri_gpio_configure (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD);</a>
-<a name="ln222">    ri_gpio_write (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE);</a>
-<a name="ln223">#endif</a>
-<a name="ln224">}</a>
-<a name="ln225"> </a>
-<a name="ln226">rd_status_t app_ble_scan_start (void)</a>
-<a name="ln227">{</a>
-<a name="ln228">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln229">    err_code |= ri_radio_uninit();</a>
-<a name="ln230">    err_code |= rt_adv_uninit();</a>
-<a name="ln231">    rt_adv_init_t adv_params =</a>
-<a name="ln232">    {</a>
-<a name="ln233">        .channels = m_scan_params.scan_channels,</a>
-<a name="ln234">        .adv_interval_ms = (1000U), //!&lt; Unused</a>
-<a name="ln235">        .adv_pwr_dbm     = (0),     //!&lt; Unused</a>
-<a name="ln236">        .manufacturer_id = RB_BLE_MANUFACTURER_ID //!&lt; default</a>
-<a name="ln237">    };</a>
-<a name="ln238"> </a>
-<a name="ln239">    if (RD_SUCCESS == err_code)</a>
-<a name="ln240">    {</a>
-<a name="ln241">        next_modulation_select();</a>
-<a name="ln242">        pa_lna_ctrl();</a>
-<a name="ln243">        err_code |= ri_radio_init (m_scan_params.current_modulation);</a>
-<a name="ln244"> </a>
-<a name="ln245">        if (RD_SUCCESS == err_code)</a>
-<a name="ln246">        {</a>
-<a name="ln247">            err_code |= rt_adv_init (&amp;adv_params);</a>
-<a name="ln248">            err_code |= rt_adv_scan_start (&amp;on_scan_isr);</a>
-<a name="ln249">            err_code |= ri_watchdog_feed();</a>
-<a name="ln250">        }</a>
-<a name="ln251">    }</a>
-<a name="ln252"> </a>
-<a name="ln253">    return err_code;</a>
-<a name="ln254">}</a>
+<a name="ln212">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln213">#if RB_PA_ENABLED</a>
+<a name="ln214"> </a>
+<a name="ln215">    if (!ri_gpio_is_init())</a>
+<a name="ln216">    {</a>
+<a name="ln217">        err_code |= ri_gpio_init();</a>
+<a name="ln218">    }</a>
+<a name="ln219"> </a>
+<a name="ln220">    // Allow ESP32 to force LNA off for WiFi TX bursts</a>
+<a name="ln221">    err_code |= ri_gpio_configure (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP);</a>
+<a name="ln222">    err_code |= ri_gpio_configure (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD);</a>
+<a name="ln223">    err_code |= ri_gpio_write (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE);</a>
+<a name="ln224">#endif</a>
+<a name="ln225">    return err_code;</a>
+<a name="ln226">}</a>
+<a name="ln227"> </a>
+<a name="ln228">rd_status_t app_ble_scan_start (void)</a>
+<a name="ln229">{</a>
+<a name="ln230">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln231">    err_code |= rt_adv_uninit();</a>
+<a name="ln232">    err_code |= ri_radio_uninit();</a>
+<a name="ln233">    rt_adv_init_t adv_params =</a>
+<a name="ln234">    {</a>
+<a name="ln235">        .channels = m_scan_params.scan_channels,</a>
+<a name="ln236">        .adv_interval_ms = (1000U), //!&lt; Unused</a>
+<a name="ln237">        .adv_pwr_dbm     = (0),     //!&lt; Unused</a>
+<a name="ln238">        .manufacturer_id = RB_BLE_MANUFACTURER_ID //!&lt; default</a>
+<a name="ln239">    };</a>
+<a name="ln240"> </a>
+<a name="ln241">    if (RD_SUCCESS == err_code)</a>
+<a name="ln242">    {</a>
+<a name="ln243">        next_modulation_select();</a>
+<a name="ln244">        err_code |= pa_lna_ctrl();</a>
+<a name="ln245">        err_code |= ri_radio_init (m_scan_params.current_modulation);</a>
+<a name="ln246"> </a>
+<a name="ln247">        if (RD_SUCCESS == err_code)</a>
+<a name="ln248">        {</a>
+<a name="ln249">            err_code |= rt_adv_init (&amp;adv_params);</a>
+<a name="ln250">            err_code |= rt_adv_scan_start (&amp;on_scan_isr);</a>
+<a name="ln251">            err_code |= ri_watchdog_feed ();</a>
+<a name="ln252">        }</a>
+<a name="ln253">    }</a>
+<a name="ln254"> </a>
+<a name="ln255">    return err_code;</a>
+<a name="ln256">}</a>
 
 </code></pre>
-<div class="balloon" rel="45"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2571/" target="_blank">V2571</a> Pointer to void should not be converted to a pointer to object. Consider inspecting the expression: '(ri_adv_scan_t *) p_data'.</p></div>
+<div class="balloon" rel="44"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2571/" target="_blank">V2571</a> Pointer to void should not be converted to a pointer to object. Consider inspecting the expression: '(ri_adv_scan_t *) p_data'.</p></div>
 <div class="balloon" rel="103"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
 <div class="balloon" rel="104"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
 <div class="balloon" rel="105"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
-<div class="balloon" rel="220"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (23U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="221"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (22U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="221"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (23U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
 <div class="balloon" rel="222"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (22U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="222"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(1U)' expression should not be converted from the essential 'unsigned' type to the essential 'ri_gpio_state_t' type.</p></div>
+<div class="balloon" rel="223"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (22U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="223"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(1U)' expression should not be converted from the essential 'unsigned' type to the essential 'ri_gpio_state_t' type.</p></div>
 
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>

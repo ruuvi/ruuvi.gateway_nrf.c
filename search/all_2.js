@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['m_5fscan_5fparams',['m_scan_params',['../app__ble_8c.html#aa10869c0e51fc37862d2fd40ea082551',1,'app_ble.c']]],
   ['main',['main',['../main_8c.html#a840291bc02cba5474a4cb46a9b9566fe',1,'main.c']]],
   ['main_2ec',['main.c',['../main_8c.html',1,'']]],
   ['manufacturer_5ffilter_5fenabled',['manufacturer_filter_enabled',['../structapp__ble__scan__t.html#a490dc5073ccaf8a6ca5b11ed6cbf672a',1,'app_ble_scan_t']]],
