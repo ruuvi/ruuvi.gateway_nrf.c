@@ -33,11 +33,10 @@ static inline void LOGD (const char * const msg)
 }
 
 
-app_ble_scan_t m_scan_params;  //!< Configured scan
+static app_ble_scan_t m_scan_params;  //!< Configured scan
 
 static void repeat_adv (void * p_data, uint16_t data_len)
 {
-    //rt_adv_scan_stop();
     rd_status_t err_code = RD_SUCCESS;
 
     if (sizeof (ri_adv_scan_t) == data_len)
@@ -49,8 +48,6 @@ static void repeat_adv (void * p_data, uint16_t data_len)
             ri_watchdog_feed();
         }
     }
-
-    //app_ble_scan_start();
 }
 
 /**
@@ -69,8 +66,11 @@ static void repeat_adv (void * p_data, uint16_t data_len)
  * @note parameters are not const to maintain compatibility with the event handler
  *       signature.
  **/
-static rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, // -V2009
-                                size_t data_len)
+#ifndef CEEDLING
+static
+#endif
+rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, // -V2009
+                         size_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
 
@@ -207,27 +207,29 @@ static inline void next_modulation_select (void)
     }
 }
 
-static void pa_lna_ctrl (void)
+static rd_status_t pa_lna_ctrl (void)
 {
+    rd_status_t err_code = RD_SUCCESS;
 #if RB_PA_ENABLED
 
     if (!ri_gpio_is_init())
     {
-        (void) ri_gpio_init();
+        err_code |= ri_gpio_init();
     }
 
     // Allow ESP32 to force LNA off for WiFi TX bursts
-    ri_gpio_configure (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP);
-    ri_gpio_configure (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD);
-    ri_gpio_write (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE);
+    err_code |= ri_gpio_configure (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP);
+    err_code |= ri_gpio_configure (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD);
+    err_code |= ri_gpio_write (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE);
 #endif
+    return err_code;
 }
 
 rd_status_t app_ble_scan_start (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    err_code |= ri_radio_uninit();
     err_code |= rt_adv_uninit();
+    err_code |= ri_radio_uninit();
     rt_adv_init_t adv_params =
     {
         .channels = m_scan_params.scan_channels,
@@ -239,14 +241,14 @@ rd_status_t app_ble_scan_start (void)
     if (RD_SUCCESS == err_code)
     {
         next_modulation_select();
-        pa_lna_ctrl();
+        err_code |= pa_lna_ctrl();
         err_code |= ri_radio_init (m_scan_params.current_modulation);
 
         if (RD_SUCCESS == err_code)
         {
             err_code |= rt_adv_init (&adv_params);
             err_code |= rt_adv_scan_start (&on_scan_isr);
-            err_code |= ri_watchdog_feed();
+            err_code |= ri_watchdog_feed ();
         }
     }
 

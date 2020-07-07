@@ -64,7 +64,8 @@ rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
 rd_status_t app_ble_scan_start (void);
 
 #ifdef CEEDLING
-rd_status_t on_scan (const ri_comm_evt_t evt, void * p_data, size_t data_len);
+rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, // -V2009
+                         size_t data_len);
 #endif
 
 #endif

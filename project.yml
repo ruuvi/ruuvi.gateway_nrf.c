@@ -42,7 +42,7 @@
   #  1) remove the trailing [] from the :common: section
   #  2) add entries to the :common: section (e.g. :test: has TEST defined)
   :common: &common_defines 
-    - BOARD_RUUVITAG_B
+    - BOARD_RUUVIGW_NRF
     - BOARD_CUSTOM
     - NRF52811_XXAA
     - CMOCK
