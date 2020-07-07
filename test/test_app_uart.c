@@ -83,16 +83,15 @@ void test_app_uart_init_ok (void)
 }
 void test_app_uart_init_twice (void)
 {
-    ri_uart_init_t config =
-    {
-        .hwfc_enabled = RB_HWFC_ENABLED,
-        .parity_enabled = RB_PARITY_ENABLED,
-        .cts  = RB_UART_CTS_PIN,
-        .rts  = RB_UART_RTS_PIN,
-        .tx   = RB_UART_TX_PIN,
-        .rx   = RB_UART_RX_PIN,
-        .baud = RI_UART_BAUD_115200 //!< XXX hardcoded, should come from board.
-    };
+    ri_uart_init_t config = {0};
+    memset(config, 0, sizeof(ri_uart_init_t));
+    config.hwfc_enabled = RB_HWFC_ENABLED;
+    config.parity_enabled = RB_PARITY_ENABLED;
+    config.cts  = RB_UART_CTS_PIN;
+    config.rts  = RB_UART_RTS_PIN;
+    config.tx   = RB_UART_TX_PIN;
+    config.rx   = RB_UART_RX_PIN;
+    config.baud = RI_UART_BAUD_115200; //!< XXX hardcoded, should come from board.
     ri_uart_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
     rd_status_t err_code = app_uart_init ();
