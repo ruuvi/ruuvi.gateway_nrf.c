@@ -65,7 +65,7 @@ void tearDown (void)
  */
 void test_app_uart_init_ok (void)
 {
-    ri_uart_init_t config =
+    static ri_uart_init_t config =
     {
         .hwfc_enabled = RB_HWFC_ENABLED,
         .parity_enabled = RB_PARITY_ENABLED,
@@ -84,7 +84,7 @@ void test_app_uart_init_ok (void)
 void test_app_uart_init_twice (void)
 {
     ri_uart_init_t config = {0};
-    memset(&config, 0, sizeof(ri_uart_init_t));
+    memset (&config, 0, sizeof (ri_uart_init_t));
     config.hwfc_enabled = RB_HWFC_ENABLED;
     config.parity_enabled = RB_PARITY_ENABLED;
     config.cts  = RB_UART_CTS_PIN;
