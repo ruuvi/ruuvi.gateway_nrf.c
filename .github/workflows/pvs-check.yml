@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: GH-Pages-Check
+name: PVS-Studio-Check
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -28,18 +28,9 @@ jobs:
     - name: Install Doxygen
       run: sudo apt-get install -qq doxygen 
 
-    # Generate doxygen
-    - name: Generate docs
-      run: doxygen
-
-    # Error if doxygen.error has content
-    - name: Check documentation has no errors
-      run: |
-          if [[ $(wc -l <doxygen.error) -gt 0 ]]
-          then
-              cat doxygen.error
-              exit 1
-          fi
+    # Generate doxygen folder to put PVS data in
+    - name: mkdir
+      run: mkdir -p doxygen/html
 
     - name: Install PVS Studio
       run: |
@@ -52,6 +43,16 @@ jobs:
     - name: Run PVS Studio
       run: make pvs
 
+    # Error if pvs.error has content
+    - name: Check PVS has no errors
+      run: |
+          if [[ $(wc -l <doxygen.error) -gt 1 ]]
+          then
+              cat pvs.error
+              exit 1
+          fi
+
     - name: Install SSH Client 🔑
       uses: webfactory/ssh-agent@v0.2.0
       with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}

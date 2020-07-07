@@ -217,14 +217,13 @@ PROJ_DIR := src
 include ${PROJ_DIR}/gcc_sources.make
 
 CFLAGS  = -c -Wall -pedantic -Wno-variadic-macros -Wno-long-long -Wno-shadow -std=c11
-CFLAGS += -DBOARD_RUUVITAG_B
-CFLAGS += -DFLOAT_ABI_HARD
-CFLAGS += -DNRF52
-CFLAGS += -DNRF52832_XXAA
+CFLAGS += -DBOARD_CUSTOM
+CFLAGS += -DBOARD_RUUVIGW_NRF
+CFLAGS += -DNRF52811_XXAA
 OFLAGS=-g3
 DFLAGS=
 INCLUDES=${COMMON_INCLUDES}
-INCLUDES+=nRF5_SDK_15.3.0_59ac345/components/softdevice/s132/headers
+INCLUDES+=nRF5_SDK_15.3.0_59ac345/components/softdevice/s140/headers
 INCLUDES+= \
 src/ \
 src/config 
@@ -237,13 +236,9 @@ POBJECTS=$(SOURCES:.c=.o.PVS-Studio.log)
 EXECUTABLE=gw_nrf
 SONAR=nrf_analysis
 
-.PHONY: clean doxygen pvs sonar astyle
+.PHONY: clean doxygen pvs sonar astyle all
 
-pvs: $(SOURCES) $(EXECUTABLE) 
-
-$(EXECUTABLE): $(OBJECTS)
-# Converting
-	plog-converter -a 'GA:1,2,3;OP:1,2,3;CS:1,2,3;MISRA:1,2,3' -t $(LOG_FORMAT) $(POBJECTS) -o $(PVS_LOG)
+all: astyle clean doxygen pvs sonar 
 
 .c.o:
 # Build
@@ -253,10 +248,17 @@ $(EXECUTABLE): $(OBJECTS)
 # Analysis
 	pvs-studio --cfg $(PVS_CFG) --source-file $< --i-file $@.PVS-Studio.i --output-file $@.PVS-Studio.log
 
-doxygen: clean
+doxygen:
 	doxygen
 
-sonar: clean $(SOURCES) $(SONAR) 
+pvs: $(SOURCES) $(EXECUTABLE) 
+
+$(EXECUTABLE): $(OBJECTS)
+# Converting
+	plog-converter -a 'GA:1,2,3;OP:1,2,3;CS:1,2,3;MISRA:1,2,3' -t $(LOG_FORMAT) $(POBJECTS) -o $(PVS_LOG)
+	plog-converter -a 'GA:1,2,3;OP:1,2,3;CS:1,2,3;MISRA:1,2,3' -t errorfile $(POBJECTS) -o ./pvs.error
+
+sonar: $(SOURCES) $(SONAR) 
 $(SONAR): $(ANALYSIS)
 
 .c.a:
@@ -264,7 +266,7 @@ $(SONAR): $(ANALYSIS)
 	$(CXX) $(CFLAGS) $< $(DFLAGS) $(INC_PARAMS) $(OFLAGS) -o $@
 
 astyle:
-	astyle --project=".astylerc" --recursive "src/*.c" "src/*.h" "test/*.c" "test/*.h"
+	astyle --project=".astylerc" "src/*.c" "src/*.h" "src/config/*.h" "test/*.c"
 
 clean:
 	rm -f $(OBJECTS) $(IOBJECTS) $(POBJECTS)
@@ -272,4 +274,5 @@ clean:
 	rm -rf $(DOXYGEN_DIR)/html
 	rm -rf $(DOXYGEN_DIR)/latex
 	rm -f *.gcov
+	mkdir -p $(DOXYGEN_DIR)
 

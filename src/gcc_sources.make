@@ -11,7 +11,6 @@ NRF_LIB_SOURCES= \
   $(SDK_ROOT)/components/ble/common/ble_srv_common.c \
   $(SDK_ROOT)/components/ble/nrf_ble_gatt/nrf_ble_gatt.c \
   $(SDK_ROOT)/components/ble/nrf_ble_qwr/nrf_ble_qwr.c \
-  $(SDK_ROOT)/components/ble/nrf_ble_scan/nrf_ble_scan.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatt_cache_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatts_cache_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/id_manager.c \
@@ -57,6 +56,7 @@ NRF_LIB_SOURCES= \
   $(SDK_ROOT)/components/libraries/queue/nrf_queue.c \
   $(SDK_ROOT)/components/libraries/ringbuf/nrf_ringbuf.c \
   $(SDK_ROOT)/components/libraries/scheduler/app_scheduler.c \
+  $(SDK_ROOT)/components/libraries/serial/nrf_serial.c \
   $(SDK_ROOT)/components/libraries/strerror/nrf_strerror.c \
   $(SDK_ROOT)/components/libraries/timer/app_timer.c \
   $(SDK_ROOT)/components/libraries/util/app_error.c \
@@ -87,6 +87,7 @@ NRF_LIB_SOURCES= \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_rng.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_spi.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_twi.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_nfct.c \
@@ -98,72 +99,46 @@ NRF_LIB_SOURCES= \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_timer.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twi.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twim.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uarte.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c
 
 RUUVI_LIB_SOURCES= \
-  $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/bme280.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest/bme280_selftest.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common/sensirion_common.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1/shtc1.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/ruuvi_interface_lis2dh12.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/ruuvi_interface_bme280.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/ruuvi_interface_shtcx.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/ruuvi_interface_tmp117.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio/ruuvi_interface_gpio_interrupt_test.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio/ruuvi_interface_gpio_test.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/i2c/ruuvi_interface_i2c_bme280.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/i2c/ruuvi_interface_i2c_shtcx.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/i2c/ruuvi_interface_i2c_tmp117.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log/ruuvi_interface_log.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log/ruuvi_interface_log_dummy.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/power/ruuvi_interface_power_dummy.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/rtc/ruuvi_interface_rtc_dummy.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi/ruuvi_interface_spi_bme280.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi/ruuvi_interface_spi_lis2dh12.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/adc/ruuvi_nrf5_sdk15_adc_mcu.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/atomic/ruuvi_nrf5_sdk15_atomic.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_nfc.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_radio.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_ble4_advertising.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_ble4_gatt.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/environmental/ruuvi_nrf5_sdk15_environmental_mcu.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/flash/ruuvi_nrf5_sdk15_flash.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_nrf5_sdk15_gpio.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_nrf5_sdk15_gpio_interrupt.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/i2c/ruuvi_nrf5_sdk15_i2c.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/log/ruuvi_nrf5_sdk15_log.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/power/ruuvi_nrf5_sdk15_power.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/rtc/ruuvi_nrf5_sdk15_rtc_mcu.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_nrf5_sdk15_error.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/scheduler/ruuvi_nrf5_sdk15_scheduler.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/nrfx_wdt.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/ble_dfu.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/ble_dfu_bonded.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/ble_dfu_unbonded.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/ruuvi_nrf5_sdk15_spi.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/ruuvi_nrf5_sdk15_timer.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/watchdog/ruuvi_nrf5_sdk15_watchdog.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/ruuvi_nrf5_sdk15_yield.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/ruuvi_driver_error.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/ruuvi_driver_sensor.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/test_sensor.c \
-  $(PROJ_DIR)/ruuvi.endpoints.c/ruuvi_endpoint_3.c \
-  $(PROJ_DIR)/ruuvi.endpoints.c/ruuvi_endpoint_5.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/analysis/ruuvi_library_peak2peak.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/analysis/ruuvi_library_rms.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/analysis/ruuvi_library_test_analysis.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/analysis/ruuvi_library_variance.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ruuvi_library_ringbuffer.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ruuvi_library_ringbuffer_test.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/ruuvi_library_test.c
-  
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/log/ruuvi_interface_log.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/communication/ruuvi_interface_communication_radio.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/adc/ruuvi_nrf5_sdk15_adc_mcu.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/atomic/ruuvi_nrf5_sdk15_atomic.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_radio.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_ble_advertising.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_ble_gatt.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_uart.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/environmental/ruuvi_nrf5_sdk15_environmental_mcu.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/flash/ruuvi_nrf5_sdk15_flash.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/gpio/ruuvi_nrf5_sdk15_gpio.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/gpio/ruuvi_nrf5_sdk15_gpio_interrupt.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/log/ruuvi_nrf5_sdk15_log.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/power/ruuvi_nrf5_sdk15_power.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/rtc/ruuvi_nrf5_sdk15_rtc_mcu.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi_nrf5_sdk15_error.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/scheduler/ruuvi_nrf5_sdk15_scheduler.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/nrf_ble_scan.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/nrfx_wdt.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/spi/ruuvi_nrf5_sdk15_spi.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/timer/ruuvi_nrf5_sdk15_timer.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/watchdog/ruuvi_nrf5_sdk15_watchdog.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/yield/ruuvi_nrf5_sdk15_yield.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/ruuvi_driver_error.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/ruuvi_driver_sensor.c \
+  $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_ca_uart.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/tasks/ruuvi_task_advertisement.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/tasks/ruuvi_task_led.c \
+
 RUUVI_PRJ_SOURCES= \
   $(PROJ_DIR)/main.c \
-  $(PROJ_DIR)/ble.c \
-  $(PROJ_DIR)/uart.c
+  $(PROJ_DIR)/app_ble.c \
+  $(PROJ_DIR)/app_uart.c
 
 COMMON_SOURCES= \
   $(RUUVI_LIB_SOURCES) \
@@ -211,6 +186,7 @@ COMMON_INCLUDES= \
   $(SDK_ROOT)/components/libraries/pwr_mgmt \
   $(SDK_ROOT)/components/libraries/queue/ \
   $(SDK_ROOT)/components/libraries/scheduler \
+  $(SDK_ROOT)/components/libraries/serial/ \
   $(SDK_ROOT)/components/libraries/stack_info/ \
   $(SDK_ROOT)/components/libraries/strerror \
   $(SDK_ROOT)/components/libraries/svc \
@@ -248,17 +224,9 @@ COMMON_INCLUDES= \
   $(SDK_ROOT)/modules/nrfx/hal \
   $(SDK_ROOT)/modules/nrfx/mdk \
   $(SDK_ROOT)/integration/nrfx \
-  $(PROJ_DIR)/application_config \
+  $(PROJ_DIR)/config \
   $(PROJ_DIR)/ruuvi.boards.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src \
-  $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver \
-  $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/ \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/sht-common \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1 \
-  $(PROJ_DIR)/ruuvi.drivers.c/src/integration_tests \
-  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/acceleration \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/adc \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/atomic \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/communication \
@@ -278,10 +246,4 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/gpio/ \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/timer/ \
   $(PROJ_DIR)/ruuvi.drivers.c/src/tasks \
-  $(PROJ_DIR)/ruuvi.endpoints.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/ \
-  $(PROJ_DIR)/ruuvi.libraries.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/analysis \
-  $(PROJ_DIR)/ruuvi.libraries.c/data_structures 
-
-  STARTUP= $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S
+  $(PROJ_DIR)/ruuvi.endpoints.c/src

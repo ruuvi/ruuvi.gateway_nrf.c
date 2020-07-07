@@ -22,6 +22,10 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
+    - name: Checkout submodules
+      uses: textbook/git-checkout-submodule-action@2.1.1
+
+
     # Install Doxygen
     - name: Install Doxygen
       run: sudo apt-get install -qq doxygen 
@@ -50,6 +54,15 @@ jobs:
     - name: Run PVS Studio
       run: make pvs
 
+    # Error if pvs.error has content
+    - name: Check PVS has no errors
+      run: |
+          if [[ $(wc -l <doxygen.error) -gt 1 ]]
+          then
+              cat pvs.error
+              exit 1
+          fi
+
     - name: Install SSH Client 🔑
       uses: webfactory/ssh-agent@v0.2.0
       with:
@@ -57,7 +70,7 @@ jobs:
 
     # Deploy documents
     - name: Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@3.4.6
+      uses: JamesIves/github-pages-deploy-action@3.5.5
       with:
           SSH: true
           BRANCH: gh-pages # The branch the action should deploy to.

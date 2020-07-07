@@ -1,4 +1,6 @@
 _build/
+build/
+src/Output
 *.log
 
 # Prerequisites
@@ -62,3 +64,14 @@ dkms.conf
 
  # SDK
 nRF5_SDK_15.3.0_59ac345
+
+# SES files
+*.emSession
+*.jlink
+*.i
+
+# Doxygen, PVS error files
+*.error
+
+# Doxygen output
+doxygen/*

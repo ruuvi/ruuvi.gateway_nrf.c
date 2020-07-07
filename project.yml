@@ -41,7 +41,12 @@
   # in order to add common defines:
   #  1) remove the trailing [] from the :common: section
   #  2) add entries to the :common: section (e.g. :test: has TEST defined)
-  :common: &common_defines []
+  :common: &common_defines 
+    - BOARD_RUUVIGW_NRF
+    - BOARD_CUSTOM
+    - NRF52811_XXAA
+    - CMOCK
+    - CEEDLING
   :test:
     - *common_defines
     - TEST
@@ -53,9 +58,13 @@
   :mock_prefix: mock_
   :when_no_prototypes: :warn
   :enforce_strict_ordering: TRUE
+  :unity_helper_path: 'test/unity_helper.h'
   :plugins:
     - :ignore
     - :callback
+    - :return_thru_ptr
+    - :array
+    - :expect_any_args
   :treat_as:
     uint8:    HEX8
     uint16:   HEX16
@@ -94,4 +103,5 @@
   :enabled:
     - stdout_pretty_tests_report
     - module_generator
+    - gcov 
 ...

@@ -1,0 +1,106 @@
+PROJECT_NAME     := ruuvigw
+TARGETS          := nrf52811_xxaa
+OUTPUT_DIRECTORY := _build
+
+SDK_ROOT := ../../../nRF5_SDK_15.3.0_59ac345
+PROJ_DIR := ../..
+
+LDSCRIPT := $(if $(LDSCRIPT),$(LDSCRIPT),ruuvigw_nrf.ld)
+
+$(OUTPUT_DIRECTORY)/nrf52811_xxaa.out: \
+  LINKER_SCRIPT  := $(LDSCRIPT)
+
+include ${PROJ_DIR}/gcc_sources.make
+
+# Source files
+SRC_FILES += \
+  $(COMMON_SOURCES) \
+  $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52811.S
+# Include folders common to all targets
+INC_FOLDERS += ${COMMON_INCLUDES}
+
+# Libraries common to all targets
+LIB_FILES += 
+
+# Optimization flags
+OPT ?= -Os -g3
+# Uncomment the line below to enable link time optimization
+#OPT += -flto
+
+CFLAGS += $(MODE)
+CFLAGS += $(DEBUG)
+# C flags common to all targets
+CFLAGS += $(OPT)
+CFLAGS += -DAPPLICATION_DRIVER_CONFIGURED
+CFLAGS += -DBOARD_CUSTOM
+CFLAGS += -DBOARD_RUUVIGW_NRF
+CFLAGS += -DCONFIG_GPIO_AS_PINRESET
+CFLAGS += -DINITIALIZE_USER_SECTIONS
+CFLAGS += -DNO_VTOR_CONFIG
+CFLAGS += -DNRF52811_XXAA
+CFLAGS += -DFLOAT_ABI_SOFT
+CFLAGS += -DNRF52_PAN_74
+CFLAGS += -DNRF_SD_BLE_API_VERSION=6
+CFLAGS += -DS140
+CFLAGS += -DSOFTDEVICE_PRESENT
+CFLAGS += -DSWI_DISABLE0
+CFLAGS += -mcpu=cortex-m4
+CFLAGS += -mthumb -mabi=aapcs
+CFLAGS += -Wall -Werror
+CFLAGS += -mfloat-abi=soft
+# keep every function in a separate section, this allows linker to discard unused ones
+CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing -fstack-usage
+CFLAGS += -fno-builtin -fshort-enums 
+
+# C++ flags common to all targets
+CXXFLAGS += $(OPT)
+
+
+# Assembler flags common to all targets
+ASMFLAGS += -g3
+ASMFLAGS += -mcpu=cortex-m4
+ASMFLAGS += -mthumb -mabi=aapcs
+ASMFLAGS += -mfloat-abi=soft
+ASMFLAGS += -DBL_SETTINGS_ACCESS_ONLY
+ASMFLAGS += -DBOARD_RUUVIGW_NRF
+ASMFLAGS += -DBOARD_CUSTOM
+ASMFLAGS += -DCONFIG_GPIO_AS_PINRESET
+ASMFLAGS += -DNRF52811_XXAA
+ASMFLAGS += -DNRF52_PAN_74
+ASMFLAGS += -DNRF_SD_BLE_API_VERSION=6
+ASMFLAGS += -DS140
+ASMFLAGS += -DSOFTDEVICE_PRESENT
+ASMFLAGS += -DSWI_DISABLE0
+
+# Linker flags
+LDFLAGS += $(OPT)
+LDFLAGS += -mthumb -mabi=aapcs -L$(SDK_ROOT)/modules/nrfx/mdk -T$(LINKER_SCRIPT)
+LDFLAGS += -mcpu=cortex-m4
+LDFLAGS += -mfloat-abi=soft
+# let linker dump unused sections
+LDFLAGS += -Wl,--gc-sections
+# use newlib in nano version
+LDFLAGS += --specs=nano.specs
+
+nrf52811_xxaa: CFLAGS += -D__HEAP_SIZE=2048
+nrf52811_xxaa: CFLAGS += -D__STACK_SIZE=2048
+nrf52811_xxaa: ASMFLAGS += -D__HEAP_SIZE=2048
+nrf52811_xxaa: ASMFLAGS += -D__STACK_SIZE=2048
+
+# Add standard libraries at the very end of the linker input, after all objects
+# that may need symbols provided by these libraries.
+LIB_FILES += -lc -lnosys -lm
+
+.PHONY: default print_cflags
+
+# Default target - first one defined
+default: nrf52811_xxaa
+
+TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
+
+include $(TEMPLATE_PATH)/Makefile.common
+$(foreach target, $(TARGETS), $(call define_target, $(target)))
+
+print_cflags:
+	@echo "CFLAGS: " $(CFLAGS) "\n"
+
