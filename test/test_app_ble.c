@@ -10,10 +10,12 @@
 #include "mock_ruuvi_interface_scheduler.h"
 #include "mock_ruuvi_interface_watchdog.h"
 #include "mock_ruuvi_task_advertisement.h"
+#include <string.h>
 
 void setUp (void)
 {
     ri_log_Ignore();
+    rd_error_check_Ignore();
     const ri_radio_channels_t channels =
     {
         .channel_37 = 1,
@@ -190,5 +192,200 @@ void test_app_ble_scan_start_all_modulations_channels (void)
     rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
     err_code |= app_ble_scan_start();
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_ble_scan_start_all_channels_lr (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    static rt_adv_init_t adv_params =
+    {
+        .channels =
+        {
+            .channel_37 = 1,
+            .channel_38 = 1,
+            .channel_39 = 1
+        },
+        .adv_interval_ms = (1000U),
+        .adv_pwr_dbm     = (0),                         //!< Unused
+        .manufacturer_id = RB_BLE_MANUFACTURER_ID       //!< Default
+    };
+    app_ble_modulation_enable (RI_RADIO_BLE_125KBPS, true);
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (false);
+    ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_125KBPS, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&adv_params, 1, RD_SUCCESS);
+    rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
+    ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_ble_scan_start_all_channels_1mbps (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    static rt_adv_init_t adv_params =
+    {
+        .channels =
+        {
+            .channel_37 = 1,
+            .channel_38 = 1,
+            .channel_39 = 1
+        },
+        .adv_interval_ms = (1000U),
+        .adv_pwr_dbm     = (0),                         //!< Unused
+        .manufacturer_id = RB_BLE_MANUFACTURER_ID       //!< Default
+    };
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (false);
+    ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&adv_params, 1, RD_SUCCESS);
+    rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
+    ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_ble_scan_start_all_channels_2mbps (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    static rt_adv_init_t adv_params =
+    {
+        .channels =
+        {
+            .channel_37 = 1,
+            .channel_38 = 1,
+            .channel_39 = 1
+        },
+        .adv_interval_ms = (1000U),
+        .adv_pwr_dbm     = (0),                         //!< Unused
+        .manufacturer_id = RB_BLE_MANUFACTURER_ID       //!< Default
+    };
+    app_ble_modulation_enable (RI_RADIO_BLE_2MBPS, true);
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (false);
+    ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_2MBPS, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&adv_params, 1, RD_SUCCESS);
+    rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
+    ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_ble_scan_start_all_channels_lr_2mbps (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    static rt_adv_init_t adv_params =
+    {
+        .channels =
+        {
+            .channel_37 = 1,
+            .channel_38 = 1,
+            .channel_39 = 1
+        },
+        .adv_interval_ms = (1000U),
+        .adv_pwr_dbm     = (0),                         //!< Unused
+        .manufacturer_id = RB_BLE_MANUFACTURER_ID       //!< Default
+    };
+    app_ble_modulation_enable (RI_RADIO_BLE_125KBPS, true);
+    app_ble_modulation_enable (RI_RADIO_BLE_2MBPS, true);
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (false);
+    ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_125KBPS, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&adv_params, 1, RD_SUCCESS);
+    rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
+    ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (true);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_2MBPS, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&adv_params, 1, RD_SUCCESS);
+    rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
+    ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+/**
+ * @brief Handle Scan events.
+ *
+ * Received data is put to scheduler queue, new scan with new PHY is started on timeout.
+ *
+ * @param[in] evt Type of event, either RI_COMM_RECEIVED on data or
+ *                RI_COMM_TIMEOUT on scan timeout.
+ * @param[in] p_data NULL on timeout, ri_adv_scan_t* on received.
+ * @param[in] data_len 0 on timeout, size of ri_adv_scan_t on received.
+ * @retval RD_SUCCESS on successful handling on event.
+ * @retval RD_ERR_NO_MEM if received event could not be put to scheduler queue.
+ * @return Error code from scanning if scan cannot be started.
+ *
+ * @note parameters are not const to maintain compatibility with the event handler
+ *       signature.
+ **/
+
+void test_app_ble_on_scan_isr_received (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    char received[] = "Ave Mundi!";
+    ri_scheduler_event_put_ExpectAndReturn (received, strlen (received), &repeat_adv,
+                                            RD_SUCCESS);
+    err_code |= on_scan_isr (RI_COMM_RECEIVED, received, strlen (received));
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_ble_on_scan_isr_timeout (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (false);
+    ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    ri_radio_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_adv_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
+    ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+    err_code |= on_scan_isr (RI_COMM_TIMEOUT, NULL, 0);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_ble_on_scan_isr_unknown (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    err_code |= on_scan_isr (RI_COMM_SENT, NULL, 0);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }

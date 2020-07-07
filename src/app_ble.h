@@ -66,6 +66,7 @@ rd_status_t app_ble_scan_start (void);
 #ifdef CEEDLING
 rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, // -V2009
                          size_t data_len);
+void repeat_adv (void * p_data, uint16_t data_len);
 #endif
 
 #endif

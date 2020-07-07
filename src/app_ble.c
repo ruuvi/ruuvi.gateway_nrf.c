@@ -35,7 +35,10 @@ static inline void LOGD (const char * const msg)
 
 static app_ble_scan_t m_scan_params;  //!< Configured scan
 
-static void repeat_adv (void * p_data, uint16_t data_len)
+#ifndef CEEDLING
+static
+#endif
+void repeat_adv (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
 
