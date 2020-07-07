@@ -76,7 +76,12 @@ rd_status_t app_uart_init (void)
     ri_uart_init_t config = { 0 };
     setup_uart_init (&config);
     err_code |= ri_uart_init (&m_uart);
-    err_code |= ri_uart_config (&config);
+
+    if (RD_SUCCESS == err_code)
+    {
+        err_code |= ri_uart_config (&config);
+    }
+
     return err_code;
 }
 
@@ -87,7 +92,11 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
     rd_status_t err_code = RD_SUCCESS;
     re_status_t re_code = RE_SUCCESS;
 
-    if (RE_CA_UART_ADV_BYTES >= scan->data_len)
+    if (NULL == scan)
+    {
+        err_code |= RD_ERROR_NULL;
+    }
+    else if (RE_CA_UART_ADV_BYTES >= scan->data_len)
     {
         memcpy (adv.params.adv.mac, scan->addr, sizeof (adv.params.adv.mac));
         memcpy (adv.params.adv.adv, scan->data, scan->data_len);
