@@ -42,6 +42,19 @@ ri_adv_scan_t mock_scan =
 
 size_t mock_scan_len = sizeof (mock_scan);
 
+static rt_adv_init_t scan_params =
+{
+    .channels =
+    {
+        .channel_37 = 1,
+        .channel_38 = 1,
+        .channel_39 = 1
+    },
+    .adv_interval_ms = (1000U),
+    .adv_pwr_dbm     = (0),                         //!< Unused
+    .manufacturer_id = RB_BLE_MANUFACTURER_ID       //!< Default
+};
+
 /**
  * @brief Enable or disable given channels.
  *
@@ -138,18 +151,6 @@ void test_app_ble_modulation_invalid (void)
 void test_app_ble_scan_start_all_modulations_channels (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    static rt_adv_init_t adv_params =
-    {
-        .channels =
-        {
-            .channel_37 = 1,
-            .channel_38 = 1,
-            .channel_39 = 1
-        },
-        .adv_interval_ms = (1000U),
-        .adv_pwr_dbm     = (0),                         //!< Unused
-        .manufacturer_id = RB_BLE_MANUFACTURER_ID       //!< Default
-    };
     app_ble_modulation_enable (RI_RADIO_BLE_125KBPS, true);
     app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
     app_ble_modulation_enable (RI_RADIO_BLE_2MBPS, true);
@@ -162,7 +163,7 @@ void test_app_ble_scan_start_all_modulations_channels (void)
                                        RD_SUCCESS);
     ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
     ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_SUCCESS);
-    rt_adv_init_ExpectWithArrayAndReturn (&adv_params, 1, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&scan_params, 1, RD_SUCCESS);
     rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
     err_code |= app_ble_scan_start();
@@ -175,7 +176,7 @@ void test_app_ble_scan_start_all_modulations_channels (void)
                                        RD_SUCCESS);
     ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
     ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_2MBPS, RD_SUCCESS);
-    rt_adv_init_ExpectWithArrayAndReturn (&adv_params, 1, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&scan_params, 1, RD_SUCCESS);
     rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
     err_code |= app_ble_scan_start();
@@ -188,7 +189,7 @@ void test_app_ble_scan_start_all_modulations_channels (void)
                                        RD_SUCCESS);
     ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
     ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_125KBPS, RD_SUCCESS);
-    rt_adv_init_ExpectWithArrayAndReturn (&adv_params, 1, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&scan_params, 1, RD_SUCCESS);
     rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
     err_code |= app_ble_scan_start();
@@ -198,18 +199,6 @@ void test_app_ble_scan_start_all_modulations_channels (void)
 void test_app_ble_scan_start_all_channels_lr (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    static rt_adv_init_t adv_params =
-    {
-        .channels =
-        {
-            .channel_37 = 1,
-            .channel_38 = 1,
-            .channel_39 = 1
-        },
-        .adv_interval_ms = (1000U),
-        .adv_pwr_dbm     = (0),                         //!< Unused
-        .manufacturer_id = RB_BLE_MANUFACTURER_ID       //!< Default
-    };
     app_ble_modulation_enable (RI_RADIO_BLE_125KBPS, true);
     rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
     ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
@@ -220,7 +209,7 @@ void test_app_ble_scan_start_all_channels_lr (void)
                                        RD_SUCCESS);
     ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
     ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_125KBPS, RD_SUCCESS);
-    rt_adv_init_ExpectWithArrayAndReturn (&adv_params, 1, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&scan_params, 1, RD_SUCCESS);
     rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
     err_code |= app_ble_scan_start();
@@ -230,18 +219,6 @@ void test_app_ble_scan_start_all_channels_lr (void)
 void test_app_ble_scan_start_all_channels_1mbps (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    static rt_adv_init_t adv_params =
-    {
-        .channels =
-        {
-            .channel_37 = 1,
-            .channel_38 = 1,
-            .channel_39 = 1
-        },
-        .adv_interval_ms = (1000U),
-        .adv_pwr_dbm     = (0),                         //!< Unused
-        .manufacturer_id = RB_BLE_MANUFACTURER_ID       //!< Default
-    };
     app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
     rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
     ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
@@ -252,7 +229,7 @@ void test_app_ble_scan_start_all_channels_1mbps (void)
                                        RD_SUCCESS);
     ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
     ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_SUCCESS);
-    rt_adv_init_ExpectWithArrayAndReturn (&adv_params, 1, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&scan_params, 1, RD_SUCCESS);
     rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
     err_code |= app_ble_scan_start();
@@ -262,18 +239,6 @@ void test_app_ble_scan_start_all_channels_1mbps (void)
 void test_app_ble_scan_start_all_channels_2mbps (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    static rt_adv_init_t adv_params =
-    {
-        .channels =
-        {
-            .channel_37 = 1,
-            .channel_38 = 1,
-            .channel_39 = 1
-        },
-        .adv_interval_ms = (1000U),
-        .adv_pwr_dbm     = (0),                         //!< Unused
-        .manufacturer_id = RB_BLE_MANUFACTURER_ID       //!< Default
-    };
     app_ble_modulation_enable (RI_RADIO_BLE_2MBPS, true);
     rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
     ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
@@ -284,7 +249,7 @@ void test_app_ble_scan_start_all_channels_2mbps (void)
                                        RD_SUCCESS);
     ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
     ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_2MBPS, RD_SUCCESS);
-    rt_adv_init_ExpectWithArrayAndReturn (&adv_params, 1, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&scan_params, 1, RD_SUCCESS);
     rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
     err_code |= app_ble_scan_start();
@@ -294,18 +259,6 @@ void test_app_ble_scan_start_all_channels_2mbps (void)
 void test_app_ble_scan_start_all_channels_lr_2mbps (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    static rt_adv_init_t adv_params =
-    {
-        .channels =
-        {
-            .channel_37 = 1,
-            .channel_38 = 1,
-            .channel_39 = 1
-        },
-        .adv_interval_ms = (1000U),
-        .adv_pwr_dbm     = (0),                         //!< Unused
-        .manufacturer_id = RB_BLE_MANUFACTURER_ID       //!< Default
-    };
     app_ble_modulation_enable (RI_RADIO_BLE_125KBPS, true);
     app_ble_modulation_enable (RI_RADIO_BLE_2MBPS, true);
     rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
@@ -317,7 +270,7 @@ void test_app_ble_scan_start_all_channels_lr_2mbps (void)
                                        RD_SUCCESS);
     ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
     ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_125KBPS, RD_SUCCESS);
-    rt_adv_init_ExpectWithArrayAndReturn (&adv_params, 1, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&scan_params, 1, RD_SUCCESS);
     rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
     err_code |= app_ble_scan_start();
@@ -330,7 +283,7 @@ void test_app_ble_scan_start_all_channels_lr_2mbps (void)
                                        RD_SUCCESS);
     ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
     ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_2MBPS, RD_SUCCESS);
-    rt_adv_init_ExpectWithArrayAndReturn (&adv_params, 1, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&scan_params, 1, RD_SUCCESS);
     rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
     err_code |= app_ble_scan_start();

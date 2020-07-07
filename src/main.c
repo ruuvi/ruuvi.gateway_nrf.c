@@ -28,10 +28,7 @@
 /**
  * @brief Configure LEDs as outputs, turn them off.
  */
-#ifndef CEEDLING
-static
-#endif
-rd_status_t leds_init (void)
+static rd_status_t leds_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     static const ri_gpio_id_t led_list[] = RB_LEDS_LIST;
@@ -49,10 +46,7 @@ void on_wdt (void)
     // No action required
 }
 
-#ifndef CEEDLING
-static
-#endif
-void modulations_setup (void)
+static void modulations_setup (void)
 {
     if (ri_radio_supports (RI_RADIO_BLE_125KBPS))
     {
@@ -67,10 +61,7 @@ void modulations_setup (void)
     app_ble_modulation_enable (RI_RADIO_BLE_2MBPS, true);
 }
 
-#ifndef CEEDLING
-static
-#endif
-void setup (void)
+static void setup (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_log_init (APP_LOG_LEVEL);
@@ -112,5 +103,5 @@ int main (void)
         ri_yield();
     } while (LOOP_FOREVER);
 
-    return 0; // Unreachable code unless running unit tests.
+    return -1; // Unreachable code unless running unit tests.
 }
