@@ -16,8 +16,6 @@
   :default_tasks:
     - test:all
 
-:unity_helper_path: 'test/unity_helper.h'
-
 #:test_build:
 #  :use_assembly: TRUE
 
@@ -60,6 +58,7 @@
   :mock_prefix: mock_
   :when_no_prototypes: :warn
   :enforce_strict_ordering: TRUE
+  :unity_helper_path: 'test/unity_helper.h'
   :plugins:
     - :ignore
     - :callback
