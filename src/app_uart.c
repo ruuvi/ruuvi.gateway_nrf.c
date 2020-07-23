@@ -17,12 +17,70 @@
 #include "ruuvi_endpoint_ca_uart.h"
 #include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
+#include "ruuvi_interface_watchdog.h"
+#include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_communication_uart.h"
 
 #include <string.h>
 #include <stdio.h>
 
 static ri_comm_channel_t m_uart; //!< UART communication interface.
+
+void app_uart_parser (void * p_data, uint16_t data_len)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_comm_message_t msg = {0};
+    re_ca_uart_payload_t uart_payload = {0};
+    err_code = re_ca_uart_decode (p_data, &uart_payload);
+
+    if (RD_SUCCESS == err_code)
+    {
+        uart_payload.params.bool_param.state = RE_CA_ACK_OK;
+    }
+    else
+    {
+        uart_payload.params.bool_param.state = RE_CA_ACK_ERROR;
+    }
+
+    //TODO!
+    uart_payload.cmd = RE_CA_UART_ACK;
+    msg.data_length = sizeof (msg);
+    err_code = re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
+    msg.repeat_count = 1;
+
+    if (RE_SUCCESS == err_code)
+    {
+        err_code |= m_uart.send (&msg);
+    }
+    else
+    {
+        err_code |= RD_ERROR_INVALID_DATA;
+    }
+
+    ri_watchdog_feed();
+}
+
+rd_status_t app_uart_isr (ri_comm_evt_t evt,
+                          void * p_data, size_t data_len)
+{
+    rd_status_t err_code = RD_SUCCESS;
+
+    switch (evt)
+    {
+        case RI_COMM_SENT:
+            break;
+
+        case RI_COMM_RECEIVED:
+            err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, app_uart_parser);
+            break;
+
+        default:
+            break;
+    }
+
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+    return err_code;
+}
 
 /** @brief convert baudrate from board definition for driver. */
 static ri_uart_baudrate_t rb_to_ri_baud (const uint32_t rb_baud)
@@ -79,6 +137,7 @@ rd_status_t app_uart_init (void)
 
     if (RD_SUCCESS == err_code)
     {
+        m_uart.on_evt = app_uart_isr;
         err_code |= ri_uart_config (&config);
     }
 
