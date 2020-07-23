@@ -4,9 +4,11 @@
 
 #include "ruuvi_boards.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
-
+#include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_endpoint_ca_uart.h"
 #include "mock_ruuvi_interface_communication_uart.h"
+#include "mock_ruuvi_interface_scheduler.h"
+#include "mock_ruuvi_interface_watchdog.h"
 
 #include <string.h>
 
