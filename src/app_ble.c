@@ -86,7 +86,7 @@ rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, // -V2009
 
         case RI_COMM_TIMEOUT:
             LOGD ("Timeout\r\n");
-            err_code |= app_ble_scan_start();
+            //err_code |= app_ble_scan_start();
             break;
 
         default:
