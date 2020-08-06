@@ -31,18 +31,18 @@ void app_uart_parser (void * p_data, uint16_t data_len)
     rd_status_t err_code = RD_SUCCESS;
     ri_comm_message_t msg = {0};
     re_ca_uart_payload_t uart_payload = {0};
-    err_code = re_ca_uart_decode (p_data, &uart_payload);
+    err_code = re_ca_uart_decode ( (uint8_t *) p_data, &uart_payload);
 
     if (RD_SUCCESS == err_code)
     {
-        uart_payload.params.bool_param.state = RE_CA_ACK_OK;
+        uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
     }
     else
     {
-        uart_payload.params.bool_param.state = RE_CA_ACK_ERROR;
+        uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
     }
 
-    //TODO!
+    uart_payload.params.ack.cmd = uart_payload.cmd;
     uart_payload.cmd = RE_CA_UART_ACK;
     msg.data_length = sizeof (msg);
     err_code = re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
