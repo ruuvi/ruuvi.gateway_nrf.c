@@ -20,41 +20,126 @@
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_communication_uart.h"
+#include "ruuvi_library_ringbuffer.h"
 
 #include <string.h>
 #include <stdio.h>
 
+#define APP_UART_RING_BUFFER_MAX_LEN     (128U)
+#define APP_UART_RING_DEQ_BUFFER_MAX_LEN (APP_UART_RING_BUFFER_MAX_LEN >>1)
+
+static bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock);
+
 static ri_comm_channel_t m_uart; //!< UART communication interface.
+static uint8_t buffer_data[APP_UART_RING_BUFFER_MAX_LEN] = {0};
+static bool buffer_wlock = false;
+static bool buffer_rlock = false;
+static rl_ringbuffer_t m_uart_ring_buffer =
+{
+    .head = 0,
+    .tail = 0,
+    .block_size = sizeof (uint8_t),
+    .storage_size = sizeof (buffer_data),
+    .index_mask = (sizeof (buffer_data) / sizeof (uint8_t)) - 1,
+    .storage = buffer_data,
+    .lock = app_uart_ringbuffer_lock_dummy,
+    .writelock = &buffer_wlock,
+    .readlock  = &buffer_rlock
+};
+
+/** Dummy function to lock/unlock buffer */
+static bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock)
+{
+    bool * p_bool = (bool *) flag;
+
+    if (*p_bool == lock) { return false; }
+
+    *p_bool = lock;
+    return true;
+}
 
 void app_uart_parser (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_comm_message_t msg = {0};
     re_ca_uart_payload_t uart_payload = {0};
+    uint8_t dequeue_data[APP_UART_RING_DEQ_BUFFER_MAX_LEN] = {0};
+    rl_status_t status;
+    size_t index = 0;
     err_code = re_ca_uart_decode ( (uint8_t *) p_data, &uart_payload);
 
     if (RD_SUCCESS == err_code)
     {
         uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
+
+        if (false == rl_ringbuffer_empty (&m_uart_ring_buffer))
+        {
+            do
+            {
+                uint8_t * p_dequeue_data;
+                status = rl_ringbuffer_dequeue (&m_uart_ring_buffer,
+                                                &p_dequeue_data);
+                dequeue_data[index++] = *p_dequeue_data;
+            } while (RL_SUCCESS == status);
+        }
     }
     else
     {
         uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
+
+        do
+        {
+            status = rl_ringbuffer_queue (&m_uart_ring_buffer, (p_data + index),
+                                          sizeof (uint8_t));
+            index++;
+        } while ( (RL_SUCCESS == status) && (index < data_len));
+
+        index = 0;
+
+        do
+        {
+            uint8_t * p_dequeue_data;
+            status = rl_ringbuffer_dequeue (&m_uart_ring_buffer,
+                                            &p_dequeue_data);
+            dequeue_data[index++] = *p_dequeue_data;
+        } while (RL_SUCCESS == status);
+
+        err_code = re_ca_uart_decode ( (uint8_t *) dequeue_data, &uart_payload);
+
+        if (RD_SUCCESS == err_code)
+        {
+            uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
+        }
+        else
+        {
+            size_t len = index - 1;
+            index = 0;
+
+            do
+            {
+                status = rl_ringbuffer_queue (&m_uart_ring_buffer, (dequeue_data + index),
+                                              sizeof (uint8_t));
+                index++;
+            } while ( (RL_SUCCESS == status) && (index < len));
+        }
     }
 
-    uart_payload.params.ack.cmd = uart_payload.cmd;
-    uart_payload.cmd = RE_CA_UART_ACK;
-    msg.data_length = sizeof (msg);
-    err_code = re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
-    msg.repeat_count = 1;
+    if (RE_CA_ACK_OK == uart_payload.params.ack.ack_state.state)
+    {
+        uart_payload.params.ack.cmd = uart_payload.cmd;
+        uart_payload.cmd = RE_CA_UART_ACK;
+        msg.data_length = sizeof (msg);
+        err_code = re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
+        msg.repeat_count = 1;
 
-    if (RE_SUCCESS == err_code)
-    {
-        err_code |= m_uart.send (&msg);
-    }
-    else
-    {
-        err_code |= RD_ERROR_INVALID_DATA;
+        if (RE_SUCCESS == err_code)
+        {
+            err_code |= m_uart.send (&msg);
+        }
+        else
+        {
+            err_code |= RD_ERROR_INVALID_DATA;
+        }
     }
 
     ri_watchdog_feed();
