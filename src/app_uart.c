@@ -12,6 +12,7 @@
  */
 #include "app_config.h"
 #include "app_uart.h"
+#include "app_ble.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_endpoint_ca_uart.h"
@@ -58,6 +59,84 @@ static bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool
     return true;
 }
 
+static rd_status_t app_uart_appply_config (re_ca_uart_payload_t * p_uart_payload)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_radio_modulation_t modulation;
+    ri_radio_channels_t channels;
+
+    switch (p_uart_payload->cmd)
+    {
+        case RE_CA_UART_SET_FLTR_TAGS:
+            err_code |= app_ble_manufacturer_filter_set ( (bool)
+                        p_uart_payload->params.bool_param.state);
+            break;
+
+        case RE_CA_UART_SET_FLTR_ID:
+            err_code |= app_ble_manufacturer_id_set (p_uart_payload->params.fltr_id_param.id);
+            break;
+
+        case RE_CA_UART_SET_CODED_PHY:
+            modulation = RI_RADIO_BLE_125KBPS;
+            err_code |= app_ble_modulation_enable (modulation,
+                                                   (bool) p_uart_payload->params.bool_param.state);
+            break;
+
+        case RE_CA_UART_SET_SCAN_1MB_PHY:
+            modulation = RI_RADIO_BLE_1MBPS;
+            err_code |= app_ble_modulation_enable (modulation,
+                                                   (bool) p_uart_payload->params.bool_param.state);
+            break;
+
+        case RE_CA_UART_SET_EXT_PAYLOAD:
+            modulation = RI_RADIO_BLE_2MBPS;
+            err_code |= app_ble_modulation_enable (modulation,
+                                                   (bool) p_uart_payload->params.bool_param.state);
+            break;
+
+        case RE_CA_UART_SET_CH_37:
+            channels = app_ble_channels_get();
+            channels.channel_37 = p_uart_payload->params.bool_param.state;
+            err_code |= app_ble_channels_set (channels);
+            break;
+
+        case RE_CA_UART_SET_CH_38:
+            channels = app_ble_channels_get();
+            channels.channel_38 = p_uart_payload->params.bool_param.state;
+            err_code |= app_ble_channels_set (channels);
+
+        case RE_CA_UART_SET_CH_39:
+            channels = app_ble_channels_get();
+            channels.channel_39 = p_uart_payload->params.bool_param.state;
+            err_code |= app_ble_channels_set (channels);
+
+        case RE_CA_UART_SET_ALL:
+            err_code |= app_ble_manufacturer_id_set (p_uart_payload->params.all_params.fltr_id.id);
+            err_code |= app_ble_manufacturer_filter_set ( (bool)
+                        p_uart_payload->params.all_params.bools.fltr_tags.state);
+            channels.channel_37 = p_uart_payload->params.all_params.bools.ch_37.state;
+            channels.channel_38 = p_uart_payload->params.all_params.bools.ch_38.state;
+            channels.channel_39 = p_uart_payload->params.all_params.bools.ch_39.state;
+            err_code |= app_ble_channels_set (channels);
+            modulation = RI_RADIO_BLE_125KBPS;
+            err_code |= app_ble_modulation_enable (modulation,
+                                                   (bool) p_uart_payload->params.all_params.bools.coded_phy.state);
+            modulation = RI_RADIO_BLE_1MBPS;
+            err_code |= app_ble_modulation_enable (modulation,
+                                                   (bool) p_uart_payload->params.all_params.bools.scan_phy.state);
+            modulation = RI_RADIO_BLE_2MBPS;
+            err_code |= app_ble_modulation_enable (modulation,
+                                                   (bool) p_uart_payload->params.all_params.bools.ext_payload.state);
+            break;
+
+        default:
+            err_code |= RE_ERROR_INVALID_PARAM;
+            break;
+    }
+
+    return err_code;
+}
+
 void app_uart_parser (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -70,7 +149,14 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
     if (RD_SUCCESS == err_code)
     {
-        uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
+        if (RD_SUCCESS == app_uart_appply_config (&uart_payload))
+        {
+            uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
+        }
+        else
+        {
+            uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
+        }
 
         if (false == rl_ringbuffer_empty (&m_uart_ring_buffer))
         {
@@ -85,11 +171,10 @@ void app_uart_parser (void * p_data, uint16_t data_len)
     }
     else
     {
-        uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
-
         do
         {
-            status = rl_ringbuffer_queue (&m_uart_ring_buffer, (p_data + index),
+            status = rl_ringbuffer_queue (&m_uart_ring_buffer,
+                                          (void *) ( (uint8_t *) p_data + index),
                                           sizeof (uint8_t));
             index++;
         } while ( (RL_SUCCESS == status) && (index < data_len));
@@ -117,14 +202,14 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
             do
             {
-                status = rl_ringbuffer_queue (&m_uart_ring_buffer, (dequeue_data + index),
+                status = rl_ringbuffer_queue (&m_uart_ring_buffer, (void *) (dequeue_data + index),
                                               sizeof (uint8_t));
                 index++;
             } while ( (RL_SUCCESS == status) && (index < len));
         }
     }
 
-    if (RE_CA_ACK_OK == uart_payload.params.ack.ack_state.state)
+    if (RD_SUCCESS == err_code)
     {
         uart_payload.params.ack.cmd = uart_payload.cmd;
         uart_payload.cmd = RE_CA_UART_ACK;
