@@ -1,7 +1,7 @@
 #include "unity.h"
 
 #include "app_uart.h"
-
+#include "mock_app_ble.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
 #include "mock_ruuvi_driver_error.h"
@@ -9,6 +9,8 @@
 #include "mock_ruuvi_interface_communication_uart.h"
 #include "mock_ruuvi_interface_scheduler.h"
 #include "mock_ruuvi_interface_watchdog.h"
+#include "mock_ruuvi_interface_scheduler.h"
+#include "mock_ruuvi_library_ringbuffer.h"
 
 #include <string.h>
 
