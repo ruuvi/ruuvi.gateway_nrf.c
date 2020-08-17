@@ -22,7 +22,9 @@ void setUp (void)
         .channel_38 = 1,
         .channel_39 = 1
     };
-    app_ble_channels_select (channels);
+    app_ble_manufacturer_filter_set (true);
+    app_ble_manufacturer_id_set (RB_BLE_MANUFACTURER_ID);
+    app_ble_channels_set (channels);
     app_ble_modulation_enable (RI_RADIO_BLE_125KBPS, false);
     app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, false);
     app_ble_modulation_enable (RI_RADIO_BLE_2MBPS, false);
@@ -70,7 +72,7 @@ void test_app_ble_channels_invalid (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     const ri_radio_channels_t channels = { 0 };
-    err_code |= app_ble_channels_select (channels);
+    err_code |= app_ble_channels_set (channels);
     TEST_ASSERT (RD_ERROR_INVALID_PARAM == err_code);
 }
 
@@ -81,8 +83,13 @@ void test_app_ble_channels_one_ch (void)
     {
         .channel_39 = 1
     };
-    err_code |= app_ble_channels_select (channels);
+    ri_radio_channels_t get_channels;
+    err_code |= app_ble_channels_set (channels);
+    get_channels = app_ble_channels_get ();
     TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT (0 == channels.channel_37 &&
+                 0 == channels.channel_38 &&
+                 1 == channels.channel_39);
 }
 
 void test_app_ble_channels_two_ch (void)
@@ -93,8 +100,13 @@ void test_app_ble_channels_two_ch (void)
         .channel_38 = 1,
         .channel_39 = 1
     };
-    err_code |= app_ble_channels_select (channels);
+    ri_radio_channels_t get_channels;
+    err_code |= app_ble_channels_set (channels);
+    get_channels = app_ble_channels_get ();
     TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT (0 == channels.channel_37 &&
+                 1 == channels.channel_38 &&
+                 1 == channels.channel_39);
 }
 
 /**
