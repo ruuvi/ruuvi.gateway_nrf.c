@@ -98,8 +98,26 @@ rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, // -V2009
     return err_code;
 }
 
+rd_status_t app_ble_manufacturer_filter_set (const bool state)
+{
+    rd_status_t  err_code = RD_SUCCESS;
+    m_scan_params.manufacturer_filter_enabled = state;
+    return err_code;
+}
 
-rd_status_t app_ble_channels_select (const ri_radio_channels_t channels)
+rd_status_t app_ble_manufacturer_id_set (const uint16_t id)
+{
+    rd_status_t  err_code = RD_SUCCESS;
+    m_scan_params.manufacturer_id = id;
+    return err_code;
+}
+
+ri_radio_channels_t app_ble_channels_get (void)
+{
+    return m_scan_params.scan_channels;
+}
+
+rd_status_t app_ble_channels_set (const ri_radio_channels_t channels)
 {
     rd_status_t err_code = RD_SUCCESS;
 
