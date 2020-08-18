@@ -29,7 +29,9 @@
 #define APP_UART_RING_BUFFER_MAX_LEN     (128U)
 #define APP_UART_RING_DEQ_BUFFER_MAX_LEN (APP_UART_RING_BUFFER_MAX_LEN >>1)
 
+#ifndef CEEDLING
 static bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock);
+#endif
 
 static ri_comm_channel_t m_uart; //!< UART communication interface.
 static uint8_t buffer_data[APP_UART_RING_BUFFER_MAX_LEN] = {0};
@@ -49,7 +51,10 @@ static rl_ringbuffer_t m_uart_ring_buffer =
 };
 
 /** Dummy function to lock/unlock buffer */
-static bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock)
+#ifndef CEEDLING
+static
+#endif
+bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock)
 {
     bool * p_bool = (bool *) flag;
 
@@ -137,6 +142,9 @@ static rd_status_t app_uart_appply_config (re_ca_uart_payload_t * p_uart_payload
     return err_code;
 }
 
+#ifndef CEEDLING
+static
+#endif
 void app_uart_parser (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -149,15 +157,6 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
     if (RD_SUCCESS == err_code)
     {
-        if (RD_SUCCESS == app_uart_appply_config (&uart_payload))
-        {
-            uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
-        }
-        else
-        {
-            uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
-        }
-
         if (false == rl_ringbuffer_empty (&m_uart_ring_buffer))
         {
             do
@@ -191,11 +190,7 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
         err_code = re_ca_uart_decode ( (uint8_t *) dequeue_data, &uart_payload);
 
-        if (RD_SUCCESS == err_code)
-        {
-            uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
-        }
-        else
+        if (RD_SUCCESS != err_code)
         {
             size_t len = index - 1;
             index = 0;
@@ -211,6 +206,15 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
     if (RD_SUCCESS == err_code)
     {
+        if (RD_SUCCESS == app_uart_appply_config (&uart_payload))
+        {
+            uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
+        }
+        else
+        {
+            uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
+        }
+
         uart_payload.params.ack.cmd = uart_payload.cmd;
         uart_payload.cmd = RE_CA_UART_ACK;
         msg.data_length = sizeof (msg);
@@ -230,6 +234,9 @@ void app_uart_parser (void * p_data, uint16_t data_len)
     ri_watchdog_feed();
 }
 
+#ifndef CEEDLING
+static
+#endif
 rd_status_t app_uart_isr (ri_comm_evt_t evt,
                           void * p_data, size_t data_len)
 {
