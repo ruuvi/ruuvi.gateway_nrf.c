@@ -109,12 +109,12 @@ static rd_status_t app_uart_appply_config (re_ca_uart_payload_t * p_uart_payload
             channels = app_ble_channels_get();
             channels.channel_38 = p_uart_payload->params.bool_param.state;
             err_code |= app_ble_channels_set (channels);
-
+            break;
         case RE_CA_UART_SET_CH_39:
             channels = app_ble_channels_get();
             channels.channel_39 = p_uart_payload->params.bool_param.state;
             err_code |= app_ble_channels_set (channels);
-
+            break;
         case RE_CA_UART_SET_ALL:
             err_code |= app_ble_manufacturer_id_set (p_uart_payload->params.all_params.fltr_id.id);
             err_code |= app_ble_manufacturer_filter_set ( (bool)
