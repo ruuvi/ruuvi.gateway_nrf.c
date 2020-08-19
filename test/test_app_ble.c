@@ -25,7 +25,7 @@ void setUp (void)
     app_ble_manufacturer_filter_set (true);
     app_ble_manufacturer_id_set (RB_BLE_MANUFACTURER_ID);
     app_ble_channels_set (channels);
-    app_ble_modulation_enable (RI_RADIO_BLE_125KBPS, false);
+    app_ble_modulation_enable (RI_RADIO_BLE_125KBPS, true);
     app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, false);
     app_ble_modulation_enable (RI_RADIO_BLE_2MBPS, false);
 }
@@ -85,11 +85,11 @@ void test_app_ble_channels_one_ch (void)
     };
     ri_radio_channels_t get_channels;
     err_code |= app_ble_channels_set (channels);
-    get_channels = app_ble_channels_get ();
+    err_code |= app_ble_channels_get (&get_channels);
     TEST_ASSERT (RD_SUCCESS == err_code);
-    TEST_ASSERT (0 == channels.channel_37 &&
-                 0 == channels.channel_38 &&
-                 1 == channels.channel_39);
+    TEST_ASSERT (0 == get_channels.channel_37 &&
+                 0 == get_channels.channel_38 &&
+                 1 == get_channels.channel_39);
 }
 
 void test_app_ble_channels_two_ch (void)
@@ -102,11 +102,11 @@ void test_app_ble_channels_two_ch (void)
     };
     ri_radio_channels_t get_channels;
     err_code |= app_ble_channels_set (channels);
-    get_channels = app_ble_channels_get ();
+    err_code |= app_ble_channels_get (&get_channels);
     TEST_ASSERT (RD_SUCCESS == err_code);
-    TEST_ASSERT (0 == channels.channel_37 &&
-                 1 == channels.channel_38 &&
-                 1 == channels.channel_39);
+    TEST_ASSERT (0 == get_channels.channel_37 &&
+                 1 == get_channels.channel_38 &&
+                 1 == get_channels.channel_39);
 }
 
 /**

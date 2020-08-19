@@ -74,6 +74,7 @@ void tearDown (void)
 {
 }
 
+
 /**
  * @brief Initialize UART peripheral with values read from ruuvi_boards.h.
  *
@@ -231,6 +232,139 @@ void test_app_uart_isr_unknown (void)
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
+void test_app_uart_appply_config_fltr_tags (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_FLTR_TAGS,
+        .params.bool_param.state = 1,
+    };
+    app_ble_manufacturer_filter_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_appply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_appply_config_fltr_id (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_FLTR_ID,
+        .params.fltr_id_param.id = 0x101,
+    };
+    app_ble_manufacturer_id_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_appply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_appply_config_coded_phy (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_CODED_PHY,
+        .params.bool_param.state = 1,
+    };
+    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_appply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_appply_config_scan_1mb (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_SCAN_1MB_PHY,
+        .params.bool_param.state = 1,
+    };
+    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_appply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_appply_config_ext_payload (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_EXT_PAYLOAD,
+        .params.bool_param.state = 1,
+    };
+    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_appply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_appply_config_ch_37 (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_CH_37,
+        .params.bool_param.state = 1,
+    };
+    app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_appply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_appply_config_ch_38 (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_CH_38,
+        .params.bool_param.state = 1,
+    };
+    app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_appply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_appply_config_ch_39 (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_CH_39,
+        .params.bool_param.state = 1,
+    };
+    app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_appply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_appply_config_all (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_ALL,
+        .params.all_params.fltr_id.id = 0x101,
+        .params.all_params.bools.fltr_tags.state = 1,
+        .params.all_params.bools.coded_phy.state = 0,
+        .params.all_params.bools.scan_phy.state = 0,
+        .params.all_params.bools.ext_payload.state = 0,
+        .params.all_params.bools.ch_37.state = 1,
+        .params.all_params.bools.ch_38.state = 1,
+        .params.all_params.bools.ch_39.state = 1,
+    };
+    app_ble_manufacturer_id_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_manufacturer_filter_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_appply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+
 void test_app_uart_parser_ok (void)
 {
     uint8_t data[] =
@@ -257,6 +391,7 @@ void test_app_uart_parser_ok (void)
     app_uart_parser ( (void *) data, 8);
     TEST_ASSERT (1 == mock_sends);
 }
+
 
 void test_app_uart_parser_part_1_ok (void)
 {
@@ -353,4 +488,3 @@ void test_app_uart_parser_part_2_ok (void)
     app_uart_parser ( (void *) data_part1, 5);
     TEST_ASSERT (1 == mock_sends);
 }
-
