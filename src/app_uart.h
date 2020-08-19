@@ -25,6 +25,7 @@ bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock);
 void app_uart_parser (void * p_data, uint16_t data_len);
 
 // Expose callback to Ceedling
+rd_status_t app_uart_appply_config (void * v_uart_payload);
 rd_status_t app_uart_isr (ri_comm_evt_t evt,
                           void * p_data, size_t data_len);
 

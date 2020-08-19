@@ -26,8 +26,8 @@
 #include <string.h>
 #include <stdio.h>
 
-#define APP_UART_RING_BUFFER_MAX_LEN     (128U)
-#define APP_UART_RING_DEQ_BUFFER_MAX_LEN (APP_UART_RING_BUFFER_MAX_LEN >>1)
+#define APP_UART_RING_BUFFER_MAX_LEN     (128U) //!< Ring buffer len       
+#define APP_UART_RING_DEQ_BUFFER_MAX_LEN (APP_UART_RING_BUFFER_MAX_LEN >>1) //!< Decode buffer len
 
 #ifndef CEEDLING
 static bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock);
@@ -64,8 +64,16 @@ bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock)
     return true;
 }
 
-static rd_status_t app_uart_appply_config (re_ca_uart_payload_t * p_uart_payload)
+#ifndef CEEDLING
+static
+rd_status_t app_uart_appply_config (re_ca_uart_payload_t * p_uart_payload)
+#else
+rd_status_t app_uart_appply_config (void * v_uart_payload)
+#endif
 {
+#ifdef CEEDLING
+    re_ca_uart_payload_t * p_uart_payload = (re_ca_uart_payload_t *) v_uart_payload;
+#endif
     rd_status_t err_code = RD_SUCCESS;
     ri_radio_modulation_t modulation;
     ri_radio_channels_t channels;
@@ -100,19 +108,19 @@ static rd_status_t app_uart_appply_config (re_ca_uart_payload_t * p_uart_payload
             break;
 
         case RE_CA_UART_SET_CH_37:
-            channels = app_ble_channels_get();
+            err_code |= app_ble_channels_get (&channels);
             channels.channel_37 = p_uart_payload->params.bool_param.state;
             err_code |= app_ble_channels_set (channels);
             break;
 
         case RE_CA_UART_SET_CH_38:
-            channels = app_ble_channels_get();
+            err_code |= app_ble_channels_get (&channels);
             channels.channel_38 = p_uart_payload->params.bool_param.state;
             err_code |= app_ble_channels_set (channels);
             break;
 
         case RE_CA_UART_SET_CH_39:
-            channels = app_ble_channels_get();
+            err_code |= app_ble_channels_get (&channels);
             channels.channel_39 = p_uart_payload->params.bool_param.state;
             err_code |= app_ble_channels_set (channels);
             break;
