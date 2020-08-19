@@ -22,6 +22,17 @@
 
 #include <string.h>
 
+#define RB_BLE_UNKNOWN_MANUFACTURER_ID  0xFFFF
+#define RB_BLE_DEFAULT_CH37_STATE       0
+#define RB_BLE_DEFAULT_CH38_STATE       0
+#define RB_BLE_DEFAULT_CH39_STATE       0 
+#define RB_BLE_DEFAULT_125KBPS_STATE    false
+#define RB_BLE_DEFAULT_1MBIT_STATE      false
+#define RB_BLE_DEFAULT_2MBIT_STATE      false
+#define RB_BLE_DEFAULT_FLTR_STATE       true
+#define RB_BLE_DEFAULT_MANUFACTURER_ID  RB_BLE_MANUFACTURER_ID
+#define RB_BLE_DEFAULT_MODULATION       RI_RADIO_BLE_125KBPS
+
 static inline void LOG (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
@@ -33,8 +44,19 @@ static inline void LOGD (const char * const msg)
 }
 
 
-static app_ble_scan_t m_scan_params;  //!< Configured scan
-
+static app_ble_scan_t m_scan_params = 
+{
+  .scan_channels.channel_37 = RB_BLE_DEFAULT_CH37_STATE,
+  .scan_channels.channel_37 = RB_BLE_DEFAULT_CH38_STATE,
+  .scan_channels.channel_37 = RB_BLE_DEFAULT_CH39_STATE,
+  .modulation_125kbps_enabled = RB_BLE_DEFAULT_125KBPS_STATE,
+  .modulation_1mbit_enabled = RB_BLE_DEFAULT_1MBIT_STATE,
+  .modulation_2mbit_enabled = RB_BLE_DEFAULT_2MBIT_STATE,
+  .manufacturer_filter_enabled = RB_BLE_DEFAULT_FLTR_STATE,
+  .manufacturer_id = RB_BLE_DEFAULT_MANUFACTURER_ID,
+  .current_modulation =  RB_BLE_DEFAULT_MODULATION,
+};
+  
 #ifndef CEEDLING
 static
 #endif
@@ -256,8 +278,13 @@ rd_status_t app_ble_scan_start (void)
         .channels = m_scan_params.scan_channels,
         .adv_interval_ms = (1000U), //!< Unused
         .adv_pwr_dbm     = (0),     //!< Unused
-        .manufacturer_id = RB_BLE_MANUFACTURER_ID //!< default
+        .manufacturer_id = m_scan_params.manufacturer_id //!< default
     };
+    
+    if (!m_scan_params.manufacturer_filter_enabled)
+    {
+      adv_params.manufacturer_id = RB_BLE_UNKNOWN_MANUFACTURER_ID;
+    } 
 
     if (RD_SUCCESS == err_code)
     {
