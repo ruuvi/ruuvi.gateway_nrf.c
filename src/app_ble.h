@@ -46,9 +46,10 @@ rd_status_t app_ble_manufacturer_id_set (const uint16_t id);
 /**
  * @brief Get current state of chznnels.
  *
- * @param[out] channels Channels enable struct.
+ * @param[in] p_channels Pointer to channels to enable.
+ * @retval RD_SUCCESS on success.
  */
-ri_radio_channels_t app_ble_channels_get (void);
+rd_status_t app_ble_channels_get (ri_radio_channels_t * p_channels);
 
 /**
  * @brief Enable or disable given channels.

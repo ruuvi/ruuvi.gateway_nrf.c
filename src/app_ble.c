@@ -22,16 +22,16 @@
 
 #include <string.h>
 
-#define RB_BLE_UNKNOWN_MANUFACTURER_ID  0xFFFF
-#define RB_BLE_DEFAULT_CH37_STATE       0
-#define RB_BLE_DEFAULT_CH38_STATE       0
-#define RB_BLE_DEFAULT_CH39_STATE       0
-#define RB_BLE_DEFAULT_125KBPS_STATE    false
-#define RB_BLE_DEFAULT_1MBIT_STATE      false
-#define RB_BLE_DEFAULT_2MBIT_STATE      false
-#define RB_BLE_DEFAULT_FLTR_STATE       true
-#define RB_BLE_DEFAULT_MANUFACTURER_ID  RB_BLE_MANUFACTURER_ID
-#define RB_BLE_DEFAULT_MODULATION       RI_RADIO_BLE_125KBPS
+#define RB_BLE_UNKNOWN_MANUFACTURER_ID  0xFFFF                  //!< Unknown id
+#define RB_BLE_DEFAULT_CH37_STATE       0                       //!< Default channel 37 state
+#define RB_BLE_DEFAULT_CH38_STATE       0                       //!< Default channel 38 state
+#define RB_BLE_DEFAULT_CH39_STATE       0                       //!< Default channel 39 state
+#define RB_BLE_DEFAULT_125KBPS_STATE    false                   //!< Default 125kbps state
+#define RB_BLE_DEFAULT_1MBIT_STATE      false                   //!< Default 1mbit state
+#define RB_BLE_DEFAULT_2MBIT_STATE      false                   //!< Default 2mbit state
+#define RB_BLE_DEFAULT_FLTR_STATE       true                    //!< Default filter id state
+#define RB_BLE_DEFAULT_MANUFACTURER_ID  RB_BLE_MANUFACTURER_ID  //!< Default id
+#define RB_BLE_DEFAULT_MODULATION       RI_RADIO_BLE_125KBPS    //!< Default modulation
 
 static inline void LOG (const char * const msg)
 {
@@ -134,9 +134,13 @@ rd_status_t app_ble_manufacturer_id_set (const uint16_t id)
     return err_code;
 }
 
-ri_radio_channels_t app_ble_channels_get (void)
+rd_status_t app_ble_channels_get (ri_radio_channels_t * p_channels)
 {
-    return m_scan_params.scan_channels;
+    rd_status_t  err_code = RD_SUCCESS;
+    p_channels->channel_37 = m_scan_params.scan_channels.channel_37;
+    p_channels->channel_38 = m_scan_params.scan_channels.channel_38;
+    p_channels->channel_39 = m_scan_params.scan_channels.channel_39;
+    return err_code;
 }
 
 rd_status_t app_ble_channels_set (const ri_radio_channels_t channels)
