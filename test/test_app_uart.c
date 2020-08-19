@@ -232,7 +232,7 @@ void test_app_uart_isr_unknown (void)
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
-void test_app_uart_appply_config_fltr_tags (void)
+void test_app_uart_apply_config_fltr_tags (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     re_ca_uart_payload_t payload =
@@ -241,11 +241,11 @@ void test_app_uart_appply_config_fltr_tags (void)
         .params.bool_param.state = 1,
     };
     app_ble_manufacturer_filter_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    err_code |= app_uart_appply_config (&payload);
+    err_code |= app_uart_apply_config (&payload);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
-void test_app_uart_appply_config_fltr_id (void)
+void test_app_uart_apply_config_fltr_id (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     re_ca_uart_payload_t payload =
@@ -254,11 +254,11 @@ void test_app_uart_appply_config_fltr_id (void)
         .params.fltr_id_param.id = 0x101,
     };
     app_ble_manufacturer_id_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    err_code |= app_uart_appply_config (&payload);
+    err_code |= app_uart_apply_config (&payload);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
-void test_app_uart_appply_config_coded_phy (void)
+void test_app_uart_apply_config_coded_phy (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     re_ca_uart_payload_t payload =
@@ -267,11 +267,11 @@ void test_app_uart_appply_config_coded_phy (void)
         .params.bool_param.state = 1,
     };
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    err_code |= app_uart_appply_config (&payload);
+    err_code |= app_uart_apply_config (&payload);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
-void test_app_uart_appply_config_scan_1mb (void)
+void test_app_uart_apply_config_scan_1mb (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     re_ca_uart_payload_t payload =
@@ -280,11 +280,11 @@ void test_app_uart_appply_config_scan_1mb (void)
         .params.bool_param.state = 1,
     };
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    err_code |= app_uart_appply_config (&payload);
+    err_code |= app_uart_apply_config (&payload);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
-void test_app_uart_appply_config_ext_payload (void)
+void test_app_uart_apply_config_ext_payload (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     re_ca_uart_payload_t payload =
@@ -293,11 +293,11 @@ void test_app_uart_appply_config_ext_payload (void)
         .params.bool_param.state = 1,
     };
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    err_code |= app_uart_appply_config (&payload);
+    err_code |= app_uart_apply_config (&payload);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
-void test_app_uart_appply_config_ch_37 (void)
+void test_app_uart_apply_config_ch_37 (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     re_ca_uart_payload_t payload =
@@ -307,11 +307,11 @@ void test_app_uart_appply_config_ch_37 (void)
     };
     app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    err_code |= app_uart_appply_config (&payload);
+    err_code |= app_uart_apply_config (&payload);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
-void test_app_uart_appply_config_ch_38 (void)
+void test_app_uart_apply_config_ch_38 (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     re_ca_uart_payload_t payload =
@@ -321,11 +321,11 @@ void test_app_uart_appply_config_ch_38 (void)
     };
     app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    err_code |= app_uart_appply_config (&payload);
+    err_code |= app_uart_apply_config (&payload);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
-void test_app_uart_appply_config_ch_39 (void)
+void test_app_uart_apply_config_ch_39 (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     re_ca_uart_payload_t payload =
@@ -335,11 +335,11 @@ void test_app_uart_appply_config_ch_39 (void)
     };
     app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    err_code |= app_uart_appply_config (&payload);
+    err_code |= app_uart_apply_config (&payload);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
-void test_app_uart_appply_config_all (void)
+void test_app_uart_apply_config_all (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     re_ca_uart_payload_t payload =
@@ -360,7 +360,7 @@ void test_app_uart_appply_config_all (void)
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    err_code |= app_uart_appply_config (&payload);
+    err_code |= app_uart_apply_config (&payload);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
