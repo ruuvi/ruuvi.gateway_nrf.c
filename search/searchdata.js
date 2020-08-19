@@ -5,8 +5,9 @@ var indexSectionsWithContent =
   2: "amn",
   3: "am",
   4: "cms",
-  5: "an",
-  6: "r"
+  5: "r",
+  6: "an",
+  7: "r"
 };
 
 var indexSectionNames =
@@ -16,8 +17,9 @@ var indexSectionNames =
   2: "files",
   3: "functions",
   4: "variables",
-  5: "groups",
-  6: "pages"
+  5: "defines",
+  6: "groups",
+  7: "pages"
 };
 
 var indexSectionLabels =
@@ -27,7 +29,8 @@ var indexSectionLabels =
   2: "Files",
   3: "Functions",
   4: "Variables",
-  5: "Modules",
-  6: "Pages"
+  5: "Macros",
+  6: "Modules",
+  7: "Pages"
 };
 
