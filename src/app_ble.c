@@ -25,7 +25,7 @@
 #define RB_BLE_UNKNOWN_MANUFACTURER_ID  0xFFFF
 #define RB_BLE_DEFAULT_CH37_STATE       0
 #define RB_BLE_DEFAULT_CH38_STATE       0
-#define RB_BLE_DEFAULT_CH39_STATE       0 
+#define RB_BLE_DEFAULT_CH39_STATE       0
 #define RB_BLE_DEFAULT_125KBPS_STATE    false
 #define RB_BLE_DEFAULT_1MBIT_STATE      false
 #define RB_BLE_DEFAULT_2MBIT_STATE      false
@@ -44,19 +44,19 @@ static inline void LOGD (const char * const msg)
 }
 
 
-static app_ble_scan_t m_scan_params = 
+static app_ble_scan_t m_scan_params =
 {
-  .scan_channels.channel_37 = RB_BLE_DEFAULT_CH37_STATE,
-  .scan_channels.channel_37 = RB_BLE_DEFAULT_CH38_STATE,
-  .scan_channels.channel_37 = RB_BLE_DEFAULT_CH39_STATE,
-  .modulation_125kbps_enabled = RB_BLE_DEFAULT_125KBPS_STATE,
-  .modulation_1mbit_enabled = RB_BLE_DEFAULT_1MBIT_STATE,
-  .modulation_2mbit_enabled = RB_BLE_DEFAULT_2MBIT_STATE,
-  .manufacturer_filter_enabled = RB_BLE_DEFAULT_FLTR_STATE,
-  .manufacturer_id = RB_BLE_DEFAULT_MANUFACTURER_ID,
-  .current_modulation =  RB_BLE_DEFAULT_MODULATION,
+    .scan_channels.channel_37 = RB_BLE_DEFAULT_CH37_STATE,
+    .scan_channels.channel_37 = RB_BLE_DEFAULT_CH38_STATE,
+    .scan_channels.channel_37 = RB_BLE_DEFAULT_CH39_STATE,
+    .modulation_125kbps_enabled = RB_BLE_DEFAULT_125KBPS_STATE,
+    .modulation_1mbit_enabled = RB_BLE_DEFAULT_1MBIT_STATE,
+    .modulation_2mbit_enabled = RB_BLE_DEFAULT_2MBIT_STATE,
+    .manufacturer_filter_enabled = RB_BLE_DEFAULT_FLTR_STATE,
+    .manufacturer_id = RB_BLE_DEFAULT_MANUFACTURER_ID,
+    .current_modulation =  RB_BLE_DEFAULT_MODULATION,
 };
-  
+
 #ifndef CEEDLING
 static
 #endif
@@ -280,11 +280,11 @@ rd_status_t app_ble_scan_start (void)
         .adv_pwr_dbm     = (0),     //!< Unused
         .manufacturer_id = m_scan_params.manufacturer_id //!< default
     };
-    
+
     if (!m_scan_params.manufacturer_filter_enabled)
     {
-      adv_params.manufacturer_id = RB_BLE_UNKNOWN_MANUFACTURER_ID;
-    } 
+        adv_params.manufacturer_id = RB_BLE_UNKNOWN_MANUFACTURER_ID;
+    }
 
     if (RD_SUCCESS == err_code)
     {
