@@ -47,8 +47,8 @@ static inline void LOGD (const char * const msg)
 static app_ble_scan_t m_scan_params =
 {
     .scan_channels.channel_37 = RB_BLE_DEFAULT_CH37_STATE,
-    .scan_channels.channel_37 = RB_BLE_DEFAULT_CH38_STATE,
-    .scan_channels.channel_37 = RB_BLE_DEFAULT_CH39_STATE,
+    .scan_channels.channel_38 = RB_BLE_DEFAULT_CH38_STATE,
+    .scan_channels.channel_39 = RB_BLE_DEFAULT_CH39_STATE,
     .modulation_125kbps_enabled = RB_BLE_DEFAULT_125KBPS_STATE,
     .modulation_1mbit_enabled = RB_BLE_DEFAULT_1MBIT_STATE,
     .modulation_2mbit_enabled = RB_BLE_DEFAULT_2MBIT_STATE,
