@@ -28,6 +28,30 @@ typedef struct
 } app_ble_scan_t;
 
 /**
+ * @brief Enable or disable id filter.
+ *
+ * @param[in] state Filter enable / disable.
+ * @retval RD_SUCCESS on success.
+ */
+rd_status_t app_ble_manufacturer_filter_set (const bool state);
+
+/**
+ * @brief Set id filter.
+ *
+ * @param[in] id New id to set.
+ * @retval RD_SUCCESS on success.
+ */
+rd_status_t app_ble_manufacturer_id_set (const uint16_t id);
+
+/**
+ * @brief Get current state of chznnels.
+ *
+ * @param[in] p_channels Pointer to channels to enable.
+ * @retval RD_SUCCESS on success.
+ */
+rd_status_t app_ble_channels_get (ri_radio_channels_t * p_channels);
+
+/**
  * @brief Enable or disable given channels.
  *
  * On 2 MBit / s modulation, the channels only enable / disable
@@ -38,7 +62,7 @@ typedef struct
  * @retval RD_SUCCESS on success.
  * @retval RD_ERROR_INVALID_PARAM If no channels are enabled.
  */
-rd_status_t app_ble_channels_select (const ri_radio_channels_t channels);
+rd_status_t app_ble_channels_set (const ri_radio_channels_t channels);
 
 /**
  * @brief Enable or disable given modulation.

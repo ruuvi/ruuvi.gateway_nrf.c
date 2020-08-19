@@ -1,12 +1,16 @@
 #include "unity.h"
 
 #include "app_uart.h"
-
+#include "mock_app_ble.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
-
+#include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_endpoint_ca_uart.h"
 #include "mock_ruuvi_interface_communication_uart.h"
+#include "mock_ruuvi_interface_scheduler.h"
+#include "mock_ruuvi_interface_watchdog.h"
+#include "mock_ruuvi_interface_scheduler.h"
+#include "mock_ruuvi_library_ringbuffer.h"
 
 #include <string.h>
 
@@ -29,6 +33,23 @@ const uint8_t mock_data[] =
     0x8DU
 };
 
+static uint8_t t_ring_buffer[128] = {0};
+static bool t_buffer_wlock = false;
+static bool t_buffer_rlock = false;
+
+static rl_ringbuffer_t t_uart_ring_buffer =
+{
+    .head = 0,
+    .tail = 0,
+    .block_size = sizeof (uint8_t),
+    .storage_size = sizeof (t_ring_buffer),
+    .index_mask = (sizeof (t_ring_buffer) / sizeof (uint8_t)) - 1,
+    .storage = t_ring_buffer,
+    .lock = app_uart_ringbuffer_lock_dummy,
+    .writelock = &t_buffer_wlock,
+    .readlock  = &t_buffer_rlock
+};
+
 static size_t mock_sends = 0;
 // Mock sending fp for data through uart.
 static rd_status_t mock_send (ri_comm_message_t * const msg)
@@ -37,11 +58,10 @@ static rd_status_t mock_send (ri_comm_message_t * const msg)
     return RD_SUCCESS;
 }
 
-
-
 static ri_comm_channel_t mock_uart =
 {
-    .send = &mock_send
+    .send = &mock_send,
+    .on_evt = app_uart_isr
 };
 
 
@@ -53,6 +73,7 @@ void setUp (void)
 void tearDown (void)
 {
 }
+
 
 /**
  * @brief Initialize UART peripheral with values read from ruuvi_boards.h.
@@ -163,4 +184,307 @@ void test_app_uart_send_broadcast_error_size (void)
     err_code |= app_uart_send_broadcast (&scan);
     TEST_ASSERT (RD_ERROR_DATA_SIZE == err_code);
     TEST_ASSERT (0 == mock_sends);
+}
+
+/**
+ * @brief Handle Scan events.
+ *
+ * Received data is put to scheduler queue, new scan with new PHY is started on timeout.
+ *
+ * @param[in] evt Type of event, either RI_COMM_RECEIVED on data or
+ *                RI_COMM_TIMEOUT on scan timeout.
+ * @param[in] p_data NULL on timeout, ri_adv_scan_t* on received.
+ * @param[in] data_len 0 on timeout, size of ri_adv_scan_t on received.
+ * @retval RD_SUCCESS on successful handling on event.
+ * @retval RD_ERR_NO_MEM if received event could not be put to scheduler queue.
+ * @return Error code from scanning if scan cannot be started.
+ *
+ * @note parameters are not const to maintain compatibility with the event handler
+ *       signature.
+ **/
+
+void test_app_uart_isr_received (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    uint8_t data[] =
+    {
+        RE_CA_UART_STX,
+        2 + CMD_IN_LEN,
+        RE_CA_UART_SET_CH_37,
+        0x01U,
+        RE_CA_UART_FIELD_DELIMITER,
+        0xB6U, 0x78U, //crc
+        RE_CA_UART_ETX
+    };
+    ri_scheduler_event_put_ExpectAndReturn (data, 8, &app_uart_parser,
+                                            RD_SUCCESS);
+    rd_error_check_ExpectAnyArgs();
+    err_code |= app_uart_isr (RI_COMM_RECEIVED,
+                              (void *) &data[0], 8);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_isr_unknown (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rd_error_check_ExpectAnyArgs();
+    err_code |= app_uart_isr (RI_COMM_TIMEOUT, NULL, 0);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_apply_config_fltr_tags (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_FLTR_TAGS,
+        .params.bool_param.state = 1,
+    };
+    app_ble_manufacturer_filter_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_apply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_apply_config_fltr_id (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_FLTR_ID,
+        .params.fltr_id_param.id = 0x101,
+    };
+    app_ble_manufacturer_id_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_apply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_apply_config_coded_phy (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_CODED_PHY,
+        .params.bool_param.state = 1,
+    };
+    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_apply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_apply_config_scan_1mb (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_SCAN_1MB_PHY,
+        .params.bool_param.state = 1,
+    };
+    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_apply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_apply_config_ext_payload (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_EXT_PAYLOAD,
+        .params.bool_param.state = 1,
+    };
+    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_apply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_apply_config_ch_37 (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_CH_37,
+        .params.bool_param.state = 1,
+    };
+    app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_apply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_apply_config_ch_38 (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_CH_38,
+        .params.bool_param.state = 1,
+    };
+    app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_apply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_apply_config_ch_39 (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_CH_39,
+        .params.bool_param.state = 1,
+    };
+    app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_apply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_uart_apply_config_all (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_ALL,
+        .params.all_params.fltr_id.id = 0x101,
+        .params.all_params.bools.fltr_tags.state = 1,
+        .params.all_params.bools.coded_phy.state = 0,
+        .params.all_params.bools.scan_phy.state = 0,
+        .params.all_params.bools.ext_payload.state = 0,
+        .params.all_params.bools.ch_37.state = 1,
+        .params.all_params.bools.ch_38.state = 1,
+        .params.all_params.bools.ch_39.state = 1,
+    };
+    app_ble_manufacturer_id_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_manufacturer_filter_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_apply_config (&payload);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+
+void test_app_uart_parser_ok (void)
+{
+    uint8_t data[] =
+    {
+        RE_CA_UART_STX,
+        2 + CMD_IN_LEN,
+        RE_CA_UART_SET_CH_37,
+        0x01U,
+        RE_CA_UART_FIELD_DELIMITER,
+        0xB6U, 0x78U, //crc
+        RE_CA_UART_ETX
+    };
+    ri_scheduler_event_put_ExpectAndReturn (data, 8, &app_uart_parser,
+                                            RD_SUCCESS);
+    rd_error_check_ExpectAnyArgs();
+    app_uart_isr (RI_COMM_RECEIVED,
+                  (void *) &data[0], 8);
+    re_ca_uart_payload_t payload = {0};
+    re_ca_uart_decode_ExpectAndReturn ( (uint8_t *) &data[0],
+                                        (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
+    rl_ringbuffer_empty_ExpectAnyArgsAndReturn (true);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
+    app_uart_parser ( (void *) data, 8);
+    TEST_ASSERT (1 == mock_sends);
+}
+
+
+void test_app_uart_parser_part_1_ok (void)
+{
+    uint8_t data_part1[] =
+    {
+        RE_CA_UART_STX,
+        2 + CMD_IN_LEN,
+        RE_CA_UART_SET_CH_37,
+    };
+    ri_scheduler_event_put_ExpectAndReturn (data_part1, 3, &app_uart_parser,
+                                            RD_SUCCESS);
+    rd_error_check_ExpectAnyArgs();
+    app_uart_isr (RI_COMM_RECEIVED,
+                  (void *) &data_part1[0], 3);
+    re_ca_uart_payload_t payload = {0};
+    re_ca_uart_decode_ExpectAndReturn ( (uint8_t *) &data_part1[0],
+                                        (re_ca_uart_payload_t *) &payload, RE_ERROR_DECODING_CRC);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
+    rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    re_ca_uart_payload_t payload_dec = {0};
+    re_ca_uart_decode_ExpectAnyArgsAndReturn (RE_ERROR_DECODING_CRC);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
+    app_uart_parser ( (void *) data_part1, 3);
+    TEST_ASSERT (0 == mock_sends);
+}
+
+void test_app_uart_parser_part_2_ok (void)
+{
+    uint8_t data_part1[] =
+    {
+        0x01U,
+        RE_CA_UART_FIELD_DELIMITER,
+        0xB6U, 0x78U, //crc
+        RE_CA_UART_ETX
+    };
+    ri_scheduler_event_put_ExpectAndReturn (data_part1, 5, &app_uart_parser,
+                                            RD_SUCCESS);
+    rd_error_check_ExpectAnyArgs();
+    app_uart_isr (RI_COMM_RECEIVED,
+                  (void *) &data_part1[0], 5);
+    re_ca_uart_payload_t payload = {0};
+    re_ca_uart_decode_ExpectAndReturn ( (uint8_t *) &data_part1[0],
+                                        (re_ca_uart_payload_t *) &payload, RE_ERROR_DECODING_CRC);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
+    rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    re_ca_uart_payload_t payload_dec = {0};
+    re_ca_uart_decode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
+    app_uart_parser ( (void *) data_part1, 5);
+    TEST_ASSERT (1 == mock_sends);
 }
