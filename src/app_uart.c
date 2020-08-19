@@ -66,9 +66,9 @@ bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock)
 
 #ifndef CEEDLING
 static
-rd_status_t app_uart_appply_config (re_ca_uart_payload_t * p_uart_payload)
+rd_status_t app_uart_apply_config (re_ca_uart_payload_t * p_uart_payload)
 #else
-rd_status_t app_uart_appply_config (void * v_uart_payload)
+rd_status_t app_uart_apply_config (void * v_uart_payload)
 #endif
 {
 #ifdef CEEDLING
@@ -216,7 +216,7 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
     if (RD_SUCCESS == err_code)
     {
-        if (RD_SUCCESS == app_uart_appply_config (&uart_payload))
+        if (RD_SUCCESS == app_uart_apply_config (&uart_payload))
         {
             uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
         }
@@ -241,7 +241,10 @@ void app_uart_parser (void * p_data, uint16_t data_len)
         }
     }
 
-    ri_watchdog_feed();
+    if (RD_SUCCESS == err_code)
+    {
+        ri_watchdog_feed();
+    }
 }
 
 #ifndef CEEDLING
