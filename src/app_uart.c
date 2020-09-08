@@ -17,6 +17,7 @@
 #include "ruuvi_driver_error.h"
 #include "ruuvi_endpoint_ca_uart.h"
 #include "ruuvi_interface_communication.h"
+#include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_scheduler.h"
@@ -216,18 +217,33 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
     if (RD_SUCCESS == err_code)
     {
-        if (RD_SUCCESS == app_uart_apply_config (&uart_payload))
+        if (RE_CA_UART_GET_DEVICE_ID == uart_payload.cmd)
         {
-            uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
+            uint64_t mac;
+            uint64_t id;
+            ri_radio_address_get (&mac);
+            ri_comm_id_get (&id);
+            uart_payload.cmd = RE_CA_UART_DEVICE_ID;
+            uart_payload.params.device_id.id = id;
+            uart_payload.params.device_id.addr = mac;
+            msg.data_length = sizeof (msg);
         }
         else
         {
-            uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
+            if (RD_SUCCESS == app_uart_apply_config (&uart_payload))
+            {
+                uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
+            }
+            else
+            {
+                uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
+            }
+
+            uart_payload.params.ack.cmd = uart_payload.cmd;
+            uart_payload.cmd = RE_CA_UART_ACK;
+            msg.data_length = sizeof (msg);
         }
 
-        uart_payload.params.ack.cmd = uart_payload.cmd;
-        uart_payload.cmd = RE_CA_UART_ACK;
-        msg.data_length = sizeof (msg);
         err_code = re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
         msg.repeat_count = 1;
 
