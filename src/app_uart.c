@@ -156,6 +156,30 @@ rd_status_t app_uart_apply_config (void * v_uart_payload)
 #ifndef CEEDLING
 static
 #endif
+void app_uart_repeat_send (void * p_data, uint16_t data_len)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_comm_message_t msg = {0};
+    msg.repeat_count = 1;
+    msg.data_length = data_len;
+    memcpy (msg.data, p_data, data_len);
+    err_code |= m_uart.send (&msg);
+
+    if (RE_SUCCESS != err_code)
+    {
+        err_code |= ri_scheduler_event_put (msg.data, (uint16_t) msg.data_length,
+                                            app_uart_repeat_send);
+    }
+
+    if (RD_SUCCESS == err_code)
+    {
+        ri_watchdog_feed();
+    }
+}
+
+#ifndef CEEDLING
+static
+#endif
 void app_uart_parser (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -250,6 +274,12 @@ void app_uart_parser (void * p_data, uint16_t data_len)
         if (RE_SUCCESS == err_code)
         {
             err_code |= m_uart.send (&msg);
+
+            if (RE_SUCCESS != err_code)
+            {
+                err_code |= ri_scheduler_event_put (msg.data, (uint16_t) msg.data_length,
+                                                    app_uart_repeat_send);
+            }
         }
         else
         {

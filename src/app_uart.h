@@ -23,6 +23,7 @@
 // Assist function for unit tests.
 bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock);
 void app_uart_parser (void * p_data, uint16_t data_len);
+void app_uart_repeat_send (void * p_data, uint16_t data_len);
 
 // Expose callback to Ceedling
 rd_status_t app_uart_apply_config (void * v_uart_payload);
