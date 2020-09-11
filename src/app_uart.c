@@ -152,7 +152,7 @@ rd_status_t app_uart_apply_config (void * v_uart_payload)
 
     return err_code;
 }
-
+#if 0
 #ifndef CEEDLING
 static
 #endif
@@ -176,6 +176,7 @@ void app_uart_repeat_send (void * p_data, uint16_t data_len)
         ri_watchdog_feed();
     }
 }
+#endif
 
 #ifndef CEEDLING
 static
@@ -274,12 +275,15 @@ void app_uart_parser (void * p_data, uint16_t data_len)
         if (RE_SUCCESS == err_code)
         {
             err_code |= m_uart.send (&msg);
+#if 0
 
             if (RE_SUCCESS != err_code)
             {
                 err_code |= ri_scheduler_event_put (msg.data, (uint16_t) msg.data_length,
                                                     app_uart_repeat_send);
             }
+
+#endif
         }
         else
         {
