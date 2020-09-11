@@ -2,15 +2,15 @@
 Ruuvi Gateway nRF52 code
 
 [![Build Status](https://travis-ci.org/ruuvi/ruuvi.gateway_nrf.c.svg?branch=master)](https://travis-ci.org/ruuvi/ruuvi.gateway_nrf.c)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.gateway_nrf.c&metric=alert_status)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.gateway_nrf.c)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.gateway_nrf.c&metric=bugs)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.gateway_nrf.c)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.gateway_nrf.c&metric=code_smells)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.gateway_nrf.c)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.gateway_nrf.c&metric=coverage)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.gateway_nrf.c)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.gateway_nrf.c&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.gateway_nrf.c)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.gateway_nrf.c&metric=ncloc)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.gateway_nrf.c)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.gateway_nrf.c&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.gateway_nrf.c)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.gateway_nrf.c&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.gateway_nrf.c)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.gateway_nrf.c&metric=sqale_index)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.gateway_nrf.c)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.gateway_nrf.c.c&metric=alert_status)](https://sonarcloud.io/dashboard?id=ruuvi.gateway_nrf.c.c)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.gateway_nrf.c.c&metric=bugs)](https://sonarcloud.io/dashboard?id=ruuvi.gateway_nrf.c.c)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.gateway_nrf.c.c&metric=code_smells)](https://sonarcloud.io/dashboard?id=ruuvi.gateway_nrf.c.c)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.gateway_nrf.c.c&metric=coverage)](https://sonarcloud.io/dashboard?id=ruuvi.gateway_nrf.c.c)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.gateway_nrf.c.c&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=ruuvi.gateway_nrf.c.c)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.gateway_nrf.c.c&metric=ncloc)](https://sonarcloud.io/dashboard?id=ruuvi.gateway_nrf.c.c)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.gateway_nrf.c.c&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=ruuvi.gateway_nrf.c.c)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.gateway_nrf.c.c&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=ruuvi.gateway_nrf.c.c)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.gateway_nrf.c.c&metric=sqale_index)](https://sonarcloud.io/dashboard?id=ruuvi.gateway_nrf.c.c)
 
 # Setting up
 ## SDK 15.3
@@ -44,7 +44,7 @@ Make runs PVS Studio scan and outputs results under doxygen/html/fullhtml.
 This results into hundreds of warnings, it is up to you to filter the data you're interested in. For example you probably want to filter out warnings related to 64-bit systems. 
 
 ### Sonar scan
-Travis pushes the results to [SonarCloud.IO](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.gateway_nrf.c).
+Travis pushes the results to [SonarCloud.IO](https://sonarcloud.io/dashboard?id=ruuvi.gateway_nrf.c.c).
 SonarCloud uses access token which is private to Ruuvi, you'll need to fork the project and setup
 the SonarCloud under your own account if you wish to run Sonar Scan on your own code.
 
