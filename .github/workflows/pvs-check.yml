@@ -23,6 +23,10 @@ jobs:
     - name: Checkout submodules
       uses: textbook/git-checkout-submodule-action@2.1.1
 
+    # Generate folder for PVS report
+    - name: mkdir
+      run: mkdir -p doxygen/html
+
     - name: Install PVS Studio
       run: |
           wget -q -O - https://files.viva64.com/etc/pubkey.txt | sudo apt-key add -

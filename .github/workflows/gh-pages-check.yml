@@ -24,11 +24,12 @@ jobs:
       uses: textbook/git-checkout-submodule-action@2.1.1
 
 
-    # Install Doxygen
-    uses: mattnotmitt/doxygen-action@v1
-    with:
-      working-directory: '.'
-      doxyfile-path: 'Doxyfile'
+    # Generate Dox
+    - name: Generate dox 
+      uses: mattnotmitt/doxygen-action@v1
+        with:
+          working-directory: '.'
+          doxyfile-path: 'Doxyfile'
 
     # Error if doxygen.error has content
     - name: Check documentation has no errors
