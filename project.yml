@@ -16,14 +16,17 @@
   :default_tasks:
     - test:all
 
+
+        
 :flags:
   :test:
     :compile:
       :*:
-        - -Wall
-        - -Wno-tautological-pointer-compare # Cmock may create these, so ignore
-        - -Werror
-        - -std=c99
+        - -std=c11
+  :gcov:
+    :compile:
+      :*:
+        - -std=c11
 
 :environment:
 

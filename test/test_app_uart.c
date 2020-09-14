@@ -452,7 +452,6 @@ void test_app_uart_parser_part_1_ok (void)
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     rl_ringbuffer_dequeue_ReturnMemThruPtr_data (&p_data_2, sizeof (uint8_t *));
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
-    re_ca_uart_payload_t payload_dec = {0};
     re_ca_uart_decode_ExpectAnyArgsAndReturn (RE_ERROR_DECODING_CRC);
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
@@ -494,7 +493,6 @@ void test_app_uart_parser_part_2_ok (void)
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
-    re_ca_uart_payload_t payload_dec = {0};
     re_ca_uart_decode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
