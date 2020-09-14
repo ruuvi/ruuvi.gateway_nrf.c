@@ -401,6 +401,9 @@ void test_app_uart_parser_part_1_ok (void)
         2 + CMD_IN_LEN,
         RE_CA_UART_SET_CH_37,
     };
+    uint8_t * p_data_0 = &data_part1[0];
+    uint8_t * p_data_1 = &data_part1[1];
+    uint8_t * p_data_2 = &data_part1[2];
     ri_scheduler_event_put_ExpectAndReturn (data_part1, 3, &app_uart_parser,
                                             RD_SUCCESS);
     rd_error_check_ExpectAnyArgs();
@@ -417,10 +420,13 @@ void test_app_uart_parser_part_1_ok (void)
     rl_ringbuffer_queue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ReturnMemThruPtr_data (&p_data_0, sizeof (uint8_t *));
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ReturnMemThruPtr_data (&p_data_1, sizeof (uint8_t *));
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
+    rl_ringbuffer_dequeue_ReturnMemThruPtr_data (&p_data_2, sizeof (uint8_t *));
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
     rl_ringbuffer_dequeue_ReturnThruPtr_buffer (&t_uart_ring_buffer);
     re_ca_uart_payload_t payload_dec = {0};

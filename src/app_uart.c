@@ -210,7 +210,7 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
         if (RD_SUCCESS != err_code)
         {
-            size_t len = index - 1;
+            size_t len = index;
             index = 0;
 
             do
@@ -273,6 +273,7 @@ rd_status_t app_uart_isr (ri_comm_evt_t evt,
             break;
 
         default:
+            // No action needed on connect/disconnect events.
             break;
     }
 
