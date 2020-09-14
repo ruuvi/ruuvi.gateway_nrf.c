@@ -167,20 +167,17 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
     if (RD_SUCCESS == err_code)
     {
-        if (false == rl_ringbuffer_empty (&m_uart_ring_buffer))
+        do
         {
-            do
-            {
-                uint8_t * p_dequeue_data = NULL;
-                status = rl_ringbuffer_dequeue (&m_uart_ring_buffer,
-                                                &p_dequeue_data);
+            uint8_t * p_dequeue_data = NULL;
+            status = rl_ringbuffer_dequeue (&m_uart_ring_buffer,
+                                            &p_dequeue_data);
 
-                if (NULL != p_dequeue_data)
-                {
-                    dequeue_data[index++] = *p_dequeue_data;
-                }
-            } while (RL_SUCCESS == status);
-        }
+            if (NULL != p_dequeue_data)
+            {
+                dequeue_data[index++] = *p_dequeue_data;
+            }
+        } while (RL_SUCCESS == status);
     }
     else
     {
