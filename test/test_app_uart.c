@@ -443,30 +443,20 @@ void test_app_uart_parser_part_1_ok (void)
     re_ca_uart_decode_ExpectAndReturn ( (uint8_t *) &data_part1[0],
                                         (re_ca_uart_payload_t *) &payload, RE_ERROR_DECODING_CRC);
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_dequeue_ReturnMemThruPtr_data (&p_data_0, sizeof (uint8_t *));
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_dequeue_ReturnMemThruPtr_data (&p_data_1, sizeof (uint8_t *));
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_dequeue_ReturnMemThruPtr_data (&p_data_2, sizeof (uint8_t *));
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
-    
     re_ca_uart_payload_t payload_dec = {0};
     re_ca_uart_decode_ExpectAnyArgsAndReturn (RE_ERROR_DECODING_CRC);
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
     app_uart_parser ( (void *) data_part1, 3);
     TEST_ASSERT (0 == mock_sends);
@@ -485,33 +475,25 @@ void test_app_uart_parser_part_2_ok (void)
                                             RD_SUCCESS);
     rd_error_check_ExpectAnyArgs();
     app_uart_isr (RI_COMM_RECEIVED,
-                  (void *) &data_part1[0], sizeof(data_part1));
+                  (void *) &data_part1[0], sizeof (data_part1));
     re_ca_uart_payload_t payload = {0};
     re_ca_uart_decode_ExpectAndReturn ( (uint8_t *) &data_part1[0],
                                         (re_ca_uart_payload_t *) &payload, RE_ERROR_DECODING_CRC);
-    for(size_t ii = 0; ii < sizeof(data_part1); ii++)
+
+    for (size_t ii = 0; ii < sizeof (data_part1); ii++)
     {
         rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     }
-    
+
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
-    
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
-    
     re_ca_uart_payload_t payload_dec = {0};
     re_ca_uart_decode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
