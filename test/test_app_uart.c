@@ -225,7 +225,7 @@ void test_app_uart_parser_get_device_id_ok (void)
     re_ca_uart_decode_ExpectAndReturn ( (uint8_t *) &data[0],
                                         (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
     re_ca_uart_decode_ReturnThruPtr_cmd ( (re_ca_uart_payload_t *) &expect_payload);
-    rl_ringbuffer_empty_ExpectAnyArgsAndReturn (true);
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
     ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_comm_id_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);

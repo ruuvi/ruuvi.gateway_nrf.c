@@ -187,7 +187,7 @@ void app_uart_parser (void * p_data, uint16_t data_len)
     ri_comm_message_t msg = {0};
     re_ca_uart_payload_t uart_payload = {0};
     uint8_t dequeue_data[APP_UART_RING_DEQ_BUFFER_MAX_LEN] = {0};
-    rl_status_t status;
+    rl_status_t status = RL_SUCCESS;
     size_t index = 0;
     err_code = re_ca_uart_decode ( (uint8_t *) p_data, &uart_payload);
 
