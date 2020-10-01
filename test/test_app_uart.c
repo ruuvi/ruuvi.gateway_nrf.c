@@ -4,6 +4,8 @@
 #include "mock_app_ble.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
+#include "mock_ruuvi_interface_communication.h"
+#include "mock_ruuvi_interface_communication_radio.h"
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_endpoint_ca_uart.h"
 #include "mock_ruuvi_interface_communication_uart.h"
@@ -202,6 +204,35 @@ void test_app_uart_send_broadcast_error_size (void)
  * @note parameters are not const to maintain compatibility with the event handler
  *       signature.
  **/
+
+void test_app_uart_parser_get_device_id_ok (void)
+{
+    uint8_t data[] =
+    {
+        RE_CA_UART_STX,
+        0 + CMD_IN_LEN,
+        RE_CA_UART_GET_DEVICE_ID,
+        0x36U, 0x8EU, //crc
+        RE_CA_UART_ETX
+    };
+    ri_scheduler_event_put_ExpectAndReturn (data, 6, &app_uart_parser,
+                                            RD_SUCCESS);
+    rd_error_check_ExpectAnyArgs();
+    app_uart_isr (RI_COMM_RECEIVED,
+                  (void *) &data[0], 6);
+    re_ca_uart_payload_t payload = {0};
+    re_ca_uart_payload_t expect_payload = {.cmd = RE_CA_UART_GET_DEVICE_ID};
+    re_ca_uart_decode_ExpectAndReturn ( (uint8_t *) &data[0],
+                                        (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
+    re_ca_uart_decode_ReturnThruPtr_cmd ( (re_ca_uart_payload_t *) &expect_payload);
+    rl_ringbuffer_empty_ExpectAnyArgsAndReturn (true);
+    ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_comm_id_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
+    app_uart_parser ( (void *) &data[0], 6);
+    TEST_ASSERT (1 == mock_sends);
+}
 
 void test_app_uart_isr_received (void)
 {
@@ -421,7 +452,6 @@ void test_app_uart_parser_clean_old (void)
     app_uart_parser ( (void *) data, 8);
     TEST_ASSERT (1 == mock_sends);
 }
-
 
 void test_app_uart_parser_part_1_ok (void)
 {
