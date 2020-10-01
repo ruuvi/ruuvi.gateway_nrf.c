@@ -23,12 +23,7 @@ jobs:
     - name: Checkout submodules
       uses: textbook/git-checkout-submodule-action@2.1.1
 
-
-    # Install Doxygen
-    - name: Install Doxygen
-      run: sudo apt-get install -qq doxygen 
-
-    # Generate doxygen folder to put PVS data in
+    # Generate folder for PVS report
     - name: mkdir
       run: mkdir -p doxygen/html
 
@@ -46,13 +41,8 @@ jobs:
     # Error if pvs.error has content
     - name: Check PVS has no errors
       run: |
-          if [[ $(wc -l <doxygen.error) -gt 1 ]]
+          if [[ $(wc -l < pvs.error) -gt 1 ]]
           then
               cat pvs.error
               exit 1
           fi
-
-    - name: Install SSH Client 🔑
-      uses: webfactory/ssh-agent@v0.2.0
-      with:
-          ssh-private-key: ${{ secrets.DEPLOY_KEY }}

@@ -187,22 +187,23 @@ void app_uart_parser (void * p_data, uint16_t data_len)
     ri_comm_message_t msg = {0};
     re_ca_uart_payload_t uart_payload = {0};
     uint8_t dequeue_data[APP_UART_RING_DEQ_BUFFER_MAX_LEN] = {0};
-    rl_status_t status;
+    rl_status_t status = RL_SUCCESS;
     size_t index = 0;
     err_code = re_ca_uart_decode ( (uint8_t *) p_data, &uart_payload);
 
     if (RD_SUCCESS == err_code)
     {
-        if (false == rl_ringbuffer_empty (&m_uart_ring_buffer))
+        do
         {
-            do
+            uint8_t * p_dequeue_data = NULL;
+            status = rl_ringbuffer_dequeue (&m_uart_ring_buffer,
+                                            &p_dequeue_data);
+
+            if (NULL != p_dequeue_data)
             {
-                uint8_t * p_dequeue_data;
-                status = rl_ringbuffer_dequeue (&m_uart_ring_buffer,
-                                                &p_dequeue_data);
                 dequeue_data[index++] = *p_dequeue_data;
-            } while (RL_SUCCESS == status);
-        }
+            }
+        } while (RL_SUCCESS == status);
     }
     else
     {
@@ -218,17 +219,21 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
         do
         {
-            uint8_t * p_dequeue_data;
+            uint8_t * p_dequeue_data = NULL;
             status = rl_ringbuffer_dequeue (&m_uart_ring_buffer,
                                             &p_dequeue_data);
-            dequeue_data[index++] = *p_dequeue_data;
+
+            if (NULL != p_dequeue_data)
+            {
+                dequeue_data[index++] = *p_dequeue_data;
+            }
         } while (RL_SUCCESS == status);
 
         err_code = re_ca_uart_decode ( (uint8_t *) dequeue_data, &uart_payload);
 
         if (RD_SUCCESS != err_code)
         {
-            size_t len = index - 1;
+            size_t len = index;
             index = 0;
 
             do
@@ -315,6 +320,7 @@ rd_status_t app_uart_isr (ri_comm_evt_t evt,
             break;
 
         default:
+            // No action needed on connect/disconnect events.
             break;
     }
 
