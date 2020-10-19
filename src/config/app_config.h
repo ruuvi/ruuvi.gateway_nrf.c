@@ -112,7 +112,7 @@
  * @brief Enable Ruuvi Flash interface on boards with enough RAM & Flash
  */
 #ifndef RI_FLASH_ENABLED
-#   define RI_FLASH_ENABLED (RB_APP_PAGES > 0U)
+#   define RI_FLASH_ENABLED (0U)
 #endif
 
 /** @brief Enable Ruuvi led tasks. */
