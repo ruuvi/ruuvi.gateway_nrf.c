@@ -354,3 +354,27 @@ void test_app_ble_on_scan_isr_unknown (void)
     err_code |= on_scan_isr (RI_COMM_SENT, NULL, 0);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
+
+void test_repeat_adv_ok (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    app_uart_send_broadcast_ExpectAndReturn (&mock_scan, RD_SUCCESS);
+    ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+    repeat_adv (&mock_scan, mock_scan_len);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_repeat_adv_incorrect_len (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    repeat_adv (&mock_scan, (mock_scan_len - 1));
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_repeat_adv_send_error (void)
+{
+    rd_status_t err_code = RD_ERROR_DATA_SIZE;
+    app_uart_send_broadcast_ExpectAndReturn (NULL, RD_ERROR_DATA_SIZE);
+    repeat_adv (NULL, mock_scan_len);
+    TEST_ASSERT (RD_ERROR_DATA_SIZE == err_code);
+}
