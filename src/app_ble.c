@@ -31,7 +31,7 @@
 #define RB_BLE_DEFAULT_2MBIT_STATE      false                   //!< Default 2mbit state
 #define RB_BLE_DEFAULT_FLTR_STATE       true                    //!< Default filter id state
 #define RB_BLE_DEFAULT_MANUFACTURER_ID  RB_BLE_MANUFACTURER_ID  //!< Default id
-#define RB_BLE_DEFAULT_MODULATION       RI_RADIO_BLE_125KBPS    //!< Default modulation
+#define RB_BLE_DEFAULT_MODULATION       RI_RADIO_BLE_2MBPS      //!< Default modulation
 
 static inline void LOG (const char * const msg)
 {
