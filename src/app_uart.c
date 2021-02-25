@@ -23,13 +23,13 @@
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_communication_uart.h"
 #include "ruuvi_library_ringbuffer.h"
-#include <inttypes.h>
 
 #include <string.h>
 #include <stdio.h>
 
 #define APP_UART_RING_BUFFER_MAX_LEN     (128U) //!< Ring buffer len       
 #define APP_UART_RING_DEQ_BUFFER_MAX_LEN (APP_UART_RING_BUFFER_MAX_LEN >>1) //!< Decode buffer len
+#define APP_BLE_TYPE_MANUFACTURER_SPECIFIC_DATA   0xFF
 
 #ifndef CEEDLING
 static bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock);
@@ -398,6 +398,7 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
     rd_status_t err_code = RD_SUCCESS;
     re_status_t re_code = RE_SUCCESS;
     uint16_t manuf_id;
+    int ii;
 
     if (NULL == scan)
     {
@@ -407,8 +408,16 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
     {
         memcpy (adv.params.adv.mac, scan->addr, sizeof (adv.params.adv.mac));
         memcpy (adv.params.adv.adv, scan->data, scan->data_len);
-        manuf_id = scan->data[5];
-        manuf_id |= scan->data[6] << 8;
+
+        for (ii = 0; ii < scan->data_len; ii++)
+        {
+            if (scan->data[ii] == APP_BLE_TYPE_MANUFACTURER_SPECIFIC_DATA)
+            {
+                manuf_id = scan->data[ii + 1];
+                manuf_id |= scan->data[ii + 2] << 8;
+            }
+        }
+
         adv.params.adv.rssi_db = scan->rssi;
         adv.params.adv.adv_len = scan->data_len;
         adv.cmd = RE_CA_UART_ADV_RPRT;
@@ -429,7 +438,7 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
             }
             else
             {
-                err_code |= RD_ERROR_INVALID_PARAM;
+                err_code |= RD_ERROR_INVALID_DATA;
             }
         }
         else
