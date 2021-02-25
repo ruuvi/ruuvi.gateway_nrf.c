@@ -432,7 +432,7 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
             {
                 err_code |= m_uart.send (&msg);
             }
-            else if ( (!adv.params.all_params.fltr_id.id))
+            else if ( (!adv.params.all_params.bools.fltr_tags.state))
             {
                 err_code |= m_uart.send (&msg);
             }
