@@ -23,6 +23,7 @@
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_communication_uart.h"
 #include "ruuvi_library_ringbuffer.h"
+#include <inttypes.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -396,6 +397,7 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
     ri_comm_message_t msg = {0};
     rd_status_t err_code = RD_SUCCESS;
     re_status_t re_code = RE_SUCCESS;
+    uint16_t manuf_id;
 
     if (NULL == scan)
     {
@@ -405,6 +407,8 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
     {
         memcpy (adv.params.adv.mac, scan->addr, sizeof (adv.params.adv.mac));
         memcpy (adv.params.adv.adv, scan->data, scan->data_len);
+        manuf_id = scan->data[5];
+        manuf_id |= scan->data[6] << 8;
         adv.params.adv.rssi_db = scan->rssi;
         adv.params.adv.adv_len = scan->data_len;
         adv.cmd = RE_CA_UART_ADV_RPRT;
@@ -414,7 +418,19 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
 
         if (RE_SUCCESS == re_code)
         {
-            err_code |= m_uart.send (&msg);
+            if ( (adv.params.all_params.bools.fltr_tags.state)
+                    && (manuf_id == RB_BLE_MANUFACTURER_ID))
+            {
+                err_code |= m_uart.send (&msg);
+            }
+            else if ( (!adv.params.all_params.fltr_id.id))
+            {
+                err_code |= m_uart.send (&msg);
+            }
+            else
+            {
+                err_code |= RD_ERROR_INVALID_PARAM;
+            }
         }
         else
         {
