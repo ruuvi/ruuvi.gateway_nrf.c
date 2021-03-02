@@ -3,7 +3,7 @@
 #include "app_uart.h"
 #include "mock_app_ble.h"
 #include "ruuvi_boards.h"
-#include "ruuvi_interface_communication_ble_advertising.h"
+#include "mock_ruuvi_interface_communication_ble_advertising.h"
 #include "mock_ruuvi_interface_communication.h"
 #include "mock_ruuvi_interface_communication_radio.h"
 #include "mock_ruuvi_driver_error.h"
@@ -34,6 +34,7 @@ const uint8_t mock_data[] =
     0x20U, 0xA4U, 0x56U, 0xF0U, 0x30U, 0xE5U, 0xC9U, 0x44U, 0x54U, 0x29U, 0xE3U,
     0x8DU
 };
+const uint16_t mock_manuf_id = 0x0499;
 
 static uint8_t t_ring_buffer[128] = {0};
 static bool t_buffer_wlock = false;
@@ -145,6 +146,8 @@ void test_app_uart_send_broadcast_ok (void)
     scan.data_len = sizeof (mock_data);
     test_app_uart_init_ok();
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_adv_parse_manuid_ExpectAnyArgsAndReturn(mock_manuf_id);
+    app_ble_manufacturer_filter_enabled_ExpectAndReturn(true);
     err_code |= app_uart_send_broadcast (&scan);
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (1 == mock_sends);
@@ -169,6 +172,7 @@ void test_app_uart_send_broadcast_encoding_error (void)
     scan.data_len = sizeof (mock_data);
     test_app_uart_init_ok();
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_ERROR_INTERNAL);
+    ri_adv_parse_manuid_ExpectAnyArgsAndReturn(mock_manuf_id);
     err_code |= app_uart_send_broadcast (&scan);
     TEST_ASSERT (RD_ERROR_INVALID_DATA == err_code);
     TEST_ASSERT (0 == mock_sends);
