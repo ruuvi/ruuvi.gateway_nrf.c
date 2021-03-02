@@ -146,8 +146,8 @@ void test_app_uart_send_broadcast_ok (void)
     scan.data_len = sizeof (mock_data);
     test_app_uart_init_ok();
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    ri_adv_parse_manuid_ExpectAnyArgsAndReturn(mock_manuf_id);
-    app_ble_manufacturer_filter_enabled_ExpectAndReturn(true);
+    ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
+    app_ble_manufacturer_filter_enabled_ExpectAndReturn (true);
     err_code |= app_uart_send_broadcast (&scan);
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (1 == mock_sends);
@@ -172,7 +172,7 @@ void test_app_uart_send_broadcast_encoding_error (void)
     scan.data_len = sizeof (mock_data);
     test_app_uart_init_ok();
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_ERROR_INTERNAL);
-    ri_adv_parse_manuid_ExpectAnyArgsAndReturn(mock_manuf_id);
+    ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
     err_code |= app_uart_send_broadcast (&scan);
     TEST_ASSERT (RD_ERROR_INVALID_DATA == err_code);
     TEST_ASSERT (0 == mock_sends);
