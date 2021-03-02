@@ -127,6 +127,11 @@ rd_status_t app_ble_manufacturer_filter_set (const bool state)
     return err_code;
 }
 
+bool app_ble_manufacturer_filter_enabled (void)
+{
+    return m_scan_params.manufacturer_filter_enabled;
+}
+
 rd_status_t app_ble_manufacturer_id_set (const uint16_t id)
 {
     rd_status_t  err_code = RD_SUCCESS;
