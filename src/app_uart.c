@@ -413,7 +413,7 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
         msg.data_length = sizeof (msg);
         re_code = re_ca_uart_encode (msg.data, &msg.data_length, &adv);
         msg.repeat_count = 1;
-        manuf_id = ri_comm_ble_adv_parse_manuid (scan->data, scan->data_len);
+        manuf_id = ri_adv_parse_manuid (scan->data, scan->data_len);
 
         if (RE_SUCCESS == re_code)
         {
