@@ -23,6 +23,7 @@
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_communication_uart.h"
 #include "ruuvi_library_ringbuffer.h"
+#include "ble_advdata.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -248,6 +249,7 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
     if (RD_SUCCESS == err_code)
     {
+      printf("company_filter: %d\r\r", uart_payload.params.all_params.bools.fltr_tags);
         if (RE_CA_UART_GET_DEVICE_ID == uart_payload.cmd)
         {
             uint64_t mac;
@@ -397,8 +399,9 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
     ri_comm_message_t msg = {0};
     rd_status_t err_code = RD_SUCCESS;
     re_status_t re_code = RE_SUCCESS;
-    uint16_t manuf_id;
-    int ii;
+    uint16_t * manuf_id;
+    manuf_id = ble_advdata_parse (scan->data, scan->data_len,
+                                    BLE_GAP_AD_TYPE_MANUFACTURER_SPECIFIC_DATA);
 
     if (NULL == scan)
     {
@@ -408,16 +411,6 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
     {
         memcpy (adv.params.adv.mac, scan->addr, sizeof (adv.params.adv.mac));
         memcpy (adv.params.adv.adv, scan->data, scan->data_len);
-
-        for (ii = 0; ii < scan->data_len; ii++)
-        {
-            if (scan->data[ii] == APP_BLE_TYPE_MANUFACTURER_SPECIFIC_DATA)
-            {
-                manuf_id = scan->data[ii + 1];
-                manuf_id |= scan->data[ii + 2] << 8;
-            }
-        }
-
         adv.params.adv.rssi_db = scan->rssi;
         adv.params.adv.adv_len = scan->data_len;
         adv.cmd = RE_CA_UART_ADV_RPRT;
@@ -428,7 +421,7 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
         if (RE_SUCCESS == re_code)
         {
             if ( (adv.params.all_params.bools.fltr_tags.state)
-                    && (manuf_id == RB_BLE_MANUFACTURER_ID))
+                    && (*manuf_id == RB_BLE_MANUFACTURER_ID))
             {
                 err_code |= m_uart.send (&msg);
             }
