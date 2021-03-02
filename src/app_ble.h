@@ -93,7 +93,7 @@ rd_status_t app_ble_scan_start (void);
  *
  * Function returns the status of enabled manufacturer ID scan filter.
  *
- * @retbal TRUE If filter is enabled.
+ * @retval TRUE If filter is enabled.
  */
 bool app_ble_manufacturer_filter_enabled (void);
 
