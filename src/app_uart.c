@@ -394,6 +394,7 @@ rd_status_t app_uart_init (void)
 rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
 {
     re_ca_uart_payload_t adv = {0};
+    ri_adv_scan_t m_scan = {0};
     ri_comm_message_t msg = {0};
     rd_status_t err_code = RD_SUCCESS;
     re_status_t re_code = RE_SUCCESS;
@@ -407,13 +408,15 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
     {
         memcpy (adv.params.adv.mac, scan->addr, sizeof (adv.params.adv.mac));
         memcpy (adv.params.adv.adv, scan->data, scan->data_len);
+        memcpy (m_scan.data, scan->data, scan->data_len);
+        memcpy (&m_scan.data_len, &scan->data_len, sizeof (size_t));
         adv.params.adv.rssi_db = scan->rssi;
         adv.params.adv.adv_len = scan->data_len;
         adv.cmd = RE_CA_UART_ADV_RPRT;
         msg.data_length = sizeof (msg);
         re_code = re_ca_uart_encode (msg.data, &msg.data_length, &adv);
         msg.repeat_count = 1;
-        manuf_id = ri_adv_parse_manuid (scan->data, scan->data_len);
+        manuf_id = ri_adv_parse_manuid (m_scan.data, m_scan.data_len);
 
         if (RE_SUCCESS == re_code)
         {
