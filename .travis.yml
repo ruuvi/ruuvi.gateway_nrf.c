@@ -1,7 +1,7 @@
 language: c
 
 os: linux
-dist: trusty
+dist: bionic
 # Use full depth for SonarCloud
 git:
   depth: false 
