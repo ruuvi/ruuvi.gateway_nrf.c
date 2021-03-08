@@ -87,6 +87,16 @@ rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
  */
 rd_status_t app_ble_scan_start (void);
 
+
+/**
+ * @brief Check enabled Manufacturer ID filter.
+ *
+ * Function returns the status of enabled manufacturer ID scan filter.
+ *
+ * @retval TRUE If filter is enabled.
+ */
+bool app_ble_manufacturer_filter_enabled (void);
+
 #ifdef CEEDLING
 rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, // -V2009
                          size_t data_len);

@@ -208,6 +208,8 @@
 #define RI_BME280_ENABLED 0
 /** @brief Disable SHTCX code explicitly */
 #define RI_SHTCX_ENABLED 0
+/** @brief Disable DPS310 code explicitly */
+#define RI_DPS310_ENABLED 0
 
 /** @} */
 #endif

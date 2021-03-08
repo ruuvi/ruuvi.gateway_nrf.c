@@ -29,6 +29,7 @@
 
 #define APP_UART_RING_BUFFER_MAX_LEN     (128U) //!< Ring buffer len       
 #define APP_UART_RING_DEQ_BUFFER_MAX_LEN (APP_UART_RING_BUFFER_MAX_LEN >>1) //!< Decode buffer len
+#define APP_BLE_TYPE_MANUFACTURER_SPECIFIC_DATA   0xFF
 
 #ifndef CEEDLING
 static bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock);
@@ -393,9 +394,11 @@ rd_status_t app_uart_init (void)
 rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
 {
     re_ca_uart_payload_t adv = {0};
+    ri_adv_scan_t m_scan = {0};
     ri_comm_message_t msg = {0};
     rd_status_t err_code = RD_SUCCESS;
     re_status_t re_code = RE_SUCCESS;
+    uint16_t manuf_id;
 
     if (NULL == scan)
     {
@@ -405,16 +408,31 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
     {
         memcpy (adv.params.adv.mac, scan->addr, sizeof (adv.params.adv.mac));
         memcpy (adv.params.adv.adv, scan->data, scan->data_len);
+        memcpy (m_scan.data, scan->data, scan->data_len);
+        memcpy (&m_scan.data_len, &scan->data_len, sizeof (size_t));
         adv.params.adv.rssi_db = scan->rssi;
         adv.params.adv.adv_len = scan->data_len;
         adv.cmd = RE_CA_UART_ADV_RPRT;
         msg.data_length = sizeof (msg);
         re_code = re_ca_uart_encode (msg.data, &msg.data_length, &adv);
         msg.repeat_count = 1;
+        manuf_id = ri_adv_parse_manuid (m_scan.data, m_scan.data_len);
 
         if (RE_SUCCESS == re_code)
         {
-            err_code |= m_uart.send (&msg);
+            if ( (app_ble_manufacturer_filter_enabled())
+                    && (manuf_id == RB_BLE_MANUFACTURER_ID))
+            {
+                err_code |= m_uart.send (&msg);
+            }
+            else if ( (!app_ble_manufacturer_filter_enabled()))
+            {
+                err_code |= m_uart.send (&msg);
+            }
+            else
+            {
+                err_code |= RD_ERROR_INVALID_DATA;
+            }
         }
         else
         {
