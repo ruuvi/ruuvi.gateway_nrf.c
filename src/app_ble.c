@@ -21,6 +21,7 @@
 #include "ruuvi_task_advertisement.h"
 
 #include <string.h>
+#include <stdio.h>
 
 #define RB_BLE_UNKNOWN_MANUFACTURER_ID  0xFFFF                  //!< Unknown id
 #define RB_BLE_DEFAULT_CH37_STATE       0                       //!< Default channel 37 state
@@ -178,6 +179,11 @@ rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
             {
                 m_scan_params.modulation_125kbps_enabled = enable;
             }
+            else if (!m_scan_params.modulation_125kbps_enabled
+                     && !m_scan_params.modulation_1mbit_enabled && !m_scan_params.modulation_2mbit_enabled)
+            {
+                app_ble_scan_stop();
+            }
             else
             {
                 err_code |= RD_ERROR_NOT_SUPPORTED;
@@ -187,10 +193,24 @@ rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
 
         case RI_RADIO_BLE_1MBPS:
             m_scan_params.modulation_1mbit_enabled = enable;
+
+            if (!m_scan_params.modulation_125kbps_enabled && !m_scan_params.modulation_1mbit_enabled
+                    && !m_scan_params.modulation_2mbit_enabled)
+            {
+                app_ble_scan_stop();
+            }
+
             break;
 
         case RI_RADIO_BLE_2MBPS:
             m_scan_params.modulation_2mbit_enabled = enable;
+
+            if (!m_scan_params.modulation_125kbps_enabled && !m_scan_params.modulation_1mbit_enabled
+                    && !m_scan_params.modulation_2mbit_enabled)
+            {
+                app_ble_scan_stop();
+            }
+
             break;
 
         default:
@@ -309,5 +329,13 @@ rd_status_t app_ble_scan_start (void)
         }
     }
 
+    return err_code;
+}
+
+rd_status_t app_ble_scan_stop (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    err_code |= rt_adv_uninit();
+    err_code |= ri_radio_uninit();
     return err_code;
 }
