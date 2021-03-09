@@ -21,6 +21,7 @@
 #include "ruuvi_task_advertisement.h"
 
 #include <string.h>
+#include <stdio.h>
 
 #define RB_BLE_UNKNOWN_MANUFACTURER_ID  0xFFFF                  //!< Unknown id
 #define RB_BLE_DEFAULT_CH37_STATE       0                       //!< Default channel 37 state
@@ -42,6 +43,8 @@ static inline void LOGD (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_DEBUG, msg);
 }
+
+static uint8_t m_scan_enable;
 
 
 static app_ble_scan_t m_scan_params =
@@ -177,6 +180,7 @@ rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
             if (RB_BLE_CODED_SUPPORTED)
             {
                 m_scan_params.modulation_125kbps_enabled = enable;
+                m_scan_enable ^= (-enable ^ m_scan_enable) & (1UL << 0);
             }
             else
             {
@@ -187,10 +191,12 @@ rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
 
         case RI_RADIO_BLE_1MBPS:
             m_scan_params.modulation_1mbit_enabled = enable;
+            m_scan_enable ^= (-enable ^ m_scan_enable) & (1UL << 1);
             break;
 
         case RI_RADIO_BLE_2MBPS:
             m_scan_params.modulation_2mbit_enabled = enable;
+            m_scan_enable ^= (-enable ^ m_scan_enable) & (1UL << 2);
             break;
 
         default:
@@ -280,34 +286,49 @@ static rd_status_t pa_lna_ctrl (void)
 rd_status_t app_ble_scan_start (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    err_code |= rt_adv_uninit();
-    err_code |= ri_radio_uninit();
-    rt_adv_init_t adv_params =
-    {
-        .channels = m_scan_params.scan_channels,
-        .adv_interval_ms = (1000U), //!< Unused
-        .adv_pwr_dbm     = (0),     //!< Unused
-        .manufacturer_id = m_scan_params.manufacturer_id //!< default
-    };
 
-    if (!m_scan_params.manufacturer_filter_enabled)
+    if (m_scan_enable)
     {
-        adv_params.manufacturer_id = RB_BLE_UNKNOWN_MANUFACTURER_ID;
-    }
+        err_code |= rt_adv_uninit();
+        err_code |= ri_radio_uninit();
+        rt_adv_init_t adv_params =
+        {
+            .channels = m_scan_params.scan_channels,
+            .adv_interval_ms = (1000U), //!< Unused
+            .adv_pwr_dbm     = (0),     //!< Unused
+            .manufacturer_id = m_scan_params.manufacturer_id //!< default
+        };
 
-    if (RD_SUCCESS == err_code)
-    {
-        next_modulation_select();
-        err_code |= pa_lna_ctrl();
-        err_code |= ri_radio_init (m_scan_params.current_modulation);
+        if (!m_scan_params.manufacturer_filter_enabled)
+        {
+            adv_params.manufacturer_id = RB_BLE_UNKNOWN_MANUFACTURER_ID;
+        }
 
         if (RD_SUCCESS == err_code)
         {
-            err_code |= rt_adv_init (&adv_params);
-            err_code |= rt_adv_scan_start (&on_scan_isr);
-            err_code |= ri_watchdog_feed ();
+            next_modulation_select();
+            err_code |= pa_lna_ctrl();
+            err_code |= ri_radio_init (m_scan_params.current_modulation);
+
+            if (RD_SUCCESS == err_code)
+            {
+                err_code |= rt_adv_init (&adv_params);
+                err_code |= rt_adv_scan_start (&on_scan_isr);
+                err_code |= ri_watchdog_feed ();
+            }
         }
     }
+    else
+    {
+        err_code |= app_ble_scan_stop();
+    }
 
+    return err_code;
+}
+
+rd_status_t app_ble_scan_stop (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    err_code |= rt_adv_scan_stop();
     return err_code;
 }
