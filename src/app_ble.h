@@ -79,8 +79,10 @@ rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
 /**
  * @brief Start a scan sequence.
  *
- * Runs through enabled modulations and channels, automatically starting
- * on next after one has finished. Calls given scan callback on data.
+ * Checks if any PHY is enabled. Runs through enabled modulations and channels,
+ * automatically starting on next after one has finished. Calls given scan
+ * callback on data. If all PHYs are disabled, calls app_ble_scan_stop() to
+ * stop scanning process until any PHY is reactivated.
  *
  * @retval RD_SUCCESS on success.
  *
@@ -97,6 +99,14 @@ rd_status_t app_ble_scan_start (void);
  */
 bool app_ble_manufacturer_filter_enabled (void);
 
+/**
+ * @brief Stop a scan sequence.
+ *
+ * Aborts the scanning process.
+ *
+ * @retval RD_SUCCESS on success.
+ * @retval RD_ERROR_INVALID_STATE if scan is not initialized.
+ */
 rd_status_t app_ble_scan_stop (void);
 
 #ifdef CEEDLING
