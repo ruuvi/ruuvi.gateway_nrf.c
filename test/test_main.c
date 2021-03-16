@@ -17,6 +17,8 @@
 #include "mock_ruuvi_interface_communication_radio.h"
 #include "mock_ruuvi_task_led.h"
 
+static const ri_gpio_state_t led = 17U;
+
 void setUp (void)
 {
     ri_log_Ignore();
@@ -37,7 +39,7 @@ static void leds_expect (void)
                                           sizeof (leds_active) / sizeof (leds_active[0]),
                                           sizeof (led_list) / sizeof (led_list[0]),
                                           RD_SUCCESS);
-    rt_led_activity_led_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
+    rt_led_write_ExpectAndReturn (led, true, RD_SUCCESS);
 }
 
 // TODO: Test on nRF52832 boards
@@ -51,7 +53,6 @@ void test_app_main (void)
     ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
     leds_expect();
     ri_yield_low_power_enable_ExpectAndReturn (true, RD_SUCCESS);
-    ri_yield_indication_set_Expect (&rt_led_activity_indicate);
     ri_radio_supports_ExpectAndReturn (RI_RADIO_BLE_125KBPS, true);
     app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_125KBPS, true, RD_SUCCESS);
     app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_2MBPS, true, RD_SUCCESS);

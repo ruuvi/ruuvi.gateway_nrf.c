@@ -34,7 +34,7 @@ static rd_status_t leds_init (void)
     static const ri_gpio_id_t led_list[] = RB_LEDS_LIST;
     static const ri_gpio_state_t leds_active[] = RB_LEDS_ACTIVE_STATE;
     err_code |= rt_led_init (led_list, leds_active, sizeof (led_list) / sizeof (led_list[0]));
-    err_code |= rt_led_activity_led_set (RB_LED_ACTIVITY);
+    err_code |= rt_led_write (RB_LED_ACTIVITY, true);
     return err_code;
 }
 
@@ -75,7 +75,6 @@ static void setup (void)
     // Requires timers
     err_code |= ri_yield_low_power_enable (true);
     // Requires LEDs
-    ri_yield_indication_set (&rt_led_activity_indicate);
     modulations_setup();
     err_code |= app_uart_init();
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
