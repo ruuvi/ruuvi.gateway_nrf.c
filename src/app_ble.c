@@ -19,9 +19,9 @@
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_task_advertisement.h"
+#include "ruuvi_task_led.h"
 
 #include <string.h>
-#include <stdio.h>
 
 #define RB_BLE_UNKNOWN_MANUFACTURER_ID  0xFFFF                  //!< Unknown id
 #define RB_BLE_DEFAULT_CH37_STATE       0                       //!< Default channel 37 state
@@ -73,6 +73,7 @@ void repeat_adv (void * p_data, uint16_t data_len)
 
         if (RD_SUCCESS == err_code)
         {
+            rt_led_blink_once (RB_LED_ACTIVITY, 100);
             ri_watchdog_feed();
         }
     }
