@@ -447,4 +447,27 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
     return err_code;
 }
 
+rd_status_t app_uart_poll_configuration (void)
+{
+    re_ca_uart_payload_t cfg = {0};
+    ri_comm_message_t msg = {0};
+    rd_status_t err_code = RD_SUCCESS;
+    re_status_t re_code = RE_SUCCESS;
+    msg.data_length = sizeof (msg);
+    cfg.cmd = RE_CA_UART_GET_ALL;
+    re_code = re_ca_uart_encode (msg.data, &msg.data_length, &cfg);
+    msg.repeat_count = RI_COMM_MSG_REPEAT_FOREVER;
+
+    if (RE_SUCCESS == re_code)
+    {
+        err_code |= m_uart.send (&msg);
+    }
+    else
+    {
+        err_code |= RD_ERROR_INVALID_DATA;
+    }
+
+
+}
+
 /** @} */

@@ -58,5 +58,7 @@ rd_status_t app_uart_init (void);
  */
 rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan);
 
+rd_status_t app_uart_poll_configuration (void);
+
 /** @} */
 #endif
