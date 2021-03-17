@@ -67,7 +67,7 @@ jobs:
         export SONAR_SCANNER_OPTS="-server"
         sonar-scanner \
           -Dsonar.organization=ruuvi \
-          -Dsonar.projectKey=ruuvi.gateway_nrf.c \
+          -Dsonar.projectKey=ruuvi_ruuvi.gateway_nrf.c \
           -Dsonar.sources=./src \
           -Dsonar.cfamily.build-wrapper-output=bw-output \
           -Dsonar.cfamily.gcov.reportsPath=. \
