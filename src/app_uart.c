@@ -454,7 +454,7 @@ rd_status_t app_uart_poll_configuration (void)
     rd_status_t err_code = RD_SUCCESS;
     re_status_t re_code = RE_SUCCESS;
     msg.data_length = sizeof (msg);
-    cfg.cmd = RE_CA_UART_GET_ALL;
+    cfg.cmd = RE_CA_UART_SET_ALL;
     re_code = re_ca_uart_encode (msg.data, &msg.data_length, &cfg);
     msg.repeat_count = RI_COMM_MSG_REPEAT_FOREVER;
 
