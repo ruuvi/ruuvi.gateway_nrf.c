@@ -44,8 +44,11 @@ static inline void LOGD (const char * const msg)
     ri_log (RI_LOG_LEVEL_DEBUG, msg);
 }
 
-static uint8_t m_scan_enable;
-
+static inline bool scan_is_enabled (const app_ble_scan_t * const params)
+{
+    return params->modulation_125kbps_enabled || params->modulation_1mbit_enabled
+           || params->modulation_2mbit_enabled;
+}
 
 static app_ble_scan_t m_scan_params =
 {
@@ -181,7 +184,6 @@ rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
             if (RB_BLE_CODED_SUPPORTED)
             {
                 m_scan_params.modulation_125kbps_enabled = enable;
-                m_scan_enable ^= (-enable ^ m_scan_enable) & (1UL << 0);
             }
             else
             {
@@ -192,12 +194,10 @@ rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
 
         case RI_RADIO_BLE_1MBPS:
             m_scan_params.modulation_1mbit_enabled = enable;
-            m_scan_enable ^= (-enable ^ m_scan_enable) & (1UL << 1);
             break;
 
         case RI_RADIO_BLE_2MBPS:
             m_scan_params.modulation_2mbit_enabled = enable;
-            m_scan_enable ^= (-enable ^ m_scan_enable) & (1UL << 2);
             break;
 
         default:
@@ -288,7 +288,7 @@ rd_status_t app_ble_scan_start (void)
 {
     rd_status_t err_code = RD_SUCCESS;
 
-    if (m_scan_enable)
+    if (scan_is_enabled (&m_scan_params))
     {
         err_code |= rt_adv_uninit();
         err_code |= ri_radio_uninit();
