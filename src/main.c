@@ -77,6 +77,7 @@ static void setup (void)
     // Requires LEDs
     modulations_setup();
     err_code |= app_uart_init();
+    err_code |= app_uart_poll_configuration();
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
 

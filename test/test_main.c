@@ -57,6 +57,7 @@ void test_app_main (void)
     app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_125KBPS, true, RD_SUCCESS);
     app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_2MBPS, true, RD_SUCCESS);
     app_uart_init_ExpectAndReturn (RD_SUCCESS);
+    app_uart_poll_configuration_ExpectAndReturn (RD_SUCCESS);
     app_ble_scan_start_ExpectAndReturn (RD_SUCCESS);
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
     ri_yield_ExpectAndReturn (RD_SUCCESS);

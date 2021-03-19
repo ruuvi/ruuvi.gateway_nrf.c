@@ -193,6 +193,34 @@ void test_app_uart_send_broadcast_error_size (void)
 }
 
 /**
+ * @brief Poll scanning configuration through UART.
+ *
+ * The format is defined by ruuvi.endpoints.c/
+ *
+ * @retval RD_SUCCESS If encoding and queuing data to UART was successful.
+ * @retval RD_ERROR_INVALID_DATA If poll cannot be encoded for any reason.
+ */
+void test_app_uart_poll_configuration_ok (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    test_app_uart_init_ok ();
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_poll_configuration ();
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT (1 == mock_sends);
+}
+
+void test_app_uart_poll_configuration_encoding_error (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    test_app_uart_init_ok ();
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_ERROR_INTERNAL);
+    err_code |= app_uart_poll_configuration ();
+    TEST_ASSERT (RD_ERROR_INVALID_DATA == err_code);
+    TEST_ASSERT (0 == mock_sends);
+}
+
+/**
  * @brief Handle Scan events.
  *
  * Received data is put to scheduler queue, new scan with new PHY is started on timeout.
