@@ -58,6 +58,14 @@ rd_status_t app_uart_init (void);
  */
 rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan);
 
+/**
+ * @brief Poll scanning configuration through UART.
+ *
+ * The format is defined by ruuvi.endpoints.c/
+ *
+ * @retval RD_SUCCESS If encoding and queuing data to UART was successful.
+ * @retval RD_ERROR_INVALID_DATA If poll cannot be encoded for any reason.
+ */
 rd_status_t app_uart_poll_configuration (void);
 
 /** @} */
