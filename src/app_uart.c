@@ -466,6 +466,8 @@ rd_status_t app_uart_poll_configuration (void)
     {
         err_code |= RD_ERROR_INVALID_DATA;
     }
+
+    return err_code;
 }
 
 /** @} */
