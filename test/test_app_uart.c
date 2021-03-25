@@ -10,8 +10,8 @@
 #include "mock_ruuvi_endpoint_ca_uart.h"
 #include "mock_ruuvi_interface_communication_uart.h"
 #include "mock_ruuvi_interface_scheduler.h"
+#include "mock_ruuvi_interface_yield.h"
 #include "mock_ruuvi_interface_watchdog.h"
-#include "mock_ruuvi_interface_scheduler.h"
 #include "mock_ruuvi_library_ringbuffer.h"
 
 #include <string.h>
@@ -40,6 +40,8 @@ static uint8_t t_ring_buffer[128] = {0};
 static bool t_buffer_wlock = false;
 static bool t_buffer_rlock = false;
 
+extern volatile bool m_uart_ack;
+
 static rl_ringbuffer_t t_uart_ring_buffer =
 {
     .head = 0,
@@ -61,11 +63,37 @@ static rd_status_t mock_send (ri_comm_message_t * const msg)
     return RD_SUCCESS;
 }
 
+static rd_status_t dummy_send_success (ri_comm_message_t * const msg)
+{
+    m_uart_ack = true;
+    return RD_SUCCESS;
+}
+
+static rd_status_t dummy_send_fail (ri_comm_message_t * const msg)
+{
+    m_uart_ack = false;
+    return RD_SUCCESS;
+}
+
+
 static ri_comm_channel_t mock_uart =
 {
     .send = &mock_send,
     .on_evt = app_uart_isr
 };
+
+static ri_comm_channel_t dummy_uart_success =
+{
+    .send = &dummy_send_success,
+    .on_evt = app_uart_isr
+};
+
+static ri_comm_channel_t dummy_uart_fail =
+{
+    .send = &dummy_send_fail,
+    .on_evt = app_uart_isr
+};
+
 
 
 void setUp (void)
@@ -203,11 +231,27 @@ void test_app_uart_send_broadcast_error_size (void)
 void test_app_uart_poll_configuration_ok (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    test_app_uart_init_ok ();
+    static ri_uart_init_t config =
+    {
+        .hwfc_enabled = RB_HWFC_ENABLED,
+        .parity_enabled = RB_PARITY_ENABLED,
+        .cts  = RB_UART_CTS_PIN,
+        .rts  = RB_UART_RTS_PIN,
+        .rx   = RB_UART_RX_PIN,
+        .tx   = RB_UART_TX_PIN,
+        .baud = RI_UART_BAUD_115200 //!< XXX hardcoded, should come from board.
+    };
+    ri_uart_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_uart_init_ReturnThruPtr_channel (&dummy_uart_success);
+    ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
+    err_code = app_uart_init ();
+    TEST_ASSERT (RD_SUCCESS == err_code);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
+    ri_yield_ExpectAndReturn (RD_SUCCESS);
     err_code |= app_uart_poll_configuration ();
     TEST_ASSERT (RD_SUCCESS == err_code);
-    TEST_ASSERT (1 == mock_sends);
+    TEST_ASSERT (0 == mock_sends);
 }
 
 void test_app_uart_poll_configuration_encoding_error (void)

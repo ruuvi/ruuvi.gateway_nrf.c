@@ -26,7 +26,7 @@
 
 /** @brief If watchdog is not fed at this interval or faster, reboot. */
 #ifndef APP_WDT_INTERVAL_MS
-#   define APP_WDT_INTERVAL_MS (2U*60U*1000U)
+#   define APP_WDT_INTERVAL_MS (20U*1000U)
 #endif
 
 /** @brief Enable/disable NFC tag functionality. */

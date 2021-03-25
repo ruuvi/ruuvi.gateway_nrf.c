@@ -23,9 +23,9 @@
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_communication_uart.h"
 #include "ruuvi_library_ringbuffer.h"
+#include "ruuvi_interface_yield.h"
 
 #include <string.h>
-#include <stdio.h>
 
 #define APP_UART_RING_BUFFER_MAX_LEN     (128U) //!< Ring buffer len       
 #define APP_UART_RING_DEQ_BUFFER_MAX_LEN (APP_UART_RING_BUFFER_MAX_LEN >>1) //!< Decode buffer len
@@ -39,6 +39,12 @@ static ri_comm_channel_t m_uart; //!< UART communication interface.
 static uint8_t buffer_data[APP_UART_RING_BUFFER_MAX_LEN] = {0};
 static bool buffer_wlock = false;
 static bool buffer_rlock = false;
+
+#ifndef CEEDLING
+static
+#endif
+volatile bool m_uart_ack = false;
+
 static rl_ringbuffer_t m_uart_ring_buffer =
 {
     .head = 0,
@@ -270,6 +276,12 @@ void app_uart_parser (void * p_data, uint16_t data_len)
                 uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
             }
 
+            if (RE_CA_UART_SET_ALL == uart_payload.cmd)
+            {
+                m_uart_ack = true;
+                err_code |= app_ble_scan_start(); // Applies new scanning settings.
+            }
+
             uart_payload.params.ack.cmd = uart_payload.cmd;
             uart_payload.cmd = RE_CA_UART_ACK;
             msg.data_length = sizeof (msg);
@@ -461,6 +473,12 @@ rd_status_t app_uart_poll_configuration (void)
     if (RE_SUCCESS == re_code)
     {
         err_code |= m_uart.send (&msg);
+
+        do
+        {
+            ri_scheduler_execute();
+            ri_yield();
+        } while (!m_uart_ack);
     }
     else
     {

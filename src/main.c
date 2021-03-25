@@ -46,21 +46,6 @@ void on_wdt (void)
     // No action required
 }
 
-static void modulations_setup (void)
-{
-    if (ri_radio_supports (RI_RADIO_BLE_125KBPS))
-    {
-        app_ble_modulation_enable (RI_RADIO_BLE_125KBPS, true);
-    }
-
-    // 2Mbit/s scans primary advertisements at 1 Mbit/s, and
-    // secondary advertisements are scanned on all support PHYs
-    // Therefore 1 Mbit/s scanning should be enabled only if
-    // 2 Mbit/s is not enabled.
-    // app_ble_modulation_enable(RI_RADIO_BLE_1MBPS, true);
-    app_ble_modulation_enable (RI_RADIO_BLE_2MBPS, true);
-}
-
 static void setup (void)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -75,7 +60,6 @@ static void setup (void)
     // Requires timers
     err_code |= ri_yield_low_power_enable (true);
     // Requires LEDs
-    modulations_setup();
     err_code |= app_uart_init();
     err_code |= app_uart_poll_configuration();
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
