@@ -53,9 +53,6 @@ void test_app_main (void)
     ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
     leds_expect();
     ri_yield_low_power_enable_ExpectAndReturn (true, RD_SUCCESS);
-    ri_radio_supports_ExpectAndReturn (RI_RADIO_BLE_125KBPS, true);
-    app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_125KBPS, true, RD_SUCCESS);
-    app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_2MBPS, true, RD_SUCCESS);
     app_uart_init_ExpectAndReturn (RD_SUCCESS);
     app_uart_poll_configuration_ExpectAndReturn (RD_SUCCESS);
     app_ble_scan_start_ExpectAndReturn (RD_SUCCESS);

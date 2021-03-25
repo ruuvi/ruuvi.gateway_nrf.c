@@ -279,7 +279,7 @@ void app_uart_parser (void * p_data, uint16_t data_len)
             if (RE_CA_UART_SET_ALL == uart_payload.cmd)
             {
                 m_uart_ack = true;
-                err_code |= app_ble_scan_start();
+                err_code |= app_ble_scan_start(); // Applies new scanning settings.
             }
 
             uart_payload.params.ack.cmd = uart_payload.cmd;
