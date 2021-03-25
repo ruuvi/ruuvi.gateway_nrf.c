@@ -39,7 +39,12 @@ static ri_comm_channel_t m_uart; //!< UART communication interface.
 static uint8_t buffer_data[APP_UART_RING_BUFFER_MAX_LEN] = {0};
 static bool buffer_wlock = false;
 static bool buffer_rlock = false;
-static volatile bool m_uart_ack = false;
+
+#ifndef CEEDLING
+static
+#endif
+volatile bool m_uart_ack = false;
+
 static rl_ringbuffer_t m_uart_ring_buffer =
 {
     .head = 0,
@@ -468,17 +473,17 @@ rd_status_t app_uart_poll_configuration (void)
     if (RE_SUCCESS == re_code)
     {
         err_code |= m_uart.send (&msg);
+
+        do
+        {
+            ri_scheduler_execute();
+            ri_yield();
+        } while (!m_uart_ack);
     }
     else
     {
         err_code |= RD_ERROR_INVALID_DATA;
     }
-
-    do
-    {
-        ri_scheduler_execute();
-        ri_yield();
-    } while (!m_uart_ack);
 
     return err_code;
 }
