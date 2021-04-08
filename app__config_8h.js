@@ -10,6 +10,7 @@ var app__config_8h =
     [ "RI_ADV_EXTENDED_ENABLED", "group___s_d_k15.html#ga0c0f134a6b398043ba58a58f491fc33d", null ],
     [ "RI_BME280_ENABLED", "group___s_d_k15.html#gade28ed24c83aeb15c586dc4fb1335290", null ],
     [ "RI_COMM_ENABLED", "group___s_d_k15.html#ga765244b315909a38656f3a02a474c8b5", null ],
+    [ "RI_DPS310_ENABLED", "group___s_d_k15.html#ga214d47181fba09e64199eef8bacb4e7e", null ],
     [ "RI_FLASH_ENABLED", "group___s_d_k15.html#gac412e53c991413132764c910f258808a", null ],
     [ "RI_GPIO_ENABLED", "group___s_d_k15.html#gaed1c08818345fe2aca4dd61eec424ec7", null ],
     [ "RI_LIS2DH12_ENABLED", "group___s_d_k15.html#ga438e218324684a3e78879d24638bceb0", null ],

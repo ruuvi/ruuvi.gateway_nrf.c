@@ -12,8 +12,10 @@ var app__ble_8c =
     [ "RB_BLE_UNKNOWN_MANUFACTURER_ID", "app__ble_8c.html#a5e665eae173e9f0da537a8e478bc8762", null ],
     [ "app_ble_channels_get", "app__ble_8c.html#a9037e9e1fca9f7c17951c9a525002cfa", null ],
     [ "app_ble_channels_set", "app__ble_8c.html#a79dafbe6b4e37f9d8ecec1f6a49c8792", null ],
+    [ "app_ble_manufacturer_filter_enabled", "app__ble_8c.html#ae87afba7d57c76b96c9ab6d6204eb4d2", null ],
     [ "app_ble_manufacturer_filter_set", "app__ble_8c.html#a149b265971b2922c47e86dd9ac3ae7f9", null ],
     [ "app_ble_manufacturer_id_set", "app__ble_8c.html#a2f054342f943f1ffacdb330ff88280f6", null ],
     [ "app_ble_modulation_enable", "app__ble_8c.html#a7e5db8051b8b396c54687e48c0cd283c", null ],
-    [ "app_ble_scan_start", "app__ble_8c.html#aa5a4e8d5f6ca79de69b20612737490a5", null ]
+    [ "app_ble_scan_start", "app__ble_8c.html#aa5a4e8d5f6ca79de69b20612737490a5", null ],
+    [ "app_ble_scan_stop", "app__ble_8c.html#af0cb901f85c5896ca6ff1cf240bcb24c", null ]
 ];

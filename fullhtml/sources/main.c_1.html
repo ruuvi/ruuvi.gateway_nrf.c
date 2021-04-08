@@ -6,7 +6,7 @@
   <title>main.c</title>
 
   <link rel="stylesheet" href="../style.css"/>
-  <script src="../jquery-3.2.1.min.js"></script>
+  <script src="../jquery-3.5.1.min.js"></script>
 </head>
 <body>
 
@@ -47,7 +47,7 @@
 <a name="ln34">    static const ri_gpio_id_t led_list[] = RB_LEDS_LIST;</a>
 <a name="ln35">    static const ri_gpio_state_t leds_active[] = RB_LEDS_ACTIVE_STATE;</a>
 <a name="ln36">    err_code |= rt_led_init (led_list, leds_active, sizeof (led_list) / sizeof (led_list[0]));</a>
-<a name="ln37">    err_code |= rt_led_activity_led_set (RB_LED_ACTIVITY);</a>
+<a name="ln37">    err_code |= rt_led_write (RB_LED_ACTIVITY, true);</a>
 <a name="ln38">    return err_code;</a>
 <a name="ln39">}</a>
 <a name="ln40"> </a>
@@ -59,68 +59,52 @@
 <a name="ln46">    // No action required</a>
 <a name="ln47">}</a>
 <a name="ln48"> </a>
-<a name="ln49">static void modulations_setup (void)</a>
+<a name="ln49">static void setup (void)</a>
 <a name="ln50">{</a>
-<a name="ln51">    if (ri_radio_supports (RI_RADIO_BLE_125KBPS))</a>
-<a name="ln52">    {</a>
-<a name="ln53">        app_ble_modulation_enable (RI_RADIO_BLE_125KBPS, true);</a>
-<a name="ln54">    }</a>
-<a name="ln55"> </a>
-<a name="ln56">    // 2Mbit/s scans primary advertisements at 1 Mbit/s, and</a>
-<a name="ln57">    // secondary advertisements are scanned on all support PHYs</a>
-<a name="ln58">    // Therefore 1 Mbit/s scanning should be enabled only if</a>
-<a name="ln59">    // 2 Mbit/s is not enabled.</a>
-<a name="ln60">    // app_ble_modulation_enable(RI_RADIO_BLE_1MBPS, true);</a>
-<a name="ln61">    app_ble_modulation_enable (RI_RADIO_BLE_2MBPS, true);</a>
-<a name="ln62">}</a>
-<a name="ln63"> </a>
-<a name="ln64">static void setup (void)</a>
-<a name="ln65">{</a>
-<a name="ln66">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln67">    err_code |= ri_log_init (APP_LOG_LEVEL);</a>
-<a name="ln68">    err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, on_wdt);</a>
-<a name="ln69">    err_code |= ri_yield_init();</a>
-<a name="ln70">    err_code |= ri_timer_init();</a>
-<a name="ln71">    err_code |= ri_scheduler_init();</a>
-<a name="ln72">    err_code |= ri_gpio_init();</a>
-<a name="ln73">    // Requires GPIO</a>
-<a name="ln74">    err_code |= leds_init();</a>
-<a name="ln75">    // Requires timers</a>
-<a name="ln76">    err_code |= ri_yield_low_power_enable (true);</a>
-<a name="ln77">    // Requires LEDs</a>
-<a name="ln78">    ri_yield_indication_set (&amp;rt_led_activity_indicate);</a>
-<a name="ln79">    modulations_setup();</a>
-<a name="ln80">    err_code |= app_uart_init();</a>
-<a name="ln81">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln82">}</a>
+<a name="ln51">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln52">    err_code |= ri_log_init (APP_LOG_LEVEL);</a>
+<a name="ln53">    err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, on_wdt);</a>
+<a name="ln54">    err_code |= ri_yield_init();</a>
+<a name="ln55">    err_code |= ri_timer_init();</a>
+<a name="ln56">    err_code |= ri_scheduler_init();</a>
+<a name="ln57">    err_code |= ri_gpio_init();</a>
+<a name="ln58">    // Requires GPIO</a>
+<a name="ln59">    err_code |= leds_init();</a>
+<a name="ln60">    // Requires timers</a>
+<a name="ln61">    err_code |= ri_yield_low_power_enable (true);</a>
+<a name="ln62">    // Requires LEDs</a>
+<a name="ln63">    err_code |= app_uart_init();</a>
+<a name="ln64">    err_code |= app_uart_poll_configuration();</a>
+<a name="ln65">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln66">}</a>
+<a name="ln67"> </a>
+<a name="ln68">/**</a>
+<a name="ln69"> * @brief Application main</a>
+<a name="ln70"> *</a>
+<a name="ln71"> * @retval 0 After unit test run. Does not return when running on embedded target.</a>
+<a name="ln72"> */</a>
+<a name="ln73">#ifdef CEEDLING</a>
+<a name="ln74">int app_main (void)</a>
+<a name="ln75">#else</a>
+<a name="ln76">int main (void)</a>
+<a name="ln77">#endif</a>
+<a name="ln78">{</a>
+<a name="ln79">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln80">    setup();</a>
+<a name="ln81">    err_code |= app_ble_scan_start();</a>
+<a name="ln82">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
 <a name="ln83"> </a>
-<a name="ln84">/**</a>
-<a name="ln85"> * @brief Application main</a>
-<a name="ln86"> *</a>
-<a name="ln87"> * @retval 0 After unit test run. Does not return when running on embedded target.</a>
-<a name="ln88"> */</a>
-<a name="ln89">#ifdef CEEDLING</a>
-<a name="ln90">int app_main (void)</a>
-<a name="ln91">#else</a>
-<a name="ln92">int main (void)</a>
-<a name="ln93">#endif</a>
-<a name="ln94">{</a>
-<a name="ln95">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln96">    setup();</a>
-<a name="ln97">    err_code |= app_ble_scan_start();</a>
-<a name="ln98">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln99"> </a>
-<a name="ln100">    do</a>
-<a name="ln101">    {</a>
-<a name="ln102">        ri_scheduler_execute();</a>
-<a name="ln103">        ri_yield();</a>
-<a name="ln104">    } while (LOOP_FOREVER);</a>
-<a name="ln105"> </a>
-<a name="ln106">    return -1; // Unreachable code unless running unit tests.</a>
-<a name="ln107">}</a>
+<a name="ln84">    do</a>
+<a name="ln85">    {</a>
+<a name="ln86">        ri_scheduler_execute();</a>
+<a name="ln87">        ri_yield();</a>
+<a name="ln88">    } while (LOOP_FOREVER);</a>
+<a name="ln89"> </a>
+<a name="ln90">    return -1; // Unreachable code unless running unit tests.</a>
+<a name="ln91">}</a>
 
 </code></pre>
-<div class="balloon" rel="37"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (13U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="37"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2572/" target="_blank">V2572</a> The value of the '(((0U) << 8U) + (17U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
 
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>

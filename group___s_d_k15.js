@@ -1,7 +1,6 @@
 var group___s_d_k15 =
 [
     [ "app_config.h", "app__config_8h.html", null ],
-    [ "nrf5_sdk15_app_config.h", "nrf5__sdk15__app__config_8h.html", null ],
     [ "APP_ADV_ENABLED", "group___s_d_k15.html#ga977370877b8921fcaf571ac73e15563e", null ],
     [ "APP_FW_NAME", "group___s_d_k15.html#gaf0b3d65827c9965bcea7defc3c1528b9", null ],
     [ "APP_GATT_ENABLED", "group___s_d_k15.html#gaf4f07ba7444b77e2197c660596ba492b", null ],
@@ -9,10 +8,10 @@ var group___s_d_k15 =
     [ "APP_NFC_ENABLED", "group___s_d_k15.html#gaf05c249ec7480800802fc147080fa99f", null ],
     [ "APP_USBUART_ENABLED", "group___s_d_k15.html#ga2089b255897d2b3a07c724321c06afbb", null ],
     [ "APP_WDT_INTERVAL_MS", "group___s_d_k15.html#ga25d771b6d2f753e677805a4177cdaaa1", null ],
-    [ "NRF5_SDK15_CONFIGURED", "group___s_d_k15.html#ga78d2fe783ce2c2843dd058adef0f5584", null ],
     [ "RI_ADV_EXTENDED_ENABLED", "group___s_d_k15.html#ga0c0f134a6b398043ba58a58f491fc33d", null ],
     [ "RI_BME280_ENABLED", "group___s_d_k15.html#gade28ed24c83aeb15c586dc4fb1335290", null ],
     [ "RI_COMM_ENABLED", "group___s_d_k15.html#ga765244b315909a38656f3a02a474c8b5", null ],
+    [ "RI_DPS310_ENABLED", "group___s_d_k15.html#ga214d47181fba09e64199eef8bacb4e7e", null ],
     [ "RI_FLASH_ENABLED", "group___s_d_k15.html#gac412e53c991413132764c910f258808a", null ],
     [ "RI_GPIO_ENABLED", "group___s_d_k15.html#gaed1c08818345fe2aca4dd61eec424ec7", null ],
     [ "RI_LIS2DH12_ENABLED", "group___s_d_k15.html#ga438e218324684a3e78879d24638bceb0", null ],
