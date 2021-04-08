@@ -29,7 +29,6 @@
 
 #define APP_UART_RING_BUFFER_MAX_LEN     (128U) //!< Ring buffer len       
 #define APP_UART_RING_DEQ_BUFFER_MAX_LEN (APP_UART_RING_BUFFER_MAX_LEN >>1) //!< Decode buffer len
-#define APP_BLE_TYPE_MANUFACTURER_SPECIFIC_DATA   0xFF
 
 #ifndef CEEDLING
 static bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock);
