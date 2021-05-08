@@ -17,15 +17,25 @@ Flashing RuuviGateway
 
 6B) Observe 
     Parsing image file.
+
     Erasing page at address 0x0.
+
     Erasing page at address 0x1000.
+
     Erasing page at address 0x2000.
+    
     ...
+    
     Erasing page at address 0x2C000.
+    
     Applying system reset.
+    
     Checking that the area to write is not protected.
+    
     Programming device.
+    
     Verifying programming.
+    
     Verified OK.
 
 
