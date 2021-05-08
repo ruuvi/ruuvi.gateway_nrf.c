@@ -2,7 +2,9 @@
 Flashing RuuviGateway
 
 1) From  https://github.com/ruuvi/ruuvi.gateway_nrf.c/releases
+
     download full.hex and 
+
     tail -n 1 *.hex   #  to see End-of-file record: :00000001FF to be sure it's a complete file.
 
 2) Connect Nordic Dev Board to laptop/desktop USB
