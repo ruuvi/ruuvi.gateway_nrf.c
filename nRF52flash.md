@@ -16,6 +16,7 @@ Flashing RuuviGateway
 6a) Run         ./rF52flash.sh      xxxx.hex  # from step 1, This invokes nrfjprog to display part number, MAC and does the flashing
 
 6B) Observe 
+
     Parsing image file.
 
     Erasing page at address 0x0.
