@@ -14,7 +14,8 @@ Flashing RuuviGateway
 5) Attach 6pin + 3 locator nails end of T-connect to RuuviGateway with either retainer clips or hold it on firmly
 
 6a) Run         ./rF52flash.sh      xxxx.hex  # from step 1, This invokes nrfjprog to display part number, MAC and does the flashing
-5b) Observe 
+
+6B) Observe 
     Parsing image file.
     Erasing page at address 0x0.
     Erasing page at address 0x1000.
