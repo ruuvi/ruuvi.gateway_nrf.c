@@ -1,5 +1,7 @@
 
-Flashing RuuviGateway
+# Flashing RuuviGateway nRF52
+
+This is needed only on Ruuvi Gateway A1, newer versions will update nRF52 automatically with ESP32
 
 1) From  https://github.com/ruuvi/ruuvi.gateway_nrf.c/releases
 
@@ -40,6 +42,3 @@ Flashing RuuviGateway
     Verifying programming.
     
     Verified OK.
-
-
-
