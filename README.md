@@ -68,7 +68,7 @@ Run `make clean` in `src` directory to clean current build.
 
 # Flashing
 ## With nrfjprog
-How to program nRF5x SoCs with nrfjprog you can find [Nordic Infocenter](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrf5x_cltools%2FUG%2Fcltools%2Fnrf5x_nrfjprogexe.html).To get started:
+How to program nRF5x SoCs with nrfjprog you can find [Nordic website](https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF-Command-Line-Tools).To get started:
 ```
 nrfjprog --eraseall
 nrfjprog --program ruuvigw_nrf_armgcc_ruuvigw_release_vX.X.X_full.hex
