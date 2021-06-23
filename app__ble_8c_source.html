@@ -153,13 +153,13 @@ $(document).ready(function(){initNavTree('app__ble_8c_source.html',''); initResi
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">sizeof</span> (ri_adv_scan_t) == data_len)</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        err_code |= <a class="code" href="group___a_p_p___u_a_r_t.html#ga723d2ccb97f86b0cb9e6063db3be7e0b">app_uart_send_broadcast</a> ( (ri_adv_scan_t *) p_data);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        err_code |= <a class="code" href="group___a_p_p___u_a_r_t.html#ga723d2ccb97f86b0cb9e6063db3be7e0b">app_uart_send_broadcast</a> ((ri_adv_scan_t *) p_data);</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <span class="keywordflow">if</span> (RD_SUCCESS == err_code)</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        {</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            (void) rt_led_blink_stop (RB_LED_ACTIVITY);</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;            (void) rt_led_blink_once (RB_LED_ACTIVITY, <a class="code" href="app__ble_8c.html#aebaf3395852b331ff3df231304241d56">LED_ACT_TIME_MS</a>);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            (void) ri_watchdog_feed ();</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            (void) ri_watchdog_feed();</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        }</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    }</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}</div>
@@ -225,7 +225,7 @@ $(document).ready(function(){initNavTree('app__ble_8c_source.html',''); initResi
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;{</div>
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    rd_status_t err_code = RD_SUCCESS;</div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160; </div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="keywordflow">if</span> ( (0 == channels.channel_37)</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="keywordflow">if</span> ((0 == channels.channel_37)</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;            &amp;&amp; (0 == channels.channel_38)</div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;            &amp;&amp; (0 == channels.channel_39))</div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    {</div>
@@ -381,7 +381,7 @@ $(document).ready(function(){initNavTree('app__ble_8c_source.html',''); initResi
 <div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;            {</div>
 <div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;                err_code |= rt_adv_init (&amp;adv_params);</div>
 <div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;                err_code |= rt_adv_scan_start (&amp;on_scan_isr);</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;                err_code |= ri_watchdog_feed ();</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;                err_code |= ri_watchdog_feed();</div>
 <div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;            }</div>
 <div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        }</div>
 <div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    }</div>

@@ -86,13 +86,13 @@
 <a name="ln73"> </a>
 <a name="ln74">    if (sizeof (ri_adv_scan_t) == data_len)</a>
 <a name="ln75">    {</a>
-<a name="ln76">        err_code |= app_uart_send_broadcast ( (ri_adv_scan_t *) p_data);</a>
+<a name="ln76">        err_code |= app_uart_send_broadcast ((ri_adv_scan_t *) p_data);</a>
 <a name="ln77"> </a>
 <a name="ln78">        if (RD_SUCCESS == err_code)</a>
 <a name="ln79">        {</a>
 <a name="ln80">            (void) rt_led_blink_stop (RB_LED_ACTIVITY);</a>
 <a name="ln81">            (void) rt_led_blink_once (RB_LED_ACTIVITY, LED_ACT_TIME_MS);</a>
-<a name="ln82">            (void) ri_watchdog_feed ();</a>
+<a name="ln82">            (void) ri_watchdog_feed();</a>
 <a name="ln83">        }</a>
 <a name="ln84">    }</a>
 <a name="ln85">}</a>
@@ -174,7 +174,7 @@
 <a name="ln161">{</a>
 <a name="ln162">    rd_status_t err_code = RD_SUCCESS;</a>
 <a name="ln163"> </a>
-<a name="ln164">    if ( (0 == channels.channel_37)</a>
+<a name="ln164">    if ((0 == channels.channel_37)</a>
 <a name="ln165">            &amp;&amp; (0 == channels.channel_38)</a>
 <a name="ln166">            &amp;&amp; (0 == channels.channel_39))</a>
 <a name="ln167">    {</a>
@@ -330,7 +330,7 @@
 <a name="ln317">            {</a>
 <a name="ln318">                err_code |= rt_adv_init (&amp;adv_params);</a>
 <a name="ln319">                err_code |= rt_adv_scan_start (&amp;on_scan_isr);</a>
-<a name="ln320">                err_code |= ri_watchdog_feed ();</a>
+<a name="ln320">                err_code |= ri_watchdog_feed();</a>
 <a name="ln321">            }</a>
 <a name="ln322">        }</a>
 <a name="ln323">    }</a>

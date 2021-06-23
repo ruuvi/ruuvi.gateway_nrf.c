@@ -101,7 +101,7 @@
 <a name="ln88">    switch (p_uart_payload-&gt;cmd)</a>
 <a name="ln89">    {</a>
 <a name="ln90">        case RE_CA_UART_SET_FLTR_TAGS:</a>
-<a name="ln91">            err_code |= app_ble_manufacturer_filter_set ( (bool)</a>
+<a name="ln91">            err_code |= app_ble_manufacturer_filter_set ((bool)</a>
 <a name="ln92">                        p_uart_payload-&gt;params.bool_param.state);</a>
 <a name="ln93">            break;</a>
 <a name="ln94"> </a>
@@ -147,7 +147,7 @@
 <a name="ln134"> </a>
 <a name="ln135">        case RE_CA_UART_SET_ALL:</a>
 <a name="ln136">            err_code |= app_ble_manufacturer_id_set (p_uart_payload-&gt;params.all_params.fltr_id.id);</a>
-<a name="ln137">            err_code |= app_ble_manufacturer_filter_set ( (bool)</a>
+<a name="ln137">            err_code |= app_ble_manufacturer_filter_set ((bool)</a>
 <a name="ln138">                        p_uart_payload-&gt;params.all_params.bools.fltr_tags.state);</a>
 <a name="ln139">            channels.channel_37 = p_uart_payload-&gt;params.all_params.bools.ch_37.state;</a>
 <a name="ln140">            channels.channel_38 = p_uart_payload-&gt;params.all_params.bools.ch_38.state;</a>
@@ -208,7 +208,7 @@
 <a name="ln195">    uint8_t dequeue_data[APP_UART_RING_DEQ_BUFFER_MAX_LEN] = {0};</a>
 <a name="ln196">    rl_status_t status = RL_SUCCESS;</a>
 <a name="ln197">    size_t index = 0;</a>
-<a name="ln198">    err_code = re_ca_uart_decode ( (uint8_t *) p_data, &amp;uart_payload);</a>
+<a name="ln198">    err_code = re_ca_uart_decode ((uint8_t *) p_data, &amp;uart_payload);</a>
 <a name="ln199"> </a>
 <a name="ln200">    if (RD_SUCCESS == err_code)</a>
 <a name="ln201">    {</a>
@@ -229,10 +229,10 @@
 <a name="ln216">        do</a>
 <a name="ln217">        {</a>
 <a name="ln218">            status = rl_ringbuffer_queue (&amp;m_uart_ring_buffer,</a>
-<a name="ln219">                                          (void *) ( (uint8_t *) p_data + index),</a>
+<a name="ln219">                                          (void *) ((uint8_t *) p_data + index),</a>
 <a name="ln220">                                          sizeof (uint8_t));</a>
 <a name="ln221">            index++;</a>
-<a name="ln222">        } while ( (RL_SUCCESS == status) &amp;&amp; (index &lt; data_len));</a>
+<a name="ln222">        } while ((RL_SUCCESS == status) &amp;&amp; (index &lt; data_len));</a>
 <a name="ln223"> </a>
 <a name="ln224">        index = 0;</a>
 <a name="ln225"> </a>
@@ -248,7 +248,7 @@
 <a name="ln235">            }</a>
 <a name="ln236">        } while (RL_SUCCESS == status);</a>
 <a name="ln237"> </a>
-<a name="ln238">        err_code = re_ca_uart_decode ( (uint8_t *) dequeue_data, &amp;uart_payload);</a>
+<a name="ln238">        err_code = re_ca_uart_decode ((uint8_t *) dequeue_data, &amp;uart_payload);</a>
 <a name="ln239"> </a>
 <a name="ln240">        if (RD_SUCCESS != err_code)</a>
 <a name="ln241">        {</a>
@@ -260,7 +260,7 @@
 <a name="ln247">                status = rl_ringbuffer_queue (&amp;m_uart_ring_buffer, (void *) (dequeue_data + index),</a>
 <a name="ln248">                                              sizeof (uint8_t));</a>
 <a name="ln249">                index++;</a>
-<a name="ln250">            } while ( (RL_SUCCESS == status) &amp;&amp; (index &lt; len));</a>
+<a name="ln250">            } while ((RL_SUCCESS == status) &amp;&amp; (index &lt; len));</a>
 <a name="ln251">        }</a>
 <a name="ln252">    }</a>
 <a name="ln253"> </a>
@@ -444,12 +444,12 @@
 <a name="ln431"> </a>
 <a name="ln432">        if (RE_SUCCESS == re_code)</a>
 <a name="ln433">        {</a>
-<a name="ln434">            if ( (app_ble_manufacturer_filter_enabled())</a>
+<a name="ln434">            if ((app_ble_manufacturer_filter_enabled())</a>
 <a name="ln435">                    &amp;&amp; (manuf_id == RB_BLE_MANUFACTURER_ID))</a>
 <a name="ln436">            {</a>
 <a name="ln437">                err_code |= m_uart.send (&amp;msg);</a>
 <a name="ln438">            }</a>
-<a name="ln439">            else if ( (!app_ble_manufacturer_filter_enabled()))</a>
+<a name="ln439">            else if ((!app_ble_manufacturer_filter_enabled()))</a>
 <a name="ln440">            {</a>
 <a name="ln441">                err_code |= m_uart.send (&amp;msg);</a>
 <a name="ln442">            }</a>
