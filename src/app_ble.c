@@ -33,6 +33,7 @@
 #define RB_BLE_DEFAULT_FLTR_STATE       true                    //!< Default filter id state
 #define RB_BLE_DEFAULT_MANUFACTURER_ID  RB_BLE_MANUFACTURER_ID  //!< Default id
 #define RB_BLE_DEFAULT_MODULATION       RI_RADIO_BLE_2MBPS      //!< Default modulation
+#define LED_ACT_TIME_MS                 (10000U)                //!< Activity led 10s from BLE RX
 
 static inline void LOG (const char * const msg)
 {
@@ -76,8 +77,9 @@ void repeat_adv (void * p_data, uint16_t data_len)
 
         if (RD_SUCCESS == err_code)
         {
-            rt_led_blink_once (RB_LED_ACTIVITY, 100);
-            ri_watchdog_feed();
+            (void) rt_led_blink_stop (RB_LED_ACTIVITY);
+            (void) rt_led_blink_once (RB_LED_ACTIVITY, LED_ACT_TIME_MS);
+            (void) ri_watchdog_feed();
         }
     }
 }
