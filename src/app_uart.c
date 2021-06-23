@@ -191,6 +191,7 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_comm_message_t msg = {0};
+    msg.data_length = sizeof (msg.data);
     re_ca_uart_payload_t uart_payload = {0};
     uint8_t dequeue_data[APP_UART_RING_DEQ_BUFFER_MAX_LEN] = {0};
     rl_status_t status = RL_SUCCESS;
@@ -257,12 +258,11 @@ void app_uart_parser (void * p_data, uint16_t data_len)
         {
             uint64_t mac;
             uint64_t id;
-            ri_radio_address_get (&mac);
-            ri_comm_id_get (&id);
+            err_code |= ri_radio_address_get (&mac);
+            err_code |= ri_comm_id_get (&id);
             uart_payload.cmd = RE_CA_UART_DEVICE_ID;
             uart_payload.params.device_id.id = id;
             uart_payload.params.device_id.addr = mac;
-            msg.data_length = sizeof (msg);
         }
         else
         {
@@ -283,10 +283,9 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
             uart_payload.params.ack.cmd = uart_payload.cmd;
             uart_payload.cmd = RE_CA_UART_ACK;
-            msg.data_length = sizeof (msg);
         }
 
-        err_code = re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
+        err_code |= re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
         msg.repeat_count = 1;
 
         if (RE_SUCCESS == err_code)
