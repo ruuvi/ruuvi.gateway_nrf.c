@@ -130,7 +130,7 @@ void test_app_uart_init_ok (void)
     ri_uart_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_uart_init_ReturnThruPtr_channel (&mock_uart);
     ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
-    rd_status_t err_code = app_uart_init ();
+    rd_status_t err_code = app_uart_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 void test_app_uart_init_twice (void)
@@ -146,9 +146,9 @@ void test_app_uart_init_twice (void)
     config.baud = RI_UART_BAUD_115200; //!< XXX hardcoded, should come from board.
     ri_uart_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
-    rd_status_t err_code = app_uart_init ();
+    rd_status_t err_code = app_uart_init();
     ri_uart_init_ExpectAnyArgsAndReturn (RD_ERROR_INVALID_STATE);
-    err_code |= app_uart_init ();
+    err_code |= app_uart_init();
     TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
 }
 
@@ -244,12 +244,12 @@ void test_app_uart_poll_configuration_ok (void)
     ri_uart_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_uart_init_ReturnThruPtr_channel (&dummy_uart_success);
     ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
-    err_code = app_uart_init ();
+    err_code = app_uart_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
     ri_yield_ExpectAndReturn (RD_SUCCESS);
-    err_code |= app_uart_poll_configuration ();
+    err_code |= app_uart_poll_configuration();
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (0 == mock_sends);
 }
@@ -257,9 +257,9 @@ void test_app_uart_poll_configuration_ok (void)
 void test_app_uart_poll_configuration_encoding_error (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    test_app_uart_init_ok ();
+    test_app_uart_init_ok();
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_ERROR_INTERNAL);
-    err_code |= app_uart_poll_configuration ();
+    err_code |= app_uart_poll_configuration();
     TEST_ASSERT (RD_ERROR_INVALID_DATA == err_code);
     TEST_ASSERT (0 == mock_sends);
 }
@@ -298,15 +298,15 @@ void test_app_uart_parser_get_device_id_ok (void)
                   (void *) &data[0], 6);
     re_ca_uart_payload_t payload = {0};
     re_ca_uart_payload_t expect_payload = {.cmd = RE_CA_UART_GET_DEVICE_ID};
-    re_ca_uart_decode_ExpectAndReturn ( (uint8_t *) &data[0],
-                                        (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
-    re_ca_uart_decode_ReturnThruPtr_cmd ( (re_ca_uart_payload_t *) &expect_payload);
+    re_ca_uart_decode_ExpectAndReturn ((uint8_t *) &data[0],
+                                       (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
+    re_ca_uart_decode_ReturnThruPtr_cmd ((re_ca_uart_payload_t *) &expect_payload);
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
     ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_comm_id_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
-    app_uart_parser ( (void *) &data[0], 6);
+    app_uart_parser ((void *) &data[0], 6);
     TEST_ASSERT (1 == mock_sends);
 }
 
@@ -490,12 +490,12 @@ void test_app_uart_parser_ok (void)
     app_uart_isr (RI_COMM_RECEIVED,
                   (void *) &data[0], 8);
     re_ca_uart_payload_t payload = {0};
-    re_ca_uart_decode_ExpectAndReturn ( (uint8_t *) &data[0],
-                                        (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
+    re_ca_uart_decode_ExpectAndReturn ((uint8_t *) &data[0],
+                                       (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
-    app_uart_parser ( (void *) data, 8);
+    app_uart_parser ((void *) data, 8);
     TEST_ASSERT (1 == mock_sends);
 }
 
@@ -518,14 +518,14 @@ void test_app_uart_parser_clean_old (void)
     app_uart_isr (RI_COMM_RECEIVED,
                   (void *) &data[0], 8);
     re_ca_uart_payload_t payload = {0};
-    re_ca_uart_decode_ExpectAndReturn ( (uint8_t *) &data[0],
-                                        (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
+    re_ca_uart_decode_ExpectAndReturn ((uint8_t *) &data[0],
+                                       (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     rl_ringbuffer_dequeue_ReturnMemThruPtr_data (&p_data_0, sizeof (uint8_t *));
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
-    app_uart_parser ( (void *) data, 8);
+    app_uart_parser ((void *) data, 8);
     TEST_ASSERT (1 == mock_sends);
 }
 
@@ -546,8 +546,8 @@ void test_app_uart_parser_part_1_ok (void)
     app_uart_isr (RI_COMM_RECEIVED,
                   (void *) &data_part1[0], 3);
     re_ca_uart_payload_t payload = {0};
-    re_ca_uart_decode_ExpectAndReturn ( (uint8_t *) &data_part1[0],
-                                        (re_ca_uart_payload_t *) &payload, RE_ERROR_DECODING_CRC);
+    re_ca_uart_decode_ExpectAndReturn ((uint8_t *) &data_part1[0],
+                                       (re_ca_uart_payload_t *) &payload, RE_ERROR_DECODING_CRC);
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
@@ -563,7 +563,7 @@ void test_app_uart_parser_part_1_ok (void)
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
-    app_uart_parser ( (void *) data_part1, 3);
+    app_uart_parser ((void *) data_part1, 3);
     TEST_ASSERT (0 == mock_sends);
 }
 
@@ -582,8 +582,8 @@ void test_app_uart_parser_part_2_ok (void)
     app_uart_isr (RI_COMM_RECEIVED,
                   (void *) &data_part1[0], sizeof (data_part1));
     re_ca_uart_payload_t payload = {0};
-    re_ca_uart_decode_ExpectAndReturn ( (uint8_t *) &data_part1[0],
-                                        (re_ca_uart_payload_t *) &payload, RE_ERROR_DECODING_CRC);
+    re_ca_uart_decode_ExpectAndReturn ((uint8_t *) &data_part1[0],
+                                       (re_ca_uart_payload_t *) &payload, RE_ERROR_DECODING_CRC);
 
     for (size_t ii = 0; ii < sizeof (data_part1); ii++)
     {
@@ -602,6 +602,6 @@ void test_app_uart_parser_part_2_ok (void)
     re_ca_uart_decode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
-    app_uart_parser ( (void *) data_part1, 5);
+    app_uart_parser ((void *) data_part1, 5);
     TEST_ASSERT (1 == mock_sends);
 }

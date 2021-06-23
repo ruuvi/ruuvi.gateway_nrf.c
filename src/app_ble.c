@@ -73,13 +73,13 @@ void repeat_adv (void * p_data, uint16_t data_len)
 
     if (sizeof (ri_adv_scan_t) == data_len)
     {
-        err_code |= app_uart_send_broadcast ( (ri_adv_scan_t *) p_data);
+        err_code |= app_uart_send_broadcast ((ri_adv_scan_t *) p_data);
 
         if (RD_SUCCESS == err_code)
         {
             (void) rt_led_blink_stop (RB_LED_ACTIVITY);
             (void) rt_led_blink_once (RB_LED_ACTIVITY, LED_ACT_TIME_MS);
-            (void) ri_watchdog_feed ();
+            (void) ri_watchdog_feed();
         }
     }
 }
@@ -161,7 +161,7 @@ rd_status_t app_ble_channels_set (const ri_radio_channels_t channels)
 {
     rd_status_t err_code = RD_SUCCESS;
 
-    if ( (0 == channels.channel_37)
+    if ((0 == channels.channel_37)
             && (0 == channels.channel_38)
             && (0 == channels.channel_39))
     {
@@ -317,7 +317,7 @@ rd_status_t app_ble_scan_start (void)
             {
                 err_code |= rt_adv_init (&adv_params);
                 err_code |= rt_adv_scan_start (&on_scan_isr);
-                err_code |= ri_watchdog_feed ();
+                err_code |= ri_watchdog_feed();
             }
         }
     }
