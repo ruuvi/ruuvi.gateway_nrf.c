@@ -28,7 +28,7 @@
 # 3.1 - Spaces
 # if (bar * baz == foo)
 --pad-oper
---pad-paren-out
+--pad-first-paren-out 
 
 # char * foo
 --align-pointer=middle
