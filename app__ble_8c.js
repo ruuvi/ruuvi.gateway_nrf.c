@@ -1,5 +1,6 @@
 var app__ble_8c =
 [
+    [ "LED_ACT_TIME_MS", "app__ble_8c.html#aebaf3395852b331ff3df231304241d56", null ],
     [ "RB_BLE_DEFAULT_125KBPS_STATE", "app__ble_8c.html#a9c87cbe6aee31977d0b9203a8051ce82", null ],
     [ "RB_BLE_DEFAULT_1MBIT_STATE", "app__ble_8c.html#ae282eef0a6477633b8238b3e8df8793b", null ],
     [ "RB_BLE_DEFAULT_2MBIT_STATE", "app__ble_8c.html#a794f05a81917c4e0d2d30473255232e4", null ],

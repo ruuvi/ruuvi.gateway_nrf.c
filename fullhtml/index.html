@@ -36,12 +36,12 @@
   </div>
 
   <table cellpadding="0" cellspacing="0" border="0" class="infotopic">
-     <tr><th id="col_info">Date:</th><td>Wed Jun 23 09:48:20 2021</td></tr>
+     <tr><th id="col_info">Date:</th><td>Wed Jun 23 13:21:58 2021</td></tr>
      <tr><th id="col_info">PVS-Studio Version:</th><td>7.13.48133.129</td></tr>
      <tr><th id="col_info">Command Line:</th><td>plog-converter -a GA\:1,2,3\;OP\:1,2,3\;CS\:1,2,3\;MISRA\:1,2,3 -t fullhtml src/main.o.PVS-Studio.log src/app_ble.o.PVS-Studio.log src/app_uart.o.PVS-Studio.log -o ./doxygen/html </td></tr>
      <tr><th id="col_info">Total Warnings (GA):</th><td>1</td></tr>
      <tr><th id="col_info">Total Warnings (CS):</th><td>1</td></tr>
-     <tr><th id="col_info">Total Warnings (MISRA):</th><td>73</td></tr>
+     <tr><th id="col_info">Total Warnings (MISRA):</th><td>75</td></tr>
   </table>
   <table cellpadding="0" cellspacing="0" border="0" class="sortable" id="sorter">
     <tr>
@@ -95,31 +95,31 @@
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln75">app_ble.c:75</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln76">app_ble.c:76</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2571/">V2571</td>
       <td id="col_message">Pointer to void should not be converted to a pointer to object. Consider inspecting the expression: '(ri_adv_scan_t *) p_data'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln79">app_ble.c:79</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln80">app_ble.c:80</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(((0U) &lt;&lt; 8U) + (17U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln162">app_ble.c:162</a></td>
-      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
-      <td id="col_message">Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln81">app_ble.c:81</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
+      <td id="col_message">The value of the '(((0U) &lt;&lt; 8U) + (17U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln163">app_ble.c:163</a></td>
-      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
-      <td id="col_message">Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln81">app_ble.c:81</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
+      <td id="col_message">The value of the '(10000U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
@@ -130,35 +130,49 @@
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln280">app_ble.c:280</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln165">app_ble.c:165</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln166">app_ble.c:166</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln282">app_ble.c:282</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(((0U) &lt;&lt; 8U) + (23U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln281">app_ble.c:281</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln283">app_ble.c:283</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(((0U) &lt;&lt; 8U) + (22U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln282">app_ble.c:282</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln284">app_ble.c:284</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(((0U) &lt;&lt; 8U) + (22U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln282">app_ble.c:282</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln284">app_ble.c:284</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(1U)' expression should not be converted from the essential 'unsigned' type to the essential 'ri_gpio_state_t' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln305">app_ble.c:305</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_ble.c_2.html#ln307">app_ble.c:307</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nrf5_5fsdk15_5fconfigured_105',['NRF5_SDK15_CONFIGURED',['../nrf5__sdk15__app__config_8h.html#a78d2fe783ce2c2843dd058adef0f5584',1,'nrf5_sdk15_app_config.h']]]
+  ['led_5fact_5ftime_5fms_106',['LED_ACT_TIME_MS',['../app__ble_8c.html#aebaf3395852b331ff3df231304241d56',1,'app_ble.c']]]
 ];
