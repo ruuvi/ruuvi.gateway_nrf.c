@@ -80,7 +80,6 @@ void repeat_adv (void * p_data, uint16_t data_len)
             (void) rt_led_blink_stop (RB_LED_ACTIVITY);
             (void) rt_led_blink_once (RB_LED_ACTIVITY, LED_ACT_TIME_MS);
             (void) ri_watchdog_feed();
-            (void) ri_watchdog_feed();
         }
     }
 }
