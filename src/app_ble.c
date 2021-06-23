@@ -76,8 +76,9 @@ void repeat_adv (void * p_data, uint16_t data_len)
 
         if (RD_SUCCESS == err_code)
         {
-            rt_led_blink_once (RB_LED_ACTIVITY, 100);
-            ri_watchdog_feed();
+            rt_led_blink_stop ();
+            rt_led_blink_once (RB_LED_ACTIVITY, 10000);
+            ri_watchdog_feed ();
         }
     }
 }
