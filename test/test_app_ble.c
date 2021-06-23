@@ -363,7 +363,7 @@ void test_repeat_adv_ok (void)
     uint16_t timer_ms = 10000U;
     rd_status_t err_code = RD_SUCCESS;
     app_uart_send_broadcast_ExpectAndReturn (&mock_scan, RD_SUCCESS);
-    rt_led_blink_stop_ExpectAndReturn(led, RD_SUCCESS);
+    rt_led_blink_stop_ExpectAndReturn (led, RD_SUCCESS);
     rt_led_blink_once_ExpectAndReturn (led, timer_ms, RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
     repeat_adv (&mock_scan, mock_scan_len);
