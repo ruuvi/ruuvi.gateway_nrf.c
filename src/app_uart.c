@@ -88,7 +88,7 @@ rd_status_t app_uart_apply_config (void * v_uart_payload)
     switch (p_uart_payload->cmd)
     {
         case RE_CA_UART_SET_FLTR_TAGS:
-            err_code |= app_ble_manufacturer_filter_set ( (bool)
+            err_code |= app_ble_manufacturer_filter_set ((bool)
                         p_uart_payload->params.bool_param.state);
             break;
 
@@ -134,7 +134,7 @@ rd_status_t app_uart_apply_config (void * v_uart_payload)
 
         case RE_CA_UART_SET_ALL:
             err_code |= app_ble_manufacturer_id_set (p_uart_payload->params.all_params.fltr_id.id);
-            err_code |= app_ble_manufacturer_filter_set ( (bool)
+            err_code |= app_ble_manufacturer_filter_set ((bool)
                         p_uart_payload->params.all_params.bools.fltr_tags.state);
             channels.channel_37 = p_uart_payload->params.all_params.bools.ch_37.state;
             channels.channel_38 = p_uart_payload->params.all_params.bools.ch_38.state;
@@ -191,11 +191,12 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_comm_message_t msg = {0};
+    msg.data_length = sizeof (msg.data);
     re_ca_uart_payload_t uart_payload = {0};
     uint8_t dequeue_data[APP_UART_RING_DEQ_BUFFER_MAX_LEN] = {0};
     rl_status_t status = RL_SUCCESS;
     size_t index = 0;
-    err_code = re_ca_uart_decode ( (uint8_t *) p_data, &uart_payload);
+    err_code = re_ca_uart_decode ((uint8_t *) p_data, &uart_payload);
 
     if (RD_SUCCESS == err_code)
     {
@@ -216,10 +217,10 @@ void app_uart_parser (void * p_data, uint16_t data_len)
         do
         {
             status = rl_ringbuffer_queue (&m_uart_ring_buffer,
-                                          (void *) ( (uint8_t *) p_data + index),
+                                          (void *) ((uint8_t *) p_data + index),
                                           sizeof (uint8_t));
             index++;
-        } while ( (RL_SUCCESS == status) && (index < data_len));
+        } while ((RL_SUCCESS == status) && (index < data_len));
 
         index = 0;
 
@@ -235,7 +236,7 @@ void app_uart_parser (void * p_data, uint16_t data_len)
             }
         } while (RL_SUCCESS == status);
 
-        err_code = re_ca_uart_decode ( (uint8_t *) dequeue_data, &uart_payload);
+        err_code = re_ca_uart_decode ((uint8_t *) dequeue_data, &uart_payload);
 
         if (RD_SUCCESS != err_code)
         {
@@ -247,7 +248,7 @@ void app_uart_parser (void * p_data, uint16_t data_len)
                 status = rl_ringbuffer_queue (&m_uart_ring_buffer, (void *) (dequeue_data + index),
                                               sizeof (uint8_t));
                 index++;
-            } while ( (RL_SUCCESS == status) && (index < len));
+            } while ((RL_SUCCESS == status) && (index < len));
         }
     }
 
@@ -257,12 +258,11 @@ void app_uart_parser (void * p_data, uint16_t data_len)
         {
             uint64_t mac;
             uint64_t id;
-            ri_radio_address_get (&mac);
-            ri_comm_id_get (&id);
+            err_code |= ri_radio_address_get (&mac);
+            err_code |= ri_comm_id_get (&id);
             uart_payload.cmd = RE_CA_UART_DEVICE_ID;
             uart_payload.params.device_id.id = id;
             uart_payload.params.device_id.addr = mac;
-            msg.data_length = sizeof (msg);
         }
         else
         {
@@ -283,10 +283,9 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
             uart_payload.params.ack.cmd = uart_payload.cmd;
             uart_payload.cmd = RE_CA_UART_ACK;
-            msg.data_length = sizeof (msg);
         }
 
-        err_code = re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
+        err_code |= re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
         msg.repeat_count = 1;
 
         if (RE_SUCCESS == err_code)
@@ -431,12 +430,12 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
 
         if (RE_SUCCESS == re_code)
         {
-            if ( (app_ble_manufacturer_filter_enabled())
+            if ((app_ble_manufacturer_filter_enabled())
                     && (manuf_id == RB_BLE_MANUFACTURER_ID))
             {
                 err_code |= m_uart.send (&msg);
             }
-            else if ( (!app_ble_manufacturer_filter_enabled()))
+            else if ((!app_ble_manufacturer_filter_enabled()))
             {
                 err_code |= m_uart.send (&msg);
             }
