@@ -430,18 +430,21 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
 
         if (RE_SUCCESS == re_code)
         {
-            if ((app_ble_manufacturer_filter_enabled())
-                    && (manuf_id == RB_BLE_MANUFACTURER_ID))
+            uint16_t filter_id = RB_BLE_MANUFACTURER_ID;
+            if (app_ble_manufacturer_filter_enabled(&filter_id))
             {
-                err_code |= m_uart.send (&msg);
-            }
-            else if ((!app_ble_manufacturer_filter_enabled()))
-            {
-                err_code |= m_uart.send (&msg);
+                if (manuf_id == filter_id)
+                {
+                    err_code |= m_uart.send (&msg);
+                }
+                else
+                {
+                    err_code |= RD_ERROR_INVALID_DATA;
+                }
             }
             else
             {
-                err_code |= RD_ERROR_INVALID_DATA;
+                err_code |= m_uart.send (&msg);
             }
         }
         else
