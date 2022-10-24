@@ -19,9 +19,8 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-
-    - name: Checkout submodules
-      uses: textbook/git-checkout-submodule-action@2.1.1
+      with:
+        submodules: recursive
 
     # Generate folder for PVS report
     - name: mkdir
