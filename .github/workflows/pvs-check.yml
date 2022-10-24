@@ -24,7 +24,7 @@ jobs:
 
     # Generate folder for PVS report
     - name: mkdir
-      run: mkdir -p doxygen/html
+      run: mkdir -p doxygen
 
     - name: Install PVS Studio
       run: |
