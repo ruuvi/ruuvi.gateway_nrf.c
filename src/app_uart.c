@@ -431,7 +431,8 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
         if (RE_SUCCESS == re_code)
         {
             uint16_t filter_id = RB_BLE_MANUFACTURER_ID;
-            if (app_ble_manufacturer_filter_enabled(&filter_id))
+
+            if (app_ble_manufacturer_filter_enabled (&filter_id))
             {
                 if (manuf_id == filter_id)
                 {

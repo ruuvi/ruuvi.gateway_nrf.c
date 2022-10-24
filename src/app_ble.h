@@ -100,7 +100,7 @@ rd_status_t app_ble_scan_start (void);
  *
  * @retval TRUE If filter is enabled.
  */
-bool app_ble_manufacturer_filter_enabled (uint16_t* const p_manufacturer_id);
+bool app_ble_manufacturer_filter_enabled (uint16_t * const p_manufacturer_id);
 
 /**
  * @brief Stop a scan sequence.
