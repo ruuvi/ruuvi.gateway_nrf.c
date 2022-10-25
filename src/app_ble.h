@@ -95,9 +95,12 @@ rd_status_t app_ble_scan_start (void);
  *
  * Function returns the status of enabled manufacturer ID scan filter.
  *
+ * @param[out] p_manufacturer_id - ptr to the variable where
+ *             manufactured_id will be stored
+ *
  * @retval TRUE If filter is enabled.
  */
-bool app_ble_manufacturer_filter_enabled (void);
+bool app_ble_manufacturer_filter_enabled (uint16_t * const p_manufacturer_id);
 
 /**
  * @brief Stop a scan sequence.

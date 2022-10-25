@@ -136,8 +136,9 @@ rd_status_t app_ble_manufacturer_filter_set (const bool state)
     return err_code;
 }
 
-bool app_ble_manufacturer_filter_enabled (void)
+bool app_ble_manufacturer_filter_enabled (uint16_t * const p_manufacturer_id)
 {
+    *p_manufacturer_id = m_scan_params.manufacturer_id;
     return m_scan_params.manufacturer_filter_enabled;
 }
 
@@ -299,7 +300,7 @@ rd_status_t app_ble_scan_start (void)
             .channels = m_scan_params.scan_channels,
             .adv_interval_ms = (1000U), //!< Unused
             .adv_pwr_dbm     = (0),     //!< Unused
-            .manufacturer_id = m_scan_params.manufacturer_id //!< default
+            .manufacturer_id = m_scan_params.manufacturer_id,
         };
 
         if (!m_scan_params.manufacturer_filter_enabled)
