@@ -431,17 +431,17 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
         if (RE_SUCCESS == re_code)
         {
             uint16_t filter_id = RB_BLE_MANUFACTURER_ID;
+            bool flag_discard = false;
 
-            if (app_ble_manufacturer_filter_enabled (&filter_id))
+            if (app_ble_manufacturer_filter_enabled (&filter_id) &&
+                    (manuf_id != filter_id))
             {
-                if (manuf_id == filter_id)
-                {
-                    err_code |= m_uart.send (&msg);
-                }
-                else
-                {
-                    err_code |= RD_ERROR_INVALID_DATA;
-                }
+                flag_discard = true;
+            }
+
+            if (flag_discard)
+            {
+                err_code |= RD_ERROR_INVALID_DATA;
             }
             else
             {
