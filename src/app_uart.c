@@ -24,6 +24,7 @@
 #include "ruuvi_interface_communication_uart.h"
 #include "ruuvi_library_ringbuffer.h"
 #include "ruuvi_interface_yield.h"
+#include "ruuvi_task_led.h"
 
 #include <string.h>
 
@@ -263,6 +264,16 @@ void app_uart_parser (void * p_data, uint16_t data_len)
             uart_payload.cmd = RE_CA_UART_DEVICE_ID;
             uart_payload.params.device_id.id = id;
             uart_payload.params.device_id.addr = mac;
+        }
+        else if (RE_CA_UART_LED_CTRL == uart_payload.cmd)
+        {
+            (void) rt_led_blink_stop (RB_LED_ACTIVITY);
+
+            if (0 != uart_payload.params.led_ctrl_param.time_interval_ms)
+            {
+                (void) rt_led_blink_once (RB_LED_ACTIVITY,
+                                          uart_payload.params.led_ctrl_param.time_interval_ms);
+            }
         }
         else
         {

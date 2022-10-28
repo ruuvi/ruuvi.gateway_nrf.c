@@ -39,7 +39,7 @@ static void leds_expect (void)
                                           sizeof (leds_active) / sizeof (leds_active[0]),
                                           sizeof (led_list) / sizeof (led_list[0]),
                                           RD_SUCCESS);
-    rt_led_write_ExpectAndReturn (led, true, RD_SUCCESS);
+    rt_led_blink_once_ExpectAndReturn (led, 4000, RD_SUCCESS);
 }
 
 // TODO: Test on nRF52832 boards
