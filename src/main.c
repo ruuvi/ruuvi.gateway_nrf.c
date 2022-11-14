@@ -25,6 +25,8 @@
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_task_led.h"
 
+#define LED_ON_TIME_AFTER_REBOOT_MS (4000U)  //!< Turn on LED for 4 seconds after reboot
+
 /**
  * @brief Configure LEDs as outputs, turn them off.
  */
@@ -34,7 +36,7 @@ static rd_status_t leds_init (void)
     static const ri_gpio_id_t led_list[] = RB_LEDS_LIST;
     static const ri_gpio_state_t leds_active[] = RB_LEDS_ACTIVE_STATE;
     err_code |= rt_led_init (led_list, leds_active, sizeof (led_list) / sizeof (led_list[0]));
-    err_code |= rt_led_write (RB_LED_ACTIVITY, true);
+    err_code |= rt_led_blink_once (RB_LED_ACTIVITY, LED_ON_TIME_AFTER_REBOOT_MS);
     return err_code;
 }
 

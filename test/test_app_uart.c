@@ -13,6 +13,7 @@
 #include "mock_ruuvi_interface_yield.h"
 #include "mock_ruuvi_interface_watchdog.h"
 #include "mock_ruuvi_library_ringbuffer.h"
+#include "mock_ruuvi_task_led.h"
 
 #include <string.h>
 
