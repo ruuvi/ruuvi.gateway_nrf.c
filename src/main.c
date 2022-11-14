@@ -3,7 +3,7 @@
  *  @author Otso Jousimaa <otso@ojousima.net>
  *  @date 2020-05-12
  *  @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
- *
+ *. This is just to test Jenkins and should be discarded.
  *  Application main.
  */
 
