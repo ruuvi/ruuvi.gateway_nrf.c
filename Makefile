@@ -1,6 +1,3 @@
-# Source, copyright: https://github.com/viva64/pvs-studio-makefile-examples
-# commit 82a0f0a, /example-1
-# Modified for C on mac, added Doxygen
 	#                               Apache License
 	#                         Version 2.0, January 2004
 	#                      http://www.apache.org/licenses/
@@ -206,10 +203,8 @@
 CXX=gcc
 
 PROJ_DIR := src
-PVS_CFG=./PVS-Studio.cfg
 # csv, errorfile, fullhtml, html, tasklist, xml
 LOG_FORMAT=fullhtml
-PVS_LOG=./doxygen/html
 DOXYGEN_DIR=./doxygen
 
 SDK_ROOT := nRF5_SDK_15.3.0_59ac345
@@ -231,32 +226,19 @@ INC_PARAMS=$(foreach d, $(INCLUDES), -I$d)
 SOURCES=${RUUVI_PRJ_SOURCES}
 OBJECTS=$(SOURCES:.c=.o)
 ANALYSIS=$(SOURCES:.c=.a)
-IOBJECTS=$(SOURCES:.c=.o.PVS-Studio.i)
-POBJECTS=$(SOURCES:.c=.o.PVS-Studio.log)
 EXECUTABLE=gw_nrf
 SONAR=nrf_analysis
 
-.PHONY: clean doxygen pvs sonar astyle all
+.PHONY: clean doxygen sonar astyle all
 
-all: astyle clean doxygen pvs sonar 
+all: astyle clean doxygen sonar 
 
 .c.o:
 # Build
 	$(CXX) $(CFLAGS) $< $(DFLAGS) $(INC_PARAMS) $(OFLAGS) $(LDFLAGS) -o $@
-# Preprocessing
-	$(CXX) $(CFLAGS) $< $(DFLAGS) $(INC_PARAMS) $(LDFLAGS) -E -o $@.PVS-Studio.i
-# Analysis
-	pvs-studio --cfg $(PVS_CFG) --source-file $< --i-file $@.PVS-Studio.i --output-file $@.PVS-Studio.log
 
 doxygen:
 	doxygen
-
-pvs: $(SOURCES) $(EXECUTABLE) 
-
-$(EXECUTABLE): $(OBJECTS)
-# Converting
-	plog-converter -a 'GA:1,2,3;OP:1,2,3;CS:1,2,3;MISRA:1,2,3' -t $(LOG_FORMAT) $(POBJECTS) -o $(PVS_LOG)
-	plog-converter -a 'GA:1;OP:1;CS:1;MISRA:1' -t errorfile $(POBJECTS) -o ./pvs.error
 
 sonar: $(SOURCES) $(SONAR) 
 $(SONAR): $(ANALYSIS)
@@ -270,7 +252,6 @@ astyle:
 
 clean:
 	rm -f $(OBJECTS) $(IOBJECTS) $(POBJECTS)
-	rm -rf $(PVS_LOG)/fullhtml
 	rm -rf $(DOXYGEN_DIR)/html
 	rm -rf $(DOXYGEN_DIR)/latex
 	rm -f *.gcov
