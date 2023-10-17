@@ -141,7 +141,16 @@ static rd_status_t app_uart_send_ack (const re_ca_uart_cmd_t cmd, const bool is_
     re_ca_uart_payload_t uart_payload = {0};
     uart_payload.cmd = RE_CA_UART_ACK;
     uart_payload.params.ack.cmd = cmd;
-    uart_payload.params.ack.ack_state.state = is_ok ? RE_CA_ACK_OK : RE_CA_ACK_ERROR;
+
+    if (is_ok)
+    {
+        uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
+    }
+    else
+    {
+        uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
+    }
+
     ri_comm_message_t msg = {0};
     msg.data_length = sizeof (msg.data);
     re_status_t err_code = re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
@@ -164,6 +173,8 @@ static
 #endif
 void app_uart_on_evt_tx_finish (void * p_data, uint16_t data_len)
 {
+    (void)p_data;
+    (void)data_len;
     g_flag_uart_tx_in_progress = false;
 
     switch (g_resp_type)
@@ -188,6 +199,8 @@ static
 #endif
 void app_uart_on_evt_send_device_id (void * p_data, uint16_t data_len)
 {
+    (void)p_data;
+    (void)data_len;
     g_resp_type = APP_UART_RESP_TYPE_DEVICE_ID;
 
     if (!g_flag_uart_tx_in_progress)
@@ -201,6 +214,8 @@ static
 #endif
 void app_uart_on_evt_send_ack (void * p_data, uint16_t data_len)
 {
+    (void)p_data;
+    (void)data_len;
     g_resp_type = APP_UART_RESP_TYPE_ACK;
 
     if (!g_flag_uart_tx_in_progress)
