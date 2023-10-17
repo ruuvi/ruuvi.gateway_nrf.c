@@ -31,11 +31,14 @@
 #define APP_UART_RING_BUFFER_MAX_LEN     (128U) //!< Ring buffer len       
 #define APP_UART_RING_DEQ_BUFFER_MAX_LEN (APP_UART_RING_BUFFER_MAX_LEN >>1) //!< Decode buffer len
 
+/*!
+ * @brief UART response type enum
+ */
 typedef enum
 {
-    APP_UART_RESP_TYPE_NONE = 0,
-    APP_UART_RESP_TYPE_ACK,
-    APP_UART_RESP_TYPE_DEVICE_ID,
+    APP_UART_RESP_TYPE_NONE = 0,  //!< No response
+    APP_UART_RESP_TYPE_ACK,       //!< Ack response
+    APP_UART_RESP_TYPE_DEVICE_ID, //!< Device ID response
 } app_uart_resp_type_e;
 
 #ifndef CEEDLING
@@ -58,6 +61,7 @@ static
 volatile bool m_uart_ack = false;
 
 static rl_ringbuffer_t m_uart_ring_buffer =
+    (rl_ringbuffer_t)
 {
     .head = 0,
     .tail = 0,
@@ -65,10 +69,26 @@ static rl_ringbuffer_t m_uart_ring_buffer =
     .storage_size = sizeof (buffer_data),
     .index_mask = (sizeof (buffer_data) / sizeof (uint8_t)) - 1,
     .storage = buffer_data,
-    .lock = app_uart_ringbuffer_lock_dummy,
+    .lock = &app_uart_ringbuffer_lock_dummy,
     .writelock = &buffer_wlock,
     .readlock  = &buffer_rlock
 };
+
+#ifndef CEEDLING
+static
+#endif
+void app_uart_init_globs (void)
+{
+    buffer_wlock = false;
+    buffer_rlock = false;
+    g_flag_uart_tx_in_progress = false;
+    g_resp_type = APP_UART_RESP_TYPE_NONE;
+    g_resp_ack_cmd = (re_ca_uart_cmd_t)0;
+    g_resp_ack_state = false;
+    m_uart_ack = false;
+    m_uart_ring_buffer.head = 0;
+    m_uart_ring_buffer.tail = 0;
+}
 
 /** Dummy function to lock/unlock buffer */
 #ifndef CEEDLING
@@ -139,7 +159,10 @@ static rd_status_t app_uart_send_ack (const re_ca_uart_cmd_t cmd, const bool is_
     return err_code;
 }
 
-static void app_uart_on_evt_tx_finish (void * p_data, uint16_t data_len)
+#ifndef CEEDLING
+static
+#endif
+void app_uart_on_evt_tx_finish (void * p_data, uint16_t data_len)
 {
     g_flag_uart_tx_in_progress = false;
 
@@ -160,7 +183,10 @@ static void app_uart_on_evt_tx_finish (void * p_data, uint16_t data_len)
     }
 }
 
-static void app_uart_on_evt_send_device_id (void * p_data, uint16_t data_len)
+#ifndef CEEDLING
+static
+#endif
+void app_uart_on_evt_send_device_id (void * p_data, uint16_t data_len)
 {
     g_resp_type = APP_UART_RESP_TYPE_DEVICE_ID;
 
@@ -170,7 +196,10 @@ static void app_uart_on_evt_send_device_id (void * p_data, uint16_t data_len)
     }
 }
 
-static void app_uart_on_evt_send_ack (void * p_data, uint16_t data_len)
+#ifndef CEEDLING
+static
+#endif
+void app_uart_on_evt_send_ack (void * p_data, uint16_t data_len)
 {
     g_resp_type = APP_UART_RESP_TYPE_ACK;
 
@@ -485,6 +514,7 @@ rd_status_t app_uart_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_uart_init_t config = { 0 };
+    app_uart_init_globs();
     setup_uart_init (&config);
     err_code |= ri_uart_init (&m_uart);
 
