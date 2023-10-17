@@ -60,9 +60,7 @@ jobs:
     # Runs a set of commands using the runners shell
     - name: Run Sonar scanner
       run: |
-        ceedling test:all
-        ceedling gcov:all utils:gcov
-        gcov  -b -c build/gcov/out/*.gcno
+        make test_all_gcov
         export SONAR_SCANNER_OPTS="-server"
         sonar-scanner \
           -Dsonar.organization=ruuvi \
