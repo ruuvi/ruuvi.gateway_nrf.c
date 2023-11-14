@@ -1,5 +1,5 @@
 _build/
-build/
+build*/
 src/Output
 *.log
 
@@ -75,6 +75,9 @@ nRF5_SDK_15.3.0_59ac345
 
 # Doxygen output
 doxygen/*
+
+# GCOV output
+*.gcov
 
 .idea/
 .vscode/

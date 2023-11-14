@@ -24,10 +24,10 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Set up Ruby 2.6
+    - name: Set up Ruby 2.7
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6
+        ruby-version: '2.7'
 
     # Runs a single command using the runners shell
     - name: Install Ceedling
@@ -36,4 +36,5 @@ jobs:
     # Runs a set of commands using the runners shell
     - name: Run unit tests
       run: |
-        ceedling test:all
+        make test_all
+

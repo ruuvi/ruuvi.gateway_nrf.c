@@ -10,3 +10,6 @@
 [submodule "src/ruuvi.endpoints.c"]
 	path = src/ruuvi.endpoints.c
 	url = https://github.com/ruuvi/ruuvi.endpoints.c.git
+[submodule "CMock"]
+	path = CMock
+	url = https://github.com/ruuvi/CMock.git

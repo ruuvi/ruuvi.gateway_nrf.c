@@ -45,10 +45,10 @@ jobs:
     - name: Compile project
       run: build-wrapper-linux-x86-64 --out-dir bw-output make sonar
 
-    - name: Set up Ruby 2.6
+    - name: Set up Ruby 2.7
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6
+        ruby-version: '2.7'
 
     # Runs a single command using the runners shell
     - name: Install Ceedling and GCovr
@@ -60,9 +60,7 @@ jobs:
     # Runs a set of commands using the runners shell
     - name: Run Sonar scanner
       run: |
-        ceedling test:all
-        ceedling gcov:all utils:gcov
-        gcov  -b -c build/gcov/out/*.gcno
+        make test_all_gcov
         export SONAR_SCANNER_OPTS="-server"
         sonar-scanner \
           -Dsonar.organization=ruuvi \

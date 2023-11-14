@@ -31,6 +31,16 @@
 #define APP_UART_RING_BUFFER_MAX_LEN     (128U) //!< Ring buffer len       
 #define APP_UART_RING_DEQ_BUFFER_MAX_LEN (APP_UART_RING_BUFFER_MAX_LEN >>1) //!< Decode buffer len
 
+/*!
+ * @brief UART response type enum
+ */
+typedef enum
+{
+    APP_UART_RESP_TYPE_NONE = 0,  //!< No response
+    APP_UART_RESP_TYPE_ACK,       //!< Ack response
+    APP_UART_RESP_TYPE_DEVICE_ID, //!< Device ID response
+} app_uart_resp_type_e;
+
 #ifndef CEEDLING
 static bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock);
 #endif
@@ -40,12 +50,18 @@ static uint8_t buffer_data[APP_UART_RING_BUFFER_MAX_LEN] = {0};
 static bool buffer_wlock = false;
 static bool buffer_rlock = false;
 
+static bool g_flag_uart_tx_in_progress;
+static app_uart_resp_type_e g_resp_type;
+static re_ca_uart_cmd_t g_resp_ack_cmd;
+static bool g_resp_ack_state;
+
 #ifndef CEEDLING
 static
 #endif
 volatile bool m_uart_ack = false;
 
 static rl_ringbuffer_t m_uart_ring_buffer =
+    (rl_ringbuffer_t)
 {
     .head = 0,
     .tail = 0,
@@ -53,10 +69,26 @@ static rl_ringbuffer_t m_uart_ring_buffer =
     .storage_size = sizeof (buffer_data),
     .index_mask = (sizeof (buffer_data) / sizeof (uint8_t)) - 1,
     .storage = buffer_data,
-    .lock = app_uart_ringbuffer_lock_dummy,
+    .lock = &app_uart_ringbuffer_lock_dummy,
     .writelock = &buffer_wlock,
     .readlock  = &buffer_rlock
 };
+
+#ifndef CEEDLING
+static
+#endif
+void app_uart_init_globs (void)
+{
+    buffer_wlock = false;
+    buffer_rlock = false;
+    g_flag_uart_tx_in_progress = false;
+    g_resp_type = APP_UART_RESP_TYPE_NONE;
+    g_resp_ack_cmd = (re_ca_uart_cmd_t)0;
+    g_resp_ack_state = false;
+    m_uart_ack = false;
+    m_uart_ring_buffer.head = 0;
+    m_uart_ring_buffer.tail = 0;
+}
 
 /** Dummy function to lock/unlock buffer */
 #ifndef CEEDLING
@@ -70,6 +102,126 @@ bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock)
 
     *p_bool = lock;
     return true;
+}
+
+static rd_status_t app_uart_send_msg (ri_comm_message_t * const p_msg)
+{
+    g_flag_uart_tx_in_progress = true;
+    const rd_status_t err_code = m_uart.send (p_msg);
+
+    if (RD_SUCCESS != err_code)
+    {
+        g_flag_uart_tx_in_progress = false;
+    }
+
+    return err_code;
+}
+
+static rd_status_t app_uart_send_device_id (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t uart_payload = {0};
+    ri_comm_message_t msg = {0};
+    msg.data_length = sizeof (msg.data);
+    uint64_t mac;
+    err_code |= ri_radio_address_get (&mac);
+    uint64_t id;
+    err_code |= ri_comm_id_get (&id);
+    uart_payload.cmd = RE_CA_UART_DEVICE_ID;
+    uart_payload.params.device_id.id = id;
+    uart_payload.params.device_id.addr = mac;
+    err_code |= re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
+    msg.repeat_count = 1;
+    err_code |= app_uart_send_msg (&msg);
+    return err_code;
+}
+
+static rd_status_t app_uart_send_ack (const re_ca_uart_cmd_t cmd, const bool is_ok)
+{
+    re_ca_uart_payload_t uart_payload = {0};
+    uart_payload.cmd = RE_CA_UART_ACK;
+    uart_payload.params.ack.cmd = cmd;
+
+    if (is_ok)
+    {
+        uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
+    }
+    else
+    {
+        uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
+    }
+
+    ri_comm_message_t msg = {0};
+    msg.data_length = sizeof (msg.data);
+    re_status_t err_code = re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
+    msg.repeat_count = 1;
+
+    if (RE_SUCCESS == err_code)
+    {
+        err_code |= app_uart_send_msg (&msg);
+    }
+    else
+    {
+        err_code |= RD_ERROR_INVALID_DATA;
+    }
+
+    return err_code;
+}
+
+#ifndef CEEDLING
+static
+#endif
+void app_uart_on_evt_tx_finish (void * p_data, uint16_t data_len)
+{
+    (void)p_data;
+    (void)data_len;
+    g_flag_uart_tx_in_progress = false;
+
+    switch (g_resp_type)
+    {
+        case APP_UART_RESP_TYPE_NONE:
+            break;
+
+        case APP_UART_RESP_TYPE_ACK:
+            g_resp_type = APP_UART_RESP_TYPE_NONE;
+            app_uart_send_ack (g_resp_ack_cmd, g_resp_ack_state);
+            return;
+
+        case APP_UART_RESP_TYPE_DEVICE_ID:
+            g_resp_type = APP_UART_RESP_TYPE_NONE;
+            app_uart_send_device_id();
+            return;
+    }
+}
+
+#ifndef CEEDLING
+static
+#endif
+void app_uart_on_evt_send_device_id (void * p_data, uint16_t data_len)
+{
+    (void)p_data;
+    (void)data_len;
+    g_resp_type = APP_UART_RESP_TYPE_DEVICE_ID;
+
+    if (!g_flag_uart_tx_in_progress)
+    {
+        ri_scheduler_event_put (NULL, (uint16_t)0, app_uart_on_evt_tx_finish);
+    }
+}
+
+#ifndef CEEDLING
+static
+#endif
+void app_uart_on_evt_send_ack (void * p_data, uint16_t data_len)
+{
+    (void)p_data;
+    (void)data_len;
+    g_resp_type = APP_UART_RESP_TYPE_ACK;
+
+    if (!g_flag_uart_tx_in_progress)
+    {
+        ri_scheduler_event_put (NULL, (uint16_t)0, app_uart_on_evt_tx_finish);
+    }
 }
 
 #ifndef CEEDLING
@@ -170,7 +322,7 @@ void app_uart_repeat_send (void * p_data, uint16_t data_len)
     msg.repeat_count = 1;
     msg.data_length = data_len;
     memcpy (msg.data, p_data, data_len);
-    err_code |= m_uart.send (&msg);
+    err_code |= app_uart_send_msg (&msg);
 
     if (RE_SUCCESS != err_code)
     {
@@ -191,8 +343,6 @@ static
 void app_uart_parser (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
-    ri_comm_message_t msg = {0};
-    msg.data_length = sizeof (msg.data);
     re_ca_uart_payload_t uart_payload = {0};
     uint8_t dequeue_data[APP_UART_RING_DEQ_BUFFER_MAX_LEN] = {0};
     rl_status_t status = RL_SUCCESS;
@@ -257,13 +407,7 @@ void app_uart_parser (void * p_data, uint16_t data_len)
     {
         if (RE_CA_UART_GET_DEVICE_ID == uart_payload.cmd)
         {
-            uint64_t mac;
-            uint64_t id;
-            err_code |= ri_radio_address_get (&mac);
-            err_code |= ri_comm_id_get (&id);
-            uart_payload.cmd = RE_CA_UART_DEVICE_ID;
-            uart_payload.params.device_id.id = id;
-            uart_payload.params.device_id.addr = mac;
+            ri_scheduler_event_put (NULL, (uint16_t) 0, app_uart_on_evt_send_device_id);
         }
         else if (RE_CA_UART_LED_CTRL == uart_payload.cmd)
         {
@@ -274,47 +418,31 @@ void app_uart_parser (void * p_data, uint16_t data_len)
                 (void) rt_led_blink_once (RB_LED_ACTIVITY,
                                           uart_payload.params.led_ctrl_param.time_interval_ms);
             }
+
+            g_resp_ack_cmd = uart_payload.cmd;
+            g_resp_ack_state = true;
+            ri_scheduler_event_put (NULL, (uint16_t) 0, app_uart_on_evt_send_ack);
         }
         else
         {
+            g_resp_ack_cmd = uart_payload.cmd;
+
             if (RD_SUCCESS == app_uart_apply_config (&uart_payload))
             {
-                uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
+                g_resp_ack_state = true;
             }
             else
             {
-                uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
+                g_resp_ack_state = false;
             }
+
+            ri_scheduler_event_put (NULL, (uint16_t) 0, app_uart_on_evt_send_ack);
 
             if (RE_CA_UART_SET_ALL == uart_payload.cmd)
             {
                 m_uart_ack = true;
                 err_code |= app_ble_scan_start(); // Applies new scanning settings.
             }
-
-            uart_payload.params.ack.cmd = uart_payload.cmd;
-            uart_payload.cmd = RE_CA_UART_ACK;
-        }
-
-        err_code |= re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
-        msg.repeat_count = 1;
-
-        if (RE_SUCCESS == err_code)
-        {
-            err_code |= m_uart.send (&msg);
-#if 0
-
-            if (RE_SUCCESS != err_code)
-            {
-                err_code |= ri_scheduler_event_put (msg.data, (uint16_t) msg.data_length,
-                                                    app_uart_repeat_send);
-            }
-
-#endif
-        }
-        else
-        {
-            err_code |= RD_ERROR_INVALID_DATA;
         }
     }
 
@@ -335,6 +463,7 @@ rd_status_t app_uart_isr (ri_comm_evt_t evt,
     switch (evt)
     {
         case RI_COMM_SENT:
+            err_code |= ri_scheduler_event_put (NULL, (uint16_t)0, app_uart_on_evt_tx_finish);
             break;
 
         case RI_COMM_RECEIVED:
@@ -400,6 +529,7 @@ rd_status_t app_uart_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_uart_init_t config = { 0 };
+    app_uart_init_globs();
     setup_uart_init (&config);
     err_code |= ri_uart_init (&m_uart);
 
@@ -456,7 +586,7 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
             }
             else
             {
-                err_code |= m_uart.send (&msg);
+                err_code |= app_uart_send_msg (&msg);
             }
         }
         else
@@ -485,7 +615,7 @@ rd_status_t app_uart_poll_configuration (void)
 
     if (RE_SUCCESS == re_code)
     {
-        err_code |= m_uart.send (&msg);
+        err_code |= app_uart_send_msg (&msg);
 
         do
         {

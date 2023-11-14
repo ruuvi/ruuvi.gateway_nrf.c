@@ -204,7 +204,6 @@ CXX=gcc
 
 PROJ_DIR := src
 # csv, errorfile, fullhtml, html, tasklist, xml
-LOG_FORMAT=fullhtml
 DOXYGEN_DIR=./doxygen
 
 SDK_ROOT := nRF5_SDK_15.3.0_59ac345
@@ -229,31 +228,68 @@ ANALYSIS=$(SOURCES:.c=.a)
 EXECUTABLE=gw_nrf
 SONAR=nrf_analysis
 
-.PHONY: clean doxygen sonar astyle all
+BUILD_DIR = ./build
+TEST_BUILD_DIR = ${BUILD_DIR}/test
+TEST_OUT_DIR = ${TEST_BUILD_DIR}/out
 
-all: astyle clean doxygen sonar 
+# Setup environment variables for ${CMOCK_DIR}/scripts/create_makefile.rb:
+export CMOCK_DIR ?= ./CMock
+UNITY_DIR = ${CMOCK_DIR}/vendor/unity
+DISABLE_CMOCK_TEST_SUMMARY_PER_PROJECT=1
 
-.c.o:
+TEST_MAKEFILE = ${TEST_BUILD_DIR}/MakefileTestSupport
+
+-include ${TEST_MAKEFILE}
+
+.PHONY: all clean doxygen sonar astyle
+
+all: clean astyle doxygen sonar
+
+#.c.o:
 # Build
-	$(CXX) $(CFLAGS) $< $(DFLAGS) $(INC_PARAMS) $(OFLAGS) $(LDFLAGS) -o $@
+#	$(CXX) $(CFLAGS) $< $(DFLAGS) $(INC_PARAMS) $(OFLAGS) $(LDFLAGS) -o $@
 
-doxygen:
+doxygen: clean
 	doxygen
 
-sonar: $(SOURCES) $(SONAR) 
+sonar: clean $(SOURCES) $(SONAR) 
 $(SONAR): $(ANALYSIS)
 
-.c.a:
-# Build
+$(ANALYSIS): %.a: %.c
 	$(CXX) $(CFLAGS) $< $(DFLAGS) $(INC_PARAMS) $(OFLAGS) -o $@
 
 astyle:
 	astyle --project=".astylerc" "src/*.c" "src/*.h" "src/config/*.h" "test/*.c"
 
 clean:
+	rm -f $(ANALYSIS)
 	rm -f $(OBJECTS) $(IOBJECTS) $(POBJECTS)
 	rm -rf $(DOXYGEN_DIR)/html
 	rm -rf $(DOXYGEN_DIR)/latex
 	rm -f *.gcov
 	mkdir -p $(DOXYGEN_DIR)
+	rm -rf $(BUILD_DIR)
+	make setup_test
+	make generate_cmock_mocks_and_runners
 
+test_all:
+	rm -rf build_ceedling
+	CEEDLING_MAIN_PROJECT_FILE=./project.yml ceedling test:all
+
+test_all_gcov:
+	rm -rf build_ceedling
+	CEEDLING_MAIN_PROJECT_FILE=./project.yml ceedling test:all
+	CEEDLING_MAIN_PROJECT_FILE=./project.yml ceedling gcov:all utils:gcov
+	gcov  -b -c build_ceedling/gcov/out/*.gcno
+
+test:
+	@UNITY_DIR=${UNITY_DIR} BUILD_DIR=${BUILD_DIR} TEST_BUILD_DIR= ruby ${CMOCK_DIR}/scripts/test_summary.rb
+
+setup_test:
+	mkdir -p ${BUILD_DIR}
+	CEEDLING_MAIN_PROJECT_FILE=./project.yml \
+		BUILD_DIR=${BUILD_DIR} \
+		TEST_BUILD_DIR=${TEST_BUILD_DIR} \
+		TEST_OUT_DIR=${TEST_OUT_DIR} \
+		TEST_MAKEFILE=${TEST_MAKEFILE} \
+		ruby ${CMOCK_DIR}/scripts/create_makefile.rb

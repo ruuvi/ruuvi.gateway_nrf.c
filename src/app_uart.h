@@ -21,8 +21,12 @@
 
 #ifdef CEEDLING
 // Assist function for unit tests.
+void app_uart_init_globs (void);
 bool app_uart_ringbuffer_lock_dummy (volatile uint32_t * const flag, bool lock);
 void app_uart_parser (void * p_data, uint16_t data_len);
+void app_uart_on_evt_send_device_id (void * p_data, uint16_t data_len);
+void app_uart_on_evt_send_ack (void * p_data, uint16_t data_len);
+void app_uart_on_evt_tx_finish (void * p_data, uint16_t data_len);
 #if 0
 void app_uart_repeat_send (void * p_data, uint16_t data_len);
 #endif
