@@ -85,6 +85,7 @@ $(document).ready(function(){initNavTree('group___a_p_p___u_a_r_t.html',''); ini
   <div class="summary">
 <a href="#files">Files</a> &#124;
 <a href="#define-members">Macros</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Application UART functionality.</div>  </div>
@@ -110,6 +111,15 @@ Macros</h2></td></tr>
 <tr class="memdesc:ga49891cfdb59345e44b79daa74fb43082"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode buffer len. <br /></td></tr>
 <tr class="separator:ga49891cfdb59345e44b79daa74fb43082"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:ga4089423188b38deafeba9179ea8ce1be"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_p_p___u_a_r_t.html#ga4089423188b38deafeba9179ea8ce1be">app_uart_resp_type_e</a> { <a class="el" href="group___a_p_p___u_a_r_t.html#gga4089423188b38deafeba9179ea8ce1bea88ec713a7e477864784b9f6abc1c8942">APP_UART_RESP_TYPE_NONE</a> = 0
+, <a class="el" href="group___a_p_p___u_a_r_t.html#gga4089423188b38deafeba9179ea8ce1beab977b73e4e2d82d6c4d6ca112ed1b826">APP_UART_RESP_TYPE_ACK</a>
+, <a class="el" href="group___a_p_p___u_a_r_t.html#gga4089423188b38deafeba9179ea8ce1bea14a39ae6db0b4291d4bd6953b49ce1e8">APP_UART_RESP_TYPE_DEVICE_ID</a>
+ }</td></tr>
+<tr class="memdesc:ga4089423188b38deafeba9179ea8ce1be"><td class="mdescLeft">&#160;</td><td class="mdescRight">UART response type enum.  <a href="group___a_p_p___u_a_r_t.html#ga4089423188b38deafeba9179ea8ce1be">More...</a><br /></td></tr>
+<tr class="separator:ga4089423188b38deafeba9179ea8ce1be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ga7efa29f7ca0ace321b2e8c0de9b10af3"><td class="memItemLeft" align="right" valign="top">rd_status_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_p_p___u_a_r_t.html#ga7efa29f7ca0ace321b2e8c0de9b10af3">app_uart_init</a> (void)</td></tr>
@@ -123,6 +133,33 @@ Functions</h2></td></tr>
 <tr class="separator:ga1a478078651c45a7ce92c84d681296ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="ga4089423188b38deafeba9179ea8ce1be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4089423188b38deafeba9179ea8ce1be">&#9670;&nbsp;</a></span>app_uart_resp_type_e</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___a_p_p___u_a_r_t.html#ga4089423188b38deafeba9179ea8ce1be">app_uart_resp_type_e</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>UART response type enum. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga4089423188b38deafeba9179ea8ce1bea88ec713a7e477864784b9f6abc1c8942"></a>APP_UART_RESP_TYPE_NONE&#160;</td><td class="fielddoc"><p>No response. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga4089423188b38deafeba9179ea8ce1beab977b73e4e2d82d6c4d6ca112ed1b826"></a>APP_UART_RESP_TYPE_ACK&#160;</td><td class="fielddoc"><p>Ack response. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga4089423188b38deafeba9179ea8ce1bea14a39ae6db0b4291d4bd6953b49ce1e8"></a>APP_UART_RESP_TYPE_DEVICE_ID&#160;</td><td class="fielddoc"><p>Device ID response. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="app__uart_8c_source.html#l00037">37</a> of file <a class="el" href="app__uart_8c_source.html">app_uart.c</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ga7efa29f7ca0ace321b2e8c0de9b10af3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga7efa29f7ca0ace321b2e8c0de9b10af3">&#9670;&nbsp;</a></span>app_uart_init()</h2>
@@ -150,7 +187,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__uart_8c_source.html#l00399">399</a> of file <a class="el" href="app__uart_8c_source.html">app_uart.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__uart_8c_source.html#l00528">528</a> of file <a class="el" href="app__uart_8c_source.html">app_uart.c</a>.</p>
 
 </div>
 </div>
@@ -180,7 +217,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__uart_8c_source.html#l00475">475</a> of file <a class="el" href="app__uart_8c_source.html">app_uart.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__uart_8c_source.html#l00605">605</a> of file <a class="el" href="app__uart_8c_source.html">app_uart.c</a>.</p>
 
 </div>
 </div>
@@ -218,7 +255,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__uart_8c_source.html#l00415">415</a> of file <a class="el" href="app__uart_8c_source.html">app_uart.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__uart_8c_source.html#l00545">545</a> of file <a class="el" href="app__uart_8c_source.html">app_uart.c</a>.</p>
 
 </div>
 </div>
