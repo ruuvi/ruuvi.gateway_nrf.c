@@ -13,6 +13,8 @@
 #include "app_config.h"
 #include "app_uart.h"
 #include "app_ble.h"
+#include "main.h"
+#include "nrf_log.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_endpoint_ca_uart.h"
@@ -237,6 +239,8 @@ rd_status_t app_uart_apply_config (void * v_uart_payload)
     rd_status_t err_code = RD_SUCCESS;
     ri_radio_modulation_t modulation;
     ri_radio_channels_t channels;
+
+    //    return err_code;
 
     switch (p_uart_payload->cmd)
     {
@@ -560,42 +564,53 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
         memcpy (adv.params.adv.mac, scan->addr, sizeof (adv.params.adv.mac));
         memcpy (adv.params.adv.adv, scan->data, scan->data_len);
         memcpy (m_scan.data, scan->data, scan->data_len);
-        memcpy (&m_scan.data_len, &scan->data_len, sizeof (size_t));
+        m_scan.data_len = scan->data_len;
         adv.params.adv.rssi_db = scan->rssi;
         adv.params.adv.adv_len = scan->data_len;
         adv.cmd = RE_CA_UART_ADV_RPRT;
-        msg.data_length = sizeof (msg);
-        re_code = re_ca_uart_encode (msg.data, &msg.data_length, &adv);
-        msg.repeat_count = 1;
         manuf_id = ri_adv_parse_manuid (m_scan.data, m_scan.data_len);
+        uint16_t filter_id = RB_BLE_MANUFACTURER_ID;
+        bool flag_discard = false;
 
-        if (RE_SUCCESS == re_code)
+        if (app_ble_manufacturer_filter_enabled (&filter_id) &&
+                (manuf_id != filter_id))
         {
-            uint16_t filter_id = RB_BLE_MANUFACTURER_ID;
-            bool flag_discard = false;
+            flag_discard = true;
+        }
 
-            if (app_ble_manufacturer_filter_enabled (&filter_id) &&
-                    (manuf_id != filter_id))
-            {
-                flag_discard = true;
-            }
-
-            if (flag_discard)
-            {
-                err_code |= RD_ERROR_INVALID_DATA;
-            }
-            else
-            {
-                err_code |= app_uart_send_msg (&msg);
-            }
+        if (flag_discard)
+        {
+            err_code |= RD_ERROR_INVALID_DATA;
         }
         else
         {
-            err_code |= RD_ERROR_INVALID_DATA;
+            _Static_assert (sizeof (msg.data) <= UINT8_MAX, "sizeof (msg) <= UINT8_MAX");
+            msg.data_length = (uint8_t)sizeof (msg.data);
+            re_code = re_ca_uart_encode (msg.data, &msg.data_length, &adv);
+            msg.repeat_count = 1;
+
+            if (RE_SUCCESS == re_code)
+            {
+                NRF_LOG_INFO ("%s: addr=%s: len=%d",
+                              __func__,
+                              mac_addr_to_str (scan->addr).buf,
+                              scan->data_len);
+                NRF_LOG_HEXDUMP_INFO (scan->data, scan->data_len);
+                err_code |= app_uart_send_msg (&msg);
+            }
+            else
+            {
+                NRF_LOG_ERROR ("%s: re_ca_uart_encode failed", __func__);
+                err_code |= RD_ERROR_INVALID_DATA;
+            }
         }
     }
     else
     {
+        NRF_LOG_ERROR ("%s: addr=%s: data len=%d > RE_CA_UART_ADV_BYTES (%d)",
+                       __func__,
+                       mac_addr_to_str (scan->addr).buf,
+                       scan->data_len, RE_CA_UART_ADV_BYTES);
         err_code |= RD_ERROR_DATA_SIZE;
     }
 
@@ -608,7 +623,7 @@ rd_status_t app_uart_poll_configuration (void)
     ri_comm_message_t msg = {0};
     rd_status_t err_code = RD_SUCCESS;
     re_status_t re_code = RE_SUCCESS;
-    msg.data_length = sizeof (msg);
+    msg.data_length = sizeof (msg.data);
     cfg.cmd = RE_CA_UART_GET_ALL;
     re_code = re_ca_uart_encode (msg.data, &msg.data_length, &cfg);
     msg.repeat_count = RI_COMM_MSG_REPEAT_FOREVER;

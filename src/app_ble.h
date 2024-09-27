@@ -18,13 +18,13 @@
 /** @brief definition of application scan parameters */
 typedef struct
 {
+    uint16_t manufacturer_id;          //!< Set to manufacturer id to scan, in MSB format. e.g. 0x0499 for Ruuvi.
     ri_radio_channels_t scan_channels; //!< Channels to scan, not applicable on 2 MBit / s
     bool modulation_125kbps_enabled;   //!< True to enable scanning BLE Long Range
     bool modulation_1mbit_enabled;     //!< True to enable "classic" scanning
     bool modulation_2mbit_enabled;     //!< True to enable scanning for extended advs at 2 MBit/s.
     bool manufacturer_filter_enabled;  //!< True to scan only data of one manufacturer.
-    uint16_t manufacturer_id;          //!< Set to manufacturer id to scan, in MSB format. e.g. 0x0499 for Ruuvi.
-    ri_radio_modulation_t current_modulation; //!< Modulation used currently.
+    bool is_current_modulation_125kbps; //!< Modulation used currently.
 } app_ble_scan_t;
 
 /**

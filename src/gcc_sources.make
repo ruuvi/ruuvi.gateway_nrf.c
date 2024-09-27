@@ -241,6 +241,7 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/adc \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/atomic \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/communication \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/crypto \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/flash \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/gpio \
