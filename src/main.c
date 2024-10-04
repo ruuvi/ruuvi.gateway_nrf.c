@@ -28,6 +28,13 @@
 
 #define LED_ON_TIME_AFTER_REBOOT_MS (4000U)  //!< Turn on LED for 4 seconds after reboot
 
+/**
+ * @brief Convert MAC address to string.
+ *
+ * @param[in] p_mac Pointer to array of 6 bytes with MAC address.
+ *
+ * @return MAC address as string.
+ */
 mac_addr_str_t mac_addr_to_str (const uint8_t * const p_mac)
 {
     mac_addr_str_t mac_addr_str = {0};
