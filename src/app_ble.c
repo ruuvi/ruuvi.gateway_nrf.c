@@ -47,7 +47,8 @@ static inline void LOGD (const char * const msg)
 
 static inline bool scan_is_enabled (const app_ble_scan_t * const params)
 {
-    return params->modulation_125kbps_enabled || params->modulation_1mbit_enabled;
+    return params->modulation_125kbps_enabled || params->modulation_1mbit_enabled
+           || params->modulation_2mbit_enabled;
 }
 
 static app_ble_scan_t m_scan_params =
@@ -285,11 +286,14 @@ rd_status_t app_ble_scan_start (void)
          * because we don't know which channel the receiver should listen to.
          *
          * Therefore, we need to enable both primary and secondary channels
-         * when extended advertisement is enabled and
-         * `m_scan_params.modulation_2mbit_enabled` is used to enable
-         * extended advertisements, but not 'LE 2M PHY' only.
+         * when extended advertisement is enabled.
+         *
+         * When Coded PHY (125kbps) is enabled, the data is sent
+         * as an extended advertisement only.
          */
-        adv_params.is_ext_adv_enabled = m_scan_params.modulation_2mbit_enabled;
+        adv_params.is_rx_le_1m_phy_enabled = m_scan_params.modulation_1mbit_enabled;
+        adv_params.is_rx_le_2m_phy_enabled = m_scan_params.modulation_2mbit_enabled;
+        adv_params.is_rx_le_coded_phy_enabled = m_scan_params.modulation_125kbps_enabled;
 
         if (RD_SUCCESS == err_code)
         {

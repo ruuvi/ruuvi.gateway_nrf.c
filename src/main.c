@@ -65,7 +65,6 @@ static void setup (void)
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_log_init (APP_LOG_LEVEL);
     ri_log (RI_LOG_LEVEL_INFO, "Log initialized\n");
-    NRF_LOG_INFO ("RE_CA_UART_TX_MAX_LEN=%d", RE_CA_UART_TX_MAX_LEN);
     NRF_LOG_INFO ("RI_COMM_BLE_PAYLOAD_MAX_LENGTH=%d", RI_COMM_BLE_PAYLOAD_MAX_LENGTH);
     NRF_LOG_INFO ("RE_CA_UART_ADV_BYTES=%d", RE_CA_UART_ADV_BYTES);
     NRF_LOG_INFO ("RUUVI_NRF5_SDK15_ADV_ENABLED: %d", RUUVI_NRF5_SDK15_ADV_ENABLED);
