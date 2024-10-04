@@ -446,13 +446,13 @@ void app_uart_parser (void * p_data, uint16_t data_len)
             {
                 m_uart_ack = true;
                 err_code |= app_ble_scan_start(); // Applies new scanning settings.
+
+                if (RD_SUCCESS == err_code)
+                {
+                    ri_watchdog_feed();
+                }
             }
         }
-    }
-
-    if (RD_SUCCESS == err_code)
-    {
-        ri_watchdog_feed();
     }
 }
 

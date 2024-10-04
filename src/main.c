@@ -108,6 +108,7 @@ int main (void)
     rd_status_t err_code = RD_SUCCESS;
     setup();
     err_code |= app_ble_scan_start();
+    err_code |= ri_watchdog_feed();
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 
     do

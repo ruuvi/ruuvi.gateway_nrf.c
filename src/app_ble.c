@@ -314,7 +314,6 @@ rd_status_t app_ble_scan_start (void)
             {
                 err_code |= rt_adv_init (&adv_params);
                 err_code |= rt_adv_scan_start (&on_scan_isr);
-                err_code |= ri_watchdog_feed();
             }
         }
         else
