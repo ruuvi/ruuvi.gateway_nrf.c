@@ -3,7 +3,7 @@ TAG := $(shell git describe --tags --exact-match)
 # Commit hash from git
 COMMIT := $(shell git rev-parse --short HEAD)
 VERSION := $(if $(TAG),\\\"$(TAG)\\\",\\\"$(COMMIT)\\\")
-BOARDS = pca10040 ruuvigw_nrf
+BOARDS = pca10040 pca10059 ruuvigw_nrf
 VARIANTS = debug release
 
 .PHONY: all sync ${BOARDS} analysis publish clean 
@@ -17,7 +17,7 @@ sync:
 	git submodule sync --recursive
 	git submodule update --init --recursive
 
-
+# nRF52-DK
 pca10040:
 	@echo build FW ${VERSION}
 	$(MAKE) -C targets/pca10040 clean
@@ -26,6 +26,16 @@ pca10040:
 	$(MAKE) -C targets/pca10040 clean
 	$(MAKE) -C targets/pca10040 DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/pca10040/package.sh -n ruuvigw_release
+
+# nRF52840-DK
+pca10059:
+	@echo build FW ${VERSION}
+	$(MAKE) -C targets/pca10059 clean
+	$(MAKE) -C targets/pca10059 DEBUG=-DDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
+	targets/pca10059/package.sh -n ruuvigw_debug
+	$(MAKE) -C targets/pca10059 clean
+	$(MAKE) -C targets/pca10059 DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
+	targets/pca10059/package.sh -n ruuvigw_release
 
 ruuvigw_nrf:
 	$(MAKE) -C targets/ruuvigw_nrf clean
@@ -45,4 +55,5 @@ publish:
 clean:
 	@echo cleaning build files…
 	$(MAKE) -C targets/pca10040 clean
+	$(MAKE) -C targets/pca10059 clean
 	$(MAKE) -C targets/ruuvigw_nrf clean
