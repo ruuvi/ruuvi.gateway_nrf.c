@@ -107,7 +107,6 @@ void tearDown (void)
 {
 }
 
-
 /**
  * @brief Initialize UART peripheral with values read from ruuvi_boards.h.
  *
@@ -133,7 +132,7 @@ void test_app_uart_init_ok (void)
     ri_uart_init_ReturnThruPtr_channel (&mock_uart);
     ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
     rd_status_t err_code = app_uart_init();
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 void test_app_uart_init_twice (void)
 {
@@ -175,13 +174,13 @@ void test_app_uart_send_broadcast_ok (void)
     memcpy (scan.data, &mock_data, sizeof (mock_data));
     scan.data_len = sizeof (mock_data);
     test_app_uart_init_ok();
-    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
     uint16_t manufacturer_id = 0x0499;
     app_ble_manufacturer_filter_enabled_ExpectAndReturn (&manufacturer_id, true);
-    err_code |= app_uart_send_broadcast (&scan);
-    TEST_ASSERT (RD_SUCCESS == err_code);
-    TEST_ASSERT (1 == mock_sends);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_send_broadcast (&scan); // Call the function under test
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (1, mock_sends);
 }
 
 void test_app_uart_send_broadcast_null (void)
@@ -189,8 +188,8 @@ void test_app_uart_send_broadcast_null (void)
     rd_status_t err_code = RD_SUCCESS;
     test_app_uart_init_ok();
     err_code |= app_uart_send_broadcast (NULL);
-    TEST_ASSERT (RD_ERROR_NULL == err_code);
-    TEST_ASSERT (0 == mock_sends);
+    TEST_ASSERT_EQUAL (RD_ERROR_NULL, err_code);
+    TEST_ASSERT_EQUAL (0, mock_sends);
 }
 
 void test_app_uart_send_broadcast_encoding_error (void)
@@ -202,11 +201,13 @@ void test_app_uart_send_broadcast_encoding_error (void)
     memcpy (scan.data, &mock_data, sizeof (mock_data));
     scan.data_len = sizeof (mock_data);
     test_app_uart_init_ok();
-    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_ERROR_INTERNAL);
     ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
+    uint16_t manufacturer_id = 0x0499;
+    app_ble_manufacturer_filter_enabled_ExpectAndReturn (&manufacturer_id, true);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_ERROR_INTERNAL);
     err_code |= app_uart_send_broadcast (&scan);
-    TEST_ASSERT (RD_ERROR_INVALID_DATA == err_code);
-    TEST_ASSERT (0 == mock_sends);
+    TEST_ASSERT_EQUAL (RD_ERROR_INVALID_DATA, err_code);
+    TEST_ASSERT_EQUAL (0, mock_sends);
 }
 
 void test_app_uart_send_broadcast_error_size (void)
@@ -219,8 +220,8 @@ void test_app_uart_send_broadcast_error_size (void)
     scan.data_len = 255U;
     test_app_uart_init_ok();
     err_code |= app_uart_send_broadcast (&scan);
-    TEST_ASSERT (RD_ERROR_DATA_SIZE == err_code);
-    TEST_ASSERT (0 == mock_sends);
+    TEST_ASSERT_EQUAL (RD_ERROR_DATA_SIZE, err_code);
+    TEST_ASSERT_EQUAL (0, mock_sends);
 }
 
 /**
@@ -248,13 +249,13 @@ void test_app_uart_poll_configuration_ok (void)
     ri_uart_init_ReturnThruPtr_channel (&dummy_uart_success);
     ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
     err_code = app_uart_init();
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
     ri_yield_ExpectAndReturn (RD_SUCCESS);
     err_code |= app_uart_poll_configuration();
-    TEST_ASSERT (RD_SUCCESS == err_code);
-    TEST_ASSERT (0 == mock_sends);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (0, mock_sends);
 }
 
 void test_app_uart_poll_configuration_encoding_error (void)
@@ -263,8 +264,8 @@ void test_app_uart_poll_configuration_encoding_error (void)
     test_app_uart_init_ok();
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_ERROR_INTERNAL);
     err_code |= app_uart_poll_configuration();
-    TEST_ASSERT (RD_ERROR_INVALID_DATA == err_code);
-    TEST_ASSERT (0 == mock_sends);
+    TEST_ASSERT_EQUAL (RD_ERROR_INVALID_DATA, err_code);
+    TEST_ASSERT_EQUAL (0, mock_sends);
 }
 
 /**
@@ -337,7 +338,7 @@ void test_app_uart_isr_received (void)
     rd_error_check_ExpectAnyArgs();
     err_code |= app_uart_isr (RI_COMM_RECEIVED,
                               (void *) &data[0], 8);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_isr_unknown (void)
@@ -345,7 +346,7 @@ void test_app_uart_isr_unknown (void)
     rd_status_t err_code = RD_SUCCESS;
     rd_error_check_ExpectAnyArgs();
     err_code |= app_uart_isr (RI_COMM_TIMEOUT, NULL, 0);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_fltr_tags (void)
@@ -358,7 +359,7 @@ void test_app_uart_apply_config_fltr_tags (void)
     };
     app_ble_manufacturer_filter_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_fltr_id (void)
@@ -371,7 +372,7 @@ void test_app_uart_apply_config_fltr_id (void)
     };
     app_ble_manufacturer_id_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_coded_phy (void)
@@ -384,7 +385,7 @@ void test_app_uart_apply_config_coded_phy (void)
     };
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_scan_1mb (void)
@@ -397,7 +398,7 @@ void test_app_uart_apply_config_scan_1mb (void)
     };
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_ext_payload (void)
@@ -410,7 +411,7 @@ void test_app_uart_apply_config_ext_payload (void)
     };
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_ch_37 (void)
@@ -424,7 +425,7 @@ void test_app_uart_apply_config_ch_37 (void)
     app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_ch_38 (void)
@@ -438,7 +439,7 @@ void test_app_uart_apply_config_ch_38 (void)
     app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_ch_39 (void)
@@ -452,7 +453,7 @@ void test_app_uart_apply_config_ch_39 (void)
     app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_all (void)
@@ -477,7 +478,7 @@ void test_app_uart_apply_config_all (void)
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 
@@ -581,7 +582,7 @@ void test_app_uart_parser_part_1_ok (void)
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
     app_uart_parser ((void *) data_part1, 3);
-    TEST_ASSERT (0 == mock_sends);
+    TEST_ASSERT_EQUAL (0, mock_sends);
 }
 
 void test_app_uart_parser_part_2_ok (void)
