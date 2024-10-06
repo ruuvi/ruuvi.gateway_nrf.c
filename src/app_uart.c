@@ -12,9 +12,9 @@
  */
 #include "app_config.h"
 #include "app_uart.h"
+#include <string.h>
 #include "app_ble.h"
 #include "main.h"
-#include "nrf_log.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_endpoint_ca_uart.h"
@@ -27,8 +27,13 @@
 #include "ruuvi_library_ringbuffer.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_task_led.h"
-
-#include <string.h>
+#ifndef CEEDLING
+#include "nrf_log.h"
+#else
+#define NRF_LOG_INFO(fmt, ...)
+#define NRF_LOG_ERROR(fmt, ...)
+#define NRF_LOG_HEXDUMP_INFO(data, len)
+#endif
 
 #define APP_UART_RING_BUFFER_MAX_LEN     (128U) //!< Ring buffer len       
 #define APP_UART_RING_DEQ_BUFFER_MAX_LEN (APP_UART_RING_BUFFER_MAX_LEN >>1) //!< Decode buffer len
@@ -581,6 +586,13 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
         if (flag_discard)
         {
             err_code |= RD_ERROR_INVALID_DATA;
+            NRF_LOG_INFO ("app_uart_send_broadcast: discard: manufacturer_id=0x%04x: addr=%s: len=%d",
+                          manuf_id,
+                          mac_addr_to_str (scan->addr).buf,
+                          scan->data_len,
+                          scan->primary_phy,
+                          scan->secondary_phy,
+                          scan->ch_index);
         }
         else
         {
@@ -591,10 +603,13 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
 
             if (RE_SUCCESS == re_code)
             {
-                NRF_LOG_INFO ("%s: addr=%s: len=%d",
-                              __func__,
+                NRF_LOG_INFO ("app_uart_send_broadcast: addr=%s: len=%d, primary_phy=%d, secondary_phy=%d, chan=%d, tx_power=%d",
                               mac_addr_to_str (scan->addr).buf,
-                              scan->data_len);
+                              scan->data_len,
+                              scan->primary_phy,
+                              scan->secondary_phy,
+                              scan->ch_index,
+                              scan->tx_power);
                 NRF_LOG_HEXDUMP_INFO (scan->data, scan->data_len);
                 err_code |= app_uart_send_msg (&msg);
             }

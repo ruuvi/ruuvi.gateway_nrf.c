@@ -10,8 +10,6 @@
 #include "app_ble.h"
 #include <string.h>
 #include "app_uart.h"
-#include "nrf_log.h"
-#include "nrf_log_ctrl.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_interface_log.h"
@@ -23,7 +21,12 @@
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_task_advertisement.h"
 #include "ruuvi_task_led.h"
-
+#ifndef CEEDLING
+#include "nrf_log.h"
+#else
+#define NRF_LOG_INFO(fmt, ...)
+#define NRF_LOG_ERROR(fmt, ...)
+#endif
 
 #define RB_BLE_UNKNOWN_MANUFACTURER_ID  0xFFFF                  //!< Unknown id
 #define RB_BLE_DEFAULT_CH37_STATE       0                       //!< Default channel 37 state

@@ -303,7 +303,7 @@ void test_app_uart_parser_get_device_id_ok (void)
     re_ca_uart_payload_t expect_payload = {.cmd = RE_CA_UART_GET_DEVICE_ID};
     re_ca_uart_decode_ExpectAndReturn ((uint8_t *) &data[0],
                                        (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
-    re_ca_uart_decode_ReturnThruPtr_cmd ((re_ca_uart_payload_t *) &expect_payload);
+    re_ca_uart_decode_ReturnThruPtr_payload ((re_ca_uart_payload_t *) &expect_payload);
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_send_device_id,
                                             RD_SUCCESS);

@@ -21,10 +21,15 @@
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_task_led.h"
 #include "ruuvi_endpoint_ca_uart.h"
-#include "nrf_log.h"
 #include "main.h"
 #include "app_ble.h"
 #include "app_uart.h"
+#ifndef CEEDLING
+#include "nrf_log.h"
+#else
+#define NRF_LOG_INFO(fmt, ...)
+#define NRF_LOG_ERROR(fmt, ...)
+#endif
 
 #define LED_ON_TIME_AFTER_REBOOT_MS (4000U)  //!< Turn on LED for 4 seconds after reboot
 
