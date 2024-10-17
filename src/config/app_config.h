@@ -26,13 +26,13 @@
 
 /** @brief If watchdog is not fed at this interval or faster, reboot.
  * When only "LE 2M PHY" and "LE Coded PHY" is enabled and they don't receive
- * any packets, then for the first 20 seconds it will wait for packets
+ * any packets, then for the first 21 seconds it will wait for packets
  * on "LE Coded PHY", then it will switch to "LE 2M PHY" and wait for packets
- * for the second 20 seconds.
- * So, the minimum watchdog timeout should be 40 seconds.
+ * for the second 21 seconds.
+ * So, the minimum watchdog timeout should be 42 seconds.
  * */
 #ifndef APP_WDT_INTERVAL_MS
-#   define APP_WDT_INTERVAL_MS (40U*1000U)
+#   define APP_WDT_INTERVAL_MS (42U*1000U)
 #endif
 
 /** @brief Enable/disable NFC tag functionality. */
