@@ -20,26 +20,26 @@ sync:
 # nRF52-DK
 pca10040:
 	@echo build FW ${VERSION}
-	$(MAKE) -C targets/pca10040 clean
-	$(MAKE) -C targets/pca10040 DEBUG=-DDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
+	$(MAKE) -j1 -C targets/pca10040 clean
+	$(MAKE) -j1 -C targets/pca10040 DEBUG=-DDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/pca10040/package.sh -n ruuvigw_debug
-	$(MAKE) -C targets/pca10040 clean
-	$(MAKE) -C targets/pca10040 DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
+	$(MAKE) -j1 -C targets/pca10040 clean
+	$(MAKE) -j1 -C targets/pca10040 DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/pca10040/package.sh -n ruuvigw_release
 
 # nRF52840-DK
 pca10059:
 	@echo build FW ${VERSION}
-	$(MAKE) -C targets/pca10059 clean
-	$(MAKE) -C targets/pca10059 DEBUG=-DDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
+	$(MAKE) -j1 -C targets/pca10059 clean
+	$(MAKE) -j1 -C targets/pca10059 DEBUG=-DDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/pca10059/package.sh -n ruuvigw_debug
-	$(MAKE) -C targets/pca10059 clean
-	$(MAKE) -C targets/pca10059 DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
+	$(MAKE) -j1 -C targets/pca10059 clean
+	$(MAKE) -j1 -C targets/pca10059 DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/pca10059/package.sh -n ruuvigw_release
 
 ruuvigw_nrf:
-	$(MAKE) -C targets/ruuvigw_nrf clean
-	$(MAKE) -C targets/ruuvigw_nrf DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
+	$(MAKE) -j1 -C targets/ruuvigw_nrf clean
+	$(MAKE) -j1 -C targets/ruuvigw_nrf DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/ruuvigw_nrf/package.sh -n ruuvigw_release
 
 analysis:

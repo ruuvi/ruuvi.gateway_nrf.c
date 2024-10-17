@@ -9,6 +9,10 @@ LINKER_PATH := $(SDK_ROOT)/modules/nrfx/mdk
 
 include ${PROJ_DIR}/gcc_sources.make
 
+COMMON_INCLUDES+= \
+  $(SDK_ROOT)/components/softdevice/s132/headers \
+  $(SDK_ROOT)/components/softdevice/s132/headers/nrf52
+
 $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
   LINKER_SCRIPT  := pca10040.ld
 

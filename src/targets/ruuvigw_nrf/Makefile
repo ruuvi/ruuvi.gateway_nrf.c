@@ -12,6 +12,10 @@ $(OUTPUT_DIRECTORY)/nrf52811_xxaa.out: \
 
 include ${PROJ_DIR}/gcc_sources.make
 
+COMMON_INCLUDES+= \
+  $(SDK_ROOT)/components/softdevice/s140/headers \
+  $(SDK_ROOT)/components/softdevice/s140/headers/nrf52
+
 # Source files
 SRC_FILES += \
   $(COMMON_SOURCES) \

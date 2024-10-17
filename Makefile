@@ -207,21 +207,28 @@ PROJ_DIR := src
 DOXYGEN_DIR=./doxygen
 
 SDK_ROOT := nRF5_SDK_15.3.0_59ac345
-PROJ_DIR := src
 include ${PROJ_DIR}/gcc_sources.make
+
+COMMON_INCLUDES+= \
+  $(SDK_ROOT)/components/softdevice/s140/headers \
+  $(SDK_ROOT)/components/softdevice/s140/headers/nrf52
 
 CFLAGS  = -c -Wall -pedantic -Wno-variadic-macros -Wno-long-long -Wno-shadow -std=c11
 CFLAGS += -DBOARD_CUSTOM
 CFLAGS += -DBOARD_RUUVIGW_NRF
 CFLAGS += -DNRF52811_XXAA
+CFLAGS += -DRI_ADV_EXTENDED_ENABLED=1
+CFLAGS += -DRI_COMM_BLE_PAYLOAD_MAX_LENGTH=192
 OFLAGS=-g3
 DFLAGS=
 INCLUDES=${COMMON_INCLUDES}
-INCLUDES+=nRF5_SDK_15.3.0_59ac345/components/softdevice/s140/headers
-INCLUDES+= \
-src/ \
-src/config 
+
+INCLUDES += \
+	src \
+	src/config
+
 INC_PARAMS=$(foreach d, $(INCLUDES), -I$d)
+INCLUDE_PATH=${INC_PARAMS}
 SOURCES=${RUUVI_PRJ_SOURCES}
 OBJECTS=$(SOURCES:.c=.o)
 ANALYSIS=$(SOURCES:.c=.a)
@@ -239,20 +246,21 @@ DISABLE_CMOCK_TEST_SUMMARY_PER_PROJECT=1
 
 TEST_MAKEFILE = ${TEST_BUILD_DIR}/MakefileTestSupport
 
+TEST_TARGETS =
 -include ${TEST_MAKEFILE}
 
 .PHONY: all clean doxygen sonar astyle
 
 all: clean astyle doxygen sonar
 
-#.c.o:
-# Build
-#	$(CXX) $(CFLAGS) $< $(DFLAGS) $(INC_PARAMS) $(OFLAGS) $(LDFLAGS) -o $@
+# Specify all tests as dependencies of 'all' (workaround for JetBrains CLion)
+# It is needed because on the first scan of Makefile the $(TEST_MAKEFILE) does not exist and it is not included.
+all: test_app_ble test_app_uart test_main
 
 doxygen: clean
 	doxygen
 
-sonar: clean $(SOURCES) $(SONAR) 
+sonar: clean $(SOURCES) $(SONAR)
 $(SONAR): $(ANALYSIS)
 
 $(ANALYSIS): %.a: %.c

@@ -52,6 +52,8 @@
     - +:src/ruuvi.drivers.c/src/**
     - +:src/ruuvi.endpoints.c/src/**
     - +:src/ruuvi.libraries.c/src/**
+  :include:
+    - nRF5_SDK_15.3.0_59ac345/components/softdevice/s140/headers
   :support:
     - test/support
 
@@ -65,6 +67,9 @@
     - NRF52811_XXAA
     - CMOCK
     - CEEDLING
+    - SVCALL_AS_NORMAL_FUNCTION
+    - RI_ADV_EXTENDED_ENABLED=1
+    - RI_COMM_BLE_PAYLOAD_MAX_LENGTH=192
   :test:
     - *common_defines
     - TEST
