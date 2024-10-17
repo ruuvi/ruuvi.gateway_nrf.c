@@ -177,6 +177,11 @@ rd_status_t app_ble_channels_set (const ri_radio_channels_t channels)
     return err_code;
 }
 
+void app_ble_set_max_adv_len (uint8_t max_adv_length)
+{
+    m_scan_params.max_adv_length = max_adv_length;
+}
+
 rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
                                        const bool enable)
 {
@@ -297,6 +302,7 @@ rd_status_t app_ble_scan_start (void)
         adv_params.is_rx_le_1m_phy_enabled = m_scan_params.modulation_1mbit_enabled;
         adv_params.is_rx_le_2m_phy_enabled = m_scan_params.modulation_2mbit_enabled;
         adv_params.is_rx_le_coded_phy_enabled = m_scan_params.modulation_125kbps_enabled;
+        adv_params.max_adv_length = m_scan_params.max_adv_length;
 
         if (RD_SUCCESS == err_code)
         {

@@ -25,6 +25,7 @@ typedef struct
     bool modulation_2mbit_enabled;     //!< True to enable scanning for extended advs at 2 MBit/s.
     bool manufacturer_filter_enabled;  //!< True to scan only data of one manufacturer.
     bool is_current_modulation_125kbps; //!< Modulation used currently.
+    uint8_t max_adv_length;            //!< Maximum length of advertisement data
 } app_ble_scan_t;
 
 /**
@@ -63,6 +64,12 @@ rd_status_t app_ble_channels_get (ri_radio_channels_t * p_channels);
  * @retval RD_ERROR_INVALID_PARAM If no channels are enabled.
  */
 rd_status_t app_ble_channels_set (const ri_radio_channels_t channels);
+
+/**
+ * @brief Set maximum advertisement length.
+ * @param[in] max_adv_length Maximum length of advertisement data.
+ */
+void app_ble_set_max_adv_len (uint8_t max_adv_length);
 
 /**
  * @brief Enable or disable given modulation.

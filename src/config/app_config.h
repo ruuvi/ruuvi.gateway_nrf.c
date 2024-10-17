@@ -162,7 +162,7 @@
  * Must accomodate extended advertisement.
  */
 #ifndef RI_SCHEDULER_SIZE
-#  define RI_SCHEDULER_SIZE (255U)
+#  define RI_SCHEDULER_SIZE (256U)
 #endif
 
 
