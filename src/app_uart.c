@@ -28,7 +28,7 @@
 #include "ruuvi_library_ringbuffer.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_task_led.h"
-#ifndef CEEDLING
+#if !defined(CEEDLING) && !defined(SONAR)
 #include "nrf_log.h"
 #else
 #define NRF_LOG_DEBUG(fmt, ...)

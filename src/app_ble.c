@@ -21,7 +21,7 @@
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_task_advertisement.h"
 #include "ruuvi_task_led.h"
-#ifndef CEEDLING
+#if !defined(CEEDLING) && !defined(SONAR)
 #include "nrf_log.h"
 #else
 #define NRF_LOG_INFO(fmt, ...)

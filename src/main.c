@@ -24,7 +24,7 @@
 #include "main.h"
 #include "app_ble.h"
 #include "app_uart.h"
-#ifndef CEEDLING
+#if !defined(CEEDLING) && !defined(SONAR)
 #include "nrf_log.h"
 #else
 #define NRF_LOG_INFO(fmt, ...)
