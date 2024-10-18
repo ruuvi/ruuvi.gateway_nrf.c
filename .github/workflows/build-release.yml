@@ -1,15 +1,12 @@
-name: Build Firmware
+name: Build Release
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ '*' ]
-    types: [opened, synchronize, reopened]
+    tags: [ 'v*.*.*' ]
 
 jobs:
   build:
-    name: Build firmware
+    name: Build release
     runs-on: ubuntu-latest
 
     steps:
@@ -54,10 +51,10 @@ jobs:
           wget -q https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip
           unzip -q nRF5_SDK_15.3.0_59ac345.zip -d ~
 
-      - name: Get short commit hash if no tags
+      - name: Get Version from Tag
         id: get-version
         run: |
-          VERSION=$(git describe --exact-match --tags HEAD 2>/dev/null || git rev-parse --short HEAD)
+          VERSION=$(git describe --exact-match --tags HEAD)
           echo "git_version=$VERSION" >> $GITHUB_ENV
 
       - name: Run build
@@ -76,14 +73,51 @@ jobs:
           echo "full_hex=${BINNAME}_full.hex" >> $GITHUB_ENV
           echo "app_hex=${BINNAME}_app.hex" >> $GITHUB_ENV
 
-      - name: Upload artifact full.hex
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.full_hex }}
-          path: src/targets/ruuvigw_nrf/${{ env.full_hex }}
+      - name: Extract release information
+        id: release-info
+        run: |
+          VERSION="${{ env.git_version }}"
+          MESSAGE=$(git for-each-ref refs/tags/${VERSION} --format='\%(contents)')
+          
+          # Get the title and the description as separated variables
+          NAME=$(echo "${MESSAGE}" | head -n1)
+          DESCRIPTION=$(echo "${MESSAGE}" | tail -n +3)
+    
+          # Escape line breaks in description to prevent JSON parsing issues
+          DESCRIPTION=$(echo "${DESCRIPTION}" | jq -s -R '.')
 
-      - name: Upload artifact app.hex
-        uses: actions/upload-artifact@v4
+          echo "TAG=${VERSION}" >> $GITHUB_ENV
+          echo "RELEASE_TITLE=${NAME}" >> $GITHUB_ENV
+          echo "RELEASE_DESCRIPTION=${DESCRIPTION}" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: ${{ env.app_hex }}
-          path: src/targets/ruuvigw_nrf/${{ env.app_hex }}
+          tag_name: ${{ env.TAG }}
+          release_name: ${{ env.RELEASE_TITLE }}
+          body: ${{ env.RELEASE_DESCRIPTION }}
+          draft: false
+          prerelease: true
+
+      - name: Upload artifact to Release full.hex
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: src/targets/ruuvigw_nrf/${{ env.full_hex }}
+          asset_name: ${{ env.full_hex }}
+          asset_content_type: application/octet-stream
+
+      - name: Upload artifact to Release app.hex
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: src/targets/ruuvigw_nrf/${{ env.app_hex }}
+          asset_name: ${{ env.app_hex }}
+          asset_content_type: application/octet-stream
