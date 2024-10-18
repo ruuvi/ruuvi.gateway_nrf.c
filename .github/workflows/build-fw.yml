@@ -1,0 +1,75 @@
+name: Build Firmware
+
+on:
+  push:
+    branches: [ master ]
+    tags: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    name: Build firmware
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          submodules: recursive
+
+      - name: Install Arm GNU Toolchain (arm-none-eabi-gcc)
+        uses: carlosperate/arm-none-eabi-gcc-action@v1
+        with:
+          release: '7-2018-q2'
+
+      - name: Cache nRF5_SDK_15.3.0_59ac345
+        id: cache-nRF5_SDK
+        uses: actions/cache@v4
+        with:
+          path: ~/nRF5_SDK_15.3.0_59ac345
+          key: nRF5_SDK-${{ hashFiles('.github/workflows/build-fw.yml') }}
+
+      - name: Download and install Nordic SDK nRF5_SDK_15.3.0_59ac345
+        if: steps.cache-nRF5_SDK.outputs.cache-hit != 'true'
+        run: |
+          wget -q https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip
+          unzip -q nRF5_SDK_15.3.0_59ac345.zip -d ~
+
+      - name: Get short commit hash if no tags
+        id: get-version
+        run: |
+          VERSION=$(git describe --exact-match --tags HEAD 2>/dev/null || git rev-parse --short HEAD)
+          echo "::set-output name=version::$VERSION"
+
+      - name: Run build
+        run: |
+          ln -s ~/nRF5_SDK_15.3.0_59ac345 nRF5_SDK_15.3.0_59ac345
+          cd src
+          make all
+
+      - name: Generate artifact names
+        id: artifact-names
+        run: |
+          PREFIX="ruuvigw_nrf_armgcc_ruuvigw_release_"
+          VERSION="${{ steps.get-version.outputs.version }}"
+          BINNAME="${PREFIX}_${VERSION}"
+          
+          echo "::set-output name=full_hex::${BINNAME}_full.hex"
+          echo "::set-output name=app_hex::${BINNAME}_app.hex"          
+
+      - name: Upload artifact full.hex
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.artifact-names.outputs.full_hex }}
+          path: |
+            src/targets/ruuvigw_nrf/${{ steps.artifact-names.outputs.full_hex }}
+
+      - name: Upload artifact app.hex
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.artifact-names.outputs.app_hex }}
+          path: |
+            src/targets/ruuvigw_nrf/${{ steps.artifact-names.outputs.app_hex }}
