@@ -1,5 +1,6 @@
 #include "unity.h"
 
+#include "ble_gap.h"
 #include "app_uart.h"
 #include "mock_app_ble.h"
 #include "ruuvi_boards.h"
@@ -27,14 +28,16 @@ STATIC_ASSERT (MEMBER_SIZE (ri_adv_scan_t, addr) == MEMBER_SIZE (re_ca_uart_ble_
                mac), \
                Size_mismatch);
 
-const uint8_t mock_mac[BLE_MAC_ADDRESS_LENGTH] = {0xFA, 0xEB, 0xDC, 0xCD, 0xBE, 0xAF};
-const uint8_t mock_data[] =
-{
-    0x05U, 0x0FU, 0x27U, 0x40U,
-    0x35U, 0xC4U, 0x54U, 0x54U, 0x50U, 0x00U, 0xC8U, 0xFCU,
-    0x20U, 0xA4U, 0x56U, 0xF0U, 0x30U, 0xE5U, 0xC9U, 0x44U, 0x54U, 0x29U, 0xE3U,
-    0x8DU
-};
+#define MOCK_MAC_ADDR_INIT() {0xFA, 0xEB, 0xDC, 0xCD, 0xBE, 0xAF}
+const uint8_t mock_mac[BLE_MAC_ADDRESS_LENGTH] = MOCK_MAC_ADDR_INIT();
+#define MOCK_DATA_INIT() \
+    { \
+        0x05U, 0x0FU, 0x27U, 0x40U, \
+        0x35U, 0xC4U, 0x54U, 0x54U, 0x50U, 0x00U, 0xC8U, 0xFCU, \
+        0x20U, 0xA4U, 0x56U, 0xF0U, 0x30U, 0xE5U, 0xC9U, 0x44U, 0x54U, 0x29U, 0xE3U, \
+        0x8DU \
+    }
+const uint8_t mock_data[] = MOCK_DATA_INIT();
 const uint16_t mock_manuf_id = 0x0499;
 
 static uint8_t t_ring_buffer[128] = {0};
@@ -165,14 +168,96 @@ void test_app_uart_init_twice (void)
  * @retval RD_ERROR_DATA_SIZE If scan had larger advertisement size than allowed by
  *                            encoding module.
  */
-void test_app_uart_send_broadcast_ok (void)
+void test_app_uart_send_broadcast_ok_regular (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    ri_adv_scan_t scan = {0};
-    memcpy (scan.addr, &mock_mac, sizeof (scan.addr));
-    scan.rssi = -50;
-    memcpy (scan.data, &mock_data, sizeof (mock_data));
-    scan.data_len = sizeof (mock_data);
+    const ri_adv_scan_t scan =
+    {
+        .addr = MOCK_MAC_ADDR_INIT(),
+        .rssi = -50,
+        .data = MOCK_DATA_INIT(),
+        .data_len = sizeof (mock_data),
+        .is_coded_phy = false,
+        .primary_phy = RE_CA_UART_BLE_PHY_1MBPS,
+        .secondary_phy = RE_CA_UART_BLE_PHY_NOT_SET,
+        .ch_index = 37,
+        .tx_power = BLE_GAP_POWER_LEVEL_INVALID,
+    };
+    test_app_uart_init_ok();
+    ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
+    uint16_t manufacturer_id = 0x0499;
+    app_ble_manufacturer_filter_enabled_ExpectAndReturn (&manufacturer_id, true);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_send_broadcast (&scan); // Call the function under test
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (1, mock_sends);
+}
+
+void test_app_uart_send_broadcast_ok_coded_phy (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const ri_adv_scan_t scan =
+    {
+        .addr = MOCK_MAC_ADDR_INIT(),
+        .rssi = -51,
+        .data = MOCK_DATA_INIT(),
+        .data_len = sizeof (mock_data),
+        .is_coded_phy = true,
+        .primary_phy = RE_CA_UART_BLE_PHY_CODED,
+        .secondary_phy = RE_CA_UART_BLE_PHY_CODED,
+        .ch_index = 10,
+        .tx_power = 8,
+    };
+    test_app_uart_init_ok();
+    ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
+    uint16_t manufacturer_id = 0x0499;
+    app_ble_manufacturer_filter_enabled_ExpectAndReturn (&manufacturer_id, true);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_send_broadcast (&scan); // Call the function under test
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (1, mock_sends);
+}
+
+void test_app_uart_send_broadcast_ok_extended_adv_2m_phy (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const ri_adv_scan_t scan =
+    {
+        .addr = MOCK_MAC_ADDR_INIT(),
+        .rssi = -52,
+        .data = MOCK_DATA_INIT(),
+        .data_len = sizeof (mock_data),
+        .is_coded_phy = false,
+        .primary_phy = RE_CA_UART_BLE_PHY_1MBPS,
+        .secondary_phy = RE_CA_UART_BLE_PHY_2MBPS,
+        .ch_index = 39,
+        .tx_power = 0,
+    };
+    test_app_uart_init_ok();
+    ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
+    uint16_t manufacturer_id = 0x0499;
+    app_ble_manufacturer_filter_enabled_ExpectAndReturn (&manufacturer_id, true);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_send_broadcast (&scan); // Call the function under test
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (1, mock_sends);
+}
+
+void test_app_uart_send_broadcast_ok_phy_auto (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const ri_adv_scan_t scan =
+    {
+        .addr = MOCK_MAC_ADDR_INIT(),
+        .rssi = -53,
+        .data = MOCK_DATA_INIT(),
+        .data_len = sizeof (mock_data),
+        .is_coded_phy = false,
+        .primary_phy = RE_CA_UART_BLE_PHY_AUTO,
+        .secondary_phy = RE_CA_UART_BLE_PHY_AUTO,
+        .ch_index = 40,
+        .tx_power = -1,
+    };
     test_app_uart_init_ok();
     ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
     uint16_t manufacturer_id = 0x0499;
