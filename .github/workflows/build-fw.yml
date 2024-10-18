@@ -25,6 +25,11 @@ jobs:
         with:
           release: '7-2018-q2'
 
+      - name: Create symbolic link for ARM toolchain
+        run: |
+          sudo ln -s /home/runner/gcc-arm-none-eabi-7.2018.2-linux-x64/gcc-arm-none-eabi-7-2018-q2-update \
+            /usr/local/gcc-arm-none-eabi-7-2018-q2-update
+
       - name: Cache nRF5_SDK_15.3.0_59ac345
         id: cache-nRF5_SDK
         uses: actions/cache@v4
@@ -42,7 +47,7 @@ jobs:
         id: get-version
         run: |
           VERSION=$(git describe --exact-match --tags HEAD 2>/dev/null || git rev-parse --short HEAD)
-          echo "::set-output name=version::$VERSION"
+          echo "git_version=$VERSION" >> $GITHUB_ENV
 
       - name: Run build
         run: |
@@ -54,22 +59,22 @@ jobs:
         id: artifact-names
         run: |
           PREFIX="ruuvigw_nrf_armgcc_ruuvigw_release_"
-          VERSION="${{ steps.get-version.outputs.version }}"
+          VERSION="${{ env.git_version }}"
           BINNAME="${PREFIX}_${VERSION}"
           
-          echo "::set-output name=full_hex::${BINNAME}_full.hex"
-          echo "::set-output name=app_hex::${BINNAME}_app.hex"          
+          echo "full_hex=${BINNAME}_full.hex" >> $GITHUB_ENV
+          echo "app_hex=${BINNAME}_app.hex" >> $GITHUB_ENV
 
       - name: Upload artifact full.hex
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.artifact-names.outputs.full_hex }}
+          name: ${{ env.full_hex }}
           path: |
-            src/targets/ruuvigw_nrf/${{ steps.artifact-names.outputs.full_hex }}
+            src/targets/ruuvigw_nrf/${{ env.full_hex }}
 
       - name: Upload artifact app.hex
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.artifact-names.outputs.app_hex }}
+          name: ${{ env.app_hex }}
           path: |
-            src/targets/ruuvigw_nrf/${{ steps.artifact-names.outputs.app_hex }}
+            src/targets/ruuvigw_nrf/${{ env.app_hex }}
