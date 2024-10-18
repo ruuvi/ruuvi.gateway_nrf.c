@@ -58,7 +58,7 @@ jobs:
       - name: Generate artifact names
         id: artifact-names
         run: |
-          PREFIX="ruuvigw_nrf_armgcc_ruuvigw_release_"
+          PREFIX="ruuvigw_nrf_armgcc_ruuvigw_release"
           VERSION="${{ env.git_version }}"
           BINNAME="${PREFIX}_${VERSION}"
           
