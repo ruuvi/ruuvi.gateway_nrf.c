@@ -45,7 +45,7 @@ jobs:
       if: steps.cache-nRF5_SDK.outputs.cache-hit != 'true'
       run: |
         wget https://nsscprodmedia.blob.core.windows.net/prod/software-and-other-downloads/sdks/nrf5/binaries/nrf5sdk153059ac345.zip
-        unzip nRF5SDK153059ac345.zip -d ~
+        unzip nrf5sdk153059ac345.zip -d ~
         ln -s ~/nRF5_SDK_15.3.0_59ac345 nRF5_SDK_15.3.0_59ac345
 
     # Runs a set of commands using the runners shell
