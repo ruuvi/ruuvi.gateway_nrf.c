@@ -78,52 +78,25 @@ jobs:
           echo "full_hex=${BINNAME}_full.hex" >> $GITHUB_ENV
           echo "app_hex=${BINNAME}_app.hex" >> $GITHUB_ENV
 
-      - name: Extract release information
-        id: release-info
-        run: |
-          VERSION="${{ env.git_version }}"
-          MESSAGE=$(git for-each-ref refs/tags/${VERSION} --format='%(contents)')
-          
-          # Get the title and the description as separated variables
-          NAME=$(echo "${MESSAGE}" | head -n1)
-          DESCRIPTION=$(echo "${MESSAGE}" | tail -n +3)
-    
-          echo "TAG=${VERSION}" >> $GITHUB_ENV
-          echo "RELEASE_TITLE=${NAME}" >> $GITHUB_ENV
-          {
-            echo 'RELEASE_DESCRIPTION<<EOF'
-            echo "${DESCRIPTION}"
-            echo 'EOF'
-          } >> $GITHUB_ENV
+      - name: Upload artifact full.hex
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.full_hex }}
+          path: src/targets/ruuvigw_nrf/${{ env.full_hex }}
+
+      - name: Upload artifact app.hex
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.app_hex }}
+          path: src/targets/ruuvigw_nrf/${{ env.app_hex }}
 
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: ncipollo/release-action@v1.14.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.TAG }}
-          release_name: ${{ env.RELEASE_TITLE }}
-          body: ${{ env.RELEASE_DESCRIPTION }}
           draft: false
           prerelease: true
-
-      - name: Upload artifact to Release full.hex
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: src/targets/ruuvigw_nrf/${{ env.full_hex }}
-          asset_name: ${{ env.full_hex }}
-          asset_content_type: application/octet-stream
-
-      - name: Upload artifact to Release app.hex
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: src/targets/ruuvigw_nrf/${{ env.app_hex }}
-          asset_name: ${{ env.app_hex }}
-          asset_content_type: application/octet-stream
+          generateReleaseNotes: true
+          artifacts: "src/targets/ruuvigw_nrf/${{ env.full_hex }},src/targets/ruuvigw_nrf/${{ env.app_hex }}"
