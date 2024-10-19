@@ -16,13 +16,6 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           submodules: recursive
 
-      - name: Check system dependencies
-        run: |
-          if ! which jq > /dev/null 2>&1; then
-            sudo apt-get update
-            sudo apt-get install -y jq
-          fi
-
       - name: Set up Python 3.8
         uses: actions/setup-python@v5
         with:
@@ -95,12 +88,13 @@ jobs:
           NAME=$(echo "${MESSAGE}" | head -n1)
           DESCRIPTION=$(echo "${MESSAGE}" | tail -n +3)
     
-          # Escape line breaks in description to prevent JSON parsing issues
-          # DESCRIPTION=$(echo "${DESCRIPTION}" | jq -s -R '.')
-
           echo "TAG=${VERSION}" >> $GITHUB_ENV
           echo "RELEASE_TITLE=${NAME}" >> $GITHUB_ENV
-          echo "RELEASE_DESCRIPTION=${DESCRIPTION}" >> $GITHUB_ENV
+          {
+            echo 'RELEASE_DESCRIPTION<<EOF'
+            echo "${DESCRIPTION}"
+            echo 'EOF'
+          } >> $GITHUB_ENV
 
       - name: Create GitHub Release
         id: create_release
