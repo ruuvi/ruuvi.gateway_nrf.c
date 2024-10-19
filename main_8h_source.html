@@ -89,16 +89,29 @@ $(document).ready(function(){initNavTree('main_8h_source.html',''); initResizabl
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef MAIN_H</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define MAIN_H</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#ifdef CEEDLING</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#   define LOOP_FOREVER (0)</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keywordtype">int</span> app_main (<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keywordtype">void</span> on_wdt (<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#   define LOOP_FOREVER (1)</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// MAIN_H</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno"><a class="line" href="structmac__addr__str__t.html">    7</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structmac__addr__str__t.html">mac_addr_str_t</a></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;{</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#if RI_LOG_ENABLED</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keywordtype">char</span> <a class="code" href="structmac__addr__str__t.html#a5a673d461d9643d7195cbd3d1e4dbe20">buf</a>[BLE_MAC_ADDRESS_LENGTH * 2 + (BLE_MAC_ADDRESS_LENGTH - 1) + 1];</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="structmac__addr__str__t.html#a5a673d461d9643d7195cbd3d1e4dbe20">   13</a></span>&#160;    <span class="keywordtype">char</span> <a class="code" href="structmac__addr__str__t.html#a5a673d461d9643d7195cbd3d1e4dbe20">buf</a>[1]; </div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;} <a class="code" href="structmac__addr__str__t.html">mac_addr_str_t</a>;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#ifdef CEEDLING</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#   define LOOP_FOREVER (0)</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keywordtype">int</span> app_main (<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keywordtype">void</span> on_wdt (<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#   define LOOP_FOREVER (1)</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<a class="code" href="structmac__addr__str__t.html">mac_addr_str_t</a> <a class="code" href="main_8c.html#a34dfad244377dd48a33d942c67c74eda">mac_addr_to_str</a> (<span class="keyword">const</span> uint8_t * <span class="keyword">const</span> p_mac);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// MAIN_H</span></div>
+<div class="ttc" id="amain_8c_html_a34dfad244377dd48a33d942c67c74eda"><div class="ttname"><a href="main_8c.html#a34dfad244377dd48a33d942c67c74eda">mac_addr_to_str</a></div><div class="ttdeci">mac_addr_str_t mac_addr_to_str(const uint8_t *const p_mac)</div><div class="ttdoc">Convert MAC address to string.</div><div class="ttdef"><b>Definition:</b> <a href="main_8c_source.html#l00043">main.c:43</a></div></div>
+<div class="ttc" id="astructmac__addr__str__t_html"><div class="ttname"><a href="structmac__addr__str__t.html">mac_addr_str_t</a></div><div class="ttdoc">String buffer for string representation of MAC address.</div><div class="ttdef"><b>Definition:</b> <a href="main_8h_source.html#l00007">main.h:8</a></div></div>
+<div class="ttc" id="astructmac__addr__str__t_html_a5a673d461d9643d7195cbd3d1e4dbe20"><div class="ttname"><a href="structmac__addr__str__t.html#a5a673d461d9643d7195cbd3d1e4dbe20">mac_addr_str_t::buf</a></div><div class="ttdeci">char buf[1]</div><div class="ttdoc">Dummy buffer if logging is disabled.</div><div class="ttdef"><b>Definition:</b> <a href="main_8h_source.html#l00013">main.h:13</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

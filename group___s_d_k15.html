@@ -101,8 +101,8 @@ Files</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:ga25d771b6d2f753e677805a4177cdaaa1"><td class="memItemLeft" align="right" valign="top"><a id="ga25d771b6d2f753e677805a4177cdaaa1"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_k15.html#ga25d771b6d2f753e677805a4177cdaaa1">APP_WDT_INTERVAL_MS</a>&#160;&#160;&#160;(20U*1000U)</td></tr>
-<tr class="memdesc:ga25d771b6d2f753e677805a4177cdaaa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">If watchdog is not fed at this interval or faster, reboot. <br /></td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_k15.html#ga25d771b6d2f753e677805a4177cdaaa1">APP_WDT_INTERVAL_MS</a>&#160;&#160;&#160;(42U*1000U)</td></tr>
+<tr class="memdesc:ga25d771b6d2f753e677805a4177cdaaa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">If watchdog is not fed at this interval or faster, reboot. When only "LE 2M PHY" and "LE Coded PHY" is enabled and they don't receive any packets, then for the first 21 seconds it will wait for packets on "LE Coded PHY", then it will switch to "LE 2M PHY" and wait for packets for the second 21 seconds. So, the minimum watchdog timeout should be 42 seconds. <br /></td></tr>
 <tr class="separator:ga25d771b6d2f753e677805a4177cdaaa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf05c249ec7480800802fc147080fa99f"><td class="memItemLeft" align="right" valign="top"><a id="gaf05c249ec7480800802fc147080fa99f"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_k15.html#gaf05c249ec7480800802fc147080fa99f">APP_NFC_ENABLED</a>&#160;&#160;&#160;RB_NFC_INTERNAL_INSTALLED</td></tr>
@@ -185,7 +185,7 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_k15.html#ga2c383b7c152956455d052a37c5e5daa5">RI_SCHEDULER_LENGTH</a>&#160;&#160;&#160;(10U)</td></tr>
 <tr class="memdesc:ga2c383b7c152956455d052a37c5e5daa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of tasks in scheduler. <br /></td></tr>
 <tr class="separator:ga2c383b7c152956455d052a37c5e5daa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga89ac81d87f6b95de8b194690bdfba116"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_k15.html#ga89ac81d87f6b95de8b194690bdfba116">RI_SCHEDULER_SIZE</a>&#160;&#160;&#160;(255U)</td></tr>
+<tr class="memitem:ga89ac81d87f6b95de8b194690bdfba116"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_k15.html#ga89ac81d87f6b95de8b194690bdfba116">RI_SCHEDULER_SIZE</a>&#160;&#160;&#160;(256U)</td></tr>
 <tr class="memdesc:ga89ac81d87f6b95de8b194690bdfba116"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum data length of scheduled task.  <a href="group___s_d_k15.html#ga89ac81d87f6b95de8b194690bdfba116">More...</a><br /></td></tr>
 <tr class="separator:ga89ac81d87f6b95de8b194690bdfba116"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5ce3f6fbc1410e1a60baa4901e2f9109"><td class="memItemLeft" align="right" valign="top"><a id="ga5ce3f6fbc1410e1a60baa4901e2f9109"></a>
@@ -255,7 +255,7 @@ Macros</h2></td></tr>
 <p>Enable extended advertising, i.e. Long Range and 2 MBit / s. </p>
 <p>Reserves a lot of memory for data payloads in program, 255 bytes vs 31 bytes. </p>
 
-<p class="definition">Definition at line <a class="el" href="app__config_8h_source.html#l00067">67</a> of file <a class="el" href="app__config_8h_source.html">app_config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__config_8h_source.html#l00073">73</a> of file <a class="el" href="app__config_8h_source.html">app_config.h</a>.</p>
 
 </div>
 </div>
@@ -274,7 +274,7 @@ Macros</h2></td></tr>
 <p>enable Ruuvi GPIO interface. </p>
 <p>Required by SPI, LED, Button and GPIO tasks. </p>
 
-<p class="definition">Definition at line <a class="el" href="app__config_8h_source.html#l00099">99</a> of file <a class="el" href="app__config_8h_source.html">app_config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__config_8h_source.html#l00105">105</a> of file <a class="el" href="app__config_8h_source.html">app_config.h</a>.</p>
 
 </div>
 </div>
@@ -285,7 +285,7 @@ Macros</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define RI_SCHEDULER_SIZE&#160;&#160;&#160;(255U)</td>
+          <td class="memname">#define RI_SCHEDULER_SIZE&#160;&#160;&#160;(256U)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -293,7 +293,7 @@ Macros</h2></td></tr>
 <p>Maximum data length of scheduled task. </p>
 <p>Must accomodate extended advertisement. </p>
 
-<p class="definition">Definition at line <a class="el" href="app__config_8h_source.html#l00159">159</a> of file <a class="el" href="app__config_8h_source.html">app_config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__config_8h_source.html#l00165">165</a> of file <a class="el" href="app__config_8h_source.html">app_config.h</a>.</p>
 
 </div>
 </div>
@@ -312,7 +312,7 @@ Macros</h2></td></tr>
 <p>Allocate RAM for the interrupt function pointers. </p>
 <p>GPIOs are indexed by GPIO number starting from 1, so size is GPIO_NUM + 1. </p>
 
-<p class="definition">Definition at line <a class="el" href="app__config_8h_source.html#l00108">108</a> of file <a class="el" href="app__config_8h_source.html">app_config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__config_8h_source.html#l00114">114</a> of file <a class="el" href="app__config_8h_source.html">app_config.h</a>.</p>
 
 </div>
 </div>

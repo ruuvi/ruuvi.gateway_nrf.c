@@ -90,138 +90,138 @@ $(document).ready(function(){initNavTree('app__config_8h_source.html',''); initR
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define APP_CONFIG_H</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &quot;ruuvi_boards.h&quot;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#ifndef APP_WDT_INTERVAL_MS</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga25d771b6d2f753e677805a4177cdaaa1">   29</a></span>&#160;<span class="preprocessor">#   define APP_WDT_INTERVAL_MS (20U*1000U)</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#ifndef APP_NFC_ENABLED</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaf05c249ec7480800802fc147080fa99f">   34</a></span>&#160;<span class="preprocessor">#   define APP_NFC_ENABLED RB_NFC_INTERNAL_INSTALLED</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#ifndef APP_ADV_ENABLED</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga977370877b8921fcaf571ac73e15563e">   39</a></span>&#160;<span class="preprocessor">#   define APP_ADV_ENABLED (1U)</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="preprocessor">#ifndef APP_GATT_ENABLED</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaf4f07ba7444b77e2197c660596ba492b">   44</a></span>&#160;<span class="preprocessor">#   define APP_GATT_ENABLED (0U)</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#ifndef APP_USBUART_ENABLED</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#   if defined (BOARD_PCA10040)</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor">#       define APP_USBUART_ENABLED (1U)</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#   elif defined (BOARD_PCA10056E)</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor">#       define APP_USBUART_ENABLED (1U)</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#   else</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga2089b255897d2b3a07c724321c06afbb">   54</a></span>&#160;<span class="preprocessor">#       define APP_USBUART_ENABLED (0U)</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#   endif</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga32245aad226d413cecd9fd837ad45d88">   59</a></span>&#160;<span class="preprocessor">#define RT_ADV_ENABLED APP_ADV_ENABLED</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="preprocessor">#ifndef RI_ADV_EXTENDED_ENABLED</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga0c0f134a6b398043ba58a58f491fc33d">   67</a></span>&#160;<span class="preprocessor">#   define RI_ADV_EXTENDED_ENABLED (1U)</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">#ifndef RT_GATT_ENABLED</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaf927cfc1fe95803ae622bc67897f6264">   72</a></span>&#160;<span class="preprocessor">#   define RT_GATT_ENABLED APP_GATT_ENABLED</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga440ba3f12d133ce32de100b4c324c8ec">   76</a></span>&#160;<span class="preprocessor">#define RUUVI_NRF5_SDK15_ENABLED (1U)</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#ifndef RT_BUTTON_ENABLED</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaf7734ccdd66a80d4b45d31ca1c55ced6">   80</a></span>&#160;<span class="preprocessor">#   define RT_BUTTON_ENABLED (1U)</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="preprocessor">#ifndef RI_COMM_ENABLED</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga765244b315909a38656f3a02a474c8b5">   85</a></span>&#160;<span class="preprocessor">#define RI_COMM_ENABLED (1U)</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor">#ifndef RT_GPIO_ENABLED</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gab041a09b0cfc52541091304900d9973c">   90</a></span>&#160;<span class="preprocessor">#   define RT_GPIO_ENABLED (1U)</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="preprocessor">#ifndef RI_GPIO_ENABLED</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaed1c08818345fe2aca4dd61eec424ec7">   99</a></span>&#160;<span class="preprocessor">#   define RI_GPIO_ENABLED (1U)</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="preprocessor">#ifndef RT_GPIO_INT_TABLE_SIZE</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaaa94f501b6d2c84d1a8f2dad2426abf9">  108</a></span>&#160;<span class="preprocessor">#    define RT_GPIO_INT_TABLE_SIZE (RB_GPIO_NUMBER + 1U)</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="preprocessor">#ifndef RI_FLASH_ENABLED</span></div>
-<div class="line"><a name="l00115"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gac412e53c991413132764c910f258808a">  115</a></span>&#160;<span class="preprocessor">#   define RI_FLASH_ENABLED (0U)</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor">#ifndef RT_LED_ENABLED</span></div>
-<div class="line"><a name="l00120"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga5fbb54def6a099ddc83097cb61fb6bbe">  120</a></span>&#160;<span class="preprocessor">#   define RT_LED_ENABLED (1U)</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="preprocessor">#ifndef RT_MAX_LED_CFG</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga82f9ffedbd37d9fded0b6416c6da081c">  125</a></span>&#160;<span class="preprocessor">#   define RT_MAX_LED_CFG RB_LEDS_NUMBER</span></div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="preprocessor">#ifndef RT_NFC_ENABLED</span></div>
-<div class="line"><a name="l00130"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaf8d470cb34b7e22e5f03e0febfc6ec60">  130</a></span>&#160;<span class="preprocessor">#   define RT_NFC_ENABLED APP_NFC_ENABLED</span></div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160; </div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="preprocessor">#ifndef RI_POWER_ENABLED</span></div>
-<div class="line"><a name="l00135"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga74bd398921e84b59d8f78b351abc53ac">  135</a></span>&#160;<span class="preprocessor">#   define RI_POWER_ENABLED (1U)</span></div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160; </div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="preprocessor">#ifndef RI_RADIO_ENABLED</span></div>
-<div class="line"><a name="l00140"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaff4c6a340dde754b8408783aaf91b59c">  140</a></span>&#160;<span class="preprocessor">#    define RI_RADIO_ENABLED (1U)</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160; </div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="preprocessor">#ifndef RI_SCHEDULER_ENABLED</span></div>
-<div class="line"><a name="l00145"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga4ed255c18352a3d8a9fbeb38ed9854bd">  145</a></span>&#160;<span class="preprocessor">#   define RI_SCHEDULER_ENABLED (1U)</span></div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160; </div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="preprocessor">#ifndef RI_SCHEDULER_LENGTH</span></div>
-<div class="line"><a name="l00150"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga2c383b7c152956455d052a37c5e5daa5">  150</a></span>&#160;<span class="preprocessor">#   define RI_SCHEDULER_LENGTH (10U)</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160; </div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="preprocessor">#ifndef RI_SCHEDULER_SIZE</span></div>
-<div class="line"><a name="l00159"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga89ac81d87f6b95de8b194690bdfba116">  159</a></span>&#160;<span class="preprocessor">#  define RI_SCHEDULER_SIZE (255U)</span></div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160; </div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160; </div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="preprocessor">#ifndef RI_TIMER_ENABLED</span></div>
-<div class="line"><a name="l00167"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga5ce3f6fbc1410e1a60baa4901e2f9109">  167</a></span>&#160;<span class="preprocessor">#   define RI_TIMER_ENABLED (1U)</span></div>
-<div class="line"><a name="l00169"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga4d31ccae3c55336f155ab6bd843fae32">  169</a></span>&#160;<span class="preprocessor">#   define RI_TIMER_MAX_INSTANCES (5U)</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160; </div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="preprocessor">#ifndef RI_UART_ENABLED</span></div>
-<div class="line"><a name="l00174"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga9ec455581c5934c3bed4df792abb8513">  174</a></span>&#160;<span class="preprocessor">#   define RI_UART_ENABLED (1U)</span></div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160; </div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="preprocessor">#ifndef RI_YIELD_ENABLED</span></div>
-<div class="line"><a name="l00179"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga820e587dde6a72c3e76bcfe387e4ff0d">  179</a></span>&#160;<span class="preprocessor">#   define RI_YIELD_ENABLED (1U)</span></div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160; </div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="preprocessor">#ifndef RI_WATCHDOG_ENABLED</span></div>
-<div class="line"><a name="l00184"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga2402dcb401292bed0f9999e8101d1f97">  184</a></span>&#160;<span class="preprocessor">#   define RI_WATCHDOG_ENABLED (1U)</span></div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160; </div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="preprocessor">#ifndef APP_FW_NAME</span></div>
-<div class="line"><a name="l00189"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaf0b3d65827c9965bcea7defc3c1528b9">  189</a></span>&#160;<span class="preprocessor">#   define APP_FW_NAME &quot;Ruuvi GW&quot;</span></div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160; </div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="preprocessor">#ifndef RI_LOG_ENABLED</span></div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="preprocessor">#   ifdef DEBUG</span></div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="preprocessor">#       define RI_LOG_ENABLED ((RB_APP_PAGES &gt; 0U))</span></div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="preprocessor">#       define APP_LOG_LEVEL RI_LOG_LEVEL_INFO</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="preprocessor">#   else</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gab55b9376f1e8e8ee5205a96b20f796ae">  199</a></span>&#160;<span class="preprocessor">#       define RI_LOG_ENABLED (0)</span></div>
-<div class="line"><a name="l00201"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gacba659841b897024f7d12dafd1fd706b">  201</a></span>&#160;<span class="preprocessor">#       define APP_LOG_LEVEL RI_LOG_LEVEL_NONE</span></div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="preprocessor">#   endif</span></div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160; </div>
-<div class="line"><a name="l00206"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga438e218324684a3e78879d24638bceb0">  206</a></span>&#160;<span class="preprocessor">#define RI_LIS2DH12_ENABLED 0</span></div>
-<div class="line"><a name="l00208"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gade28ed24c83aeb15c586dc4fb1335290">  208</a></span>&#160;<span class="preprocessor">#define RI_BME280_ENABLED 0</span></div>
-<div class="line"><a name="l00210"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga2b83343acccea92093f9043d587b57fa">  210</a></span>&#160;<span class="preprocessor">#define RI_SHTCX_ENABLED 0</span></div>
-<div class="line"><a name="l00212"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga214d47181fba09e64199eef8bacb4e7e">  212</a></span>&#160;<span class="preprocessor">#define RI_DPS310_ENABLED 0</span></div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160; </div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#ifndef APP_WDT_INTERVAL_MS</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga25d771b6d2f753e677805a4177cdaaa1">   35</a></span>&#160;<span class="preprocessor">#   define APP_WDT_INTERVAL_MS (42U*1000U)</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#ifndef APP_NFC_ENABLED</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaf05c249ec7480800802fc147080fa99f">   40</a></span>&#160;<span class="preprocessor">#   define APP_NFC_ENABLED RB_NFC_INTERNAL_INSTALLED</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#ifndef APP_ADV_ENABLED</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga977370877b8921fcaf571ac73e15563e">   45</a></span>&#160;<span class="preprocessor">#   define APP_ADV_ENABLED (1U)</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#ifndef APP_GATT_ENABLED</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaf4f07ba7444b77e2197c660596ba492b">   50</a></span>&#160;<span class="preprocessor">#   define APP_GATT_ENABLED (0U)</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#ifndef APP_USBUART_ENABLED</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#   if defined (BOARD_PCA10040)</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#       define APP_USBUART_ENABLED (1U)</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="preprocessor">#   elif defined (BOARD_PCA10056E)</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#       define APP_USBUART_ENABLED (1U)</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor">#   else</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga2089b255897d2b3a07c724321c06afbb">   60</a></span>&#160;<span class="preprocessor">#       define APP_USBUART_ENABLED (0U)</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor">#   endif</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga32245aad226d413cecd9fd837ad45d88">   65</a></span>&#160;<span class="preprocessor">#define RT_ADV_ENABLED APP_ADV_ENABLED</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor">#ifndef RI_ADV_EXTENDED_ENABLED</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga0c0f134a6b398043ba58a58f491fc33d">   73</a></span>&#160;<span class="preprocessor">#   define RI_ADV_EXTENDED_ENABLED (1U)</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="preprocessor">#ifndef RT_GATT_ENABLED</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaf927cfc1fe95803ae622bc67897f6264">   78</a></span>&#160;<span class="preprocessor">#   define RT_GATT_ENABLED APP_GATT_ENABLED</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga440ba3f12d133ce32de100b4c324c8ec">   82</a></span>&#160;<span class="preprocessor">#define RUUVI_NRF5_SDK15_ENABLED (1U)</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#ifndef RT_BUTTON_ENABLED</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaf7734ccdd66a80d4b45d31ca1c55ced6">   86</a></span>&#160;<span class="preprocessor">#   define RT_BUTTON_ENABLED (1U)</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160; </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="preprocessor">#ifndef RI_COMM_ENABLED</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga765244b315909a38656f3a02a474c8b5">   91</a></span>&#160;<span class="preprocessor">#define RI_COMM_ENABLED (1U)</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor">#ifndef RT_GPIO_ENABLED</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gab041a09b0cfc52541091304900d9973c">   96</a></span>&#160;<span class="preprocessor">#   define RT_GPIO_ENABLED (1U)</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; </div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#ifndef RI_GPIO_ENABLED</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaed1c08818345fe2aca4dd61eec424ec7">  105</a></span>&#160;<span class="preprocessor">#   define RI_GPIO_ENABLED (1U)</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="preprocessor">#ifndef RT_GPIO_INT_TABLE_SIZE</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaaa94f501b6d2c84d1a8f2dad2426abf9">  114</a></span>&#160;<span class="preprocessor">#    define RT_GPIO_INT_TABLE_SIZE (RB_GPIO_NUMBER + 1U)</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="preprocessor">#ifndef RI_FLASH_ENABLED</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gac412e53c991413132764c910f258808a">  121</a></span>&#160;<span class="preprocessor">#   define RI_FLASH_ENABLED (0U)</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160; </div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="preprocessor">#ifndef RT_LED_ENABLED</span></div>
+<div class="line"><a name="l00126"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga5fbb54def6a099ddc83097cb61fb6bbe">  126</a></span>&#160;<span class="preprocessor">#   define RT_LED_ENABLED (1U)</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160; </div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="preprocessor">#ifndef RT_MAX_LED_CFG</span></div>
+<div class="line"><a name="l00131"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga82f9ffedbd37d9fded0b6416c6da081c">  131</a></span>&#160;<span class="preprocessor">#   define RT_MAX_LED_CFG RB_LEDS_NUMBER</span></div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="preprocessor">#ifndef RT_NFC_ENABLED</span></div>
+<div class="line"><a name="l00136"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaf8d470cb34b7e22e5f03e0febfc6ec60">  136</a></span>&#160;<span class="preprocessor">#   define RT_NFC_ENABLED APP_NFC_ENABLED</span></div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="preprocessor">#ifndef RI_POWER_ENABLED</span></div>
+<div class="line"><a name="l00141"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga74bd398921e84b59d8f78b351abc53ac">  141</a></span>&#160;<span class="preprocessor">#   define RI_POWER_ENABLED (1U)</span></div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160; </div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="preprocessor">#ifndef RI_RADIO_ENABLED</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaff4c6a340dde754b8408783aaf91b59c">  146</a></span>&#160;<span class="preprocessor">#    define RI_RADIO_ENABLED (1U)</span></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160; </div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="preprocessor">#ifndef RI_SCHEDULER_ENABLED</span></div>
+<div class="line"><a name="l00151"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga4ed255c18352a3d8a9fbeb38ed9854bd">  151</a></span>&#160;<span class="preprocessor">#   define RI_SCHEDULER_ENABLED (1U)</span></div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160; </div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="preprocessor">#ifndef RI_SCHEDULER_LENGTH</span></div>
+<div class="line"><a name="l00156"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga2c383b7c152956455d052a37c5e5daa5">  156</a></span>&#160;<span class="preprocessor">#   define RI_SCHEDULER_LENGTH (10U)</span></div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160; </div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="preprocessor">#ifndef RI_SCHEDULER_SIZE</span></div>
+<div class="line"><a name="l00165"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga89ac81d87f6b95de8b194690bdfba116">  165</a></span>&#160;<span class="preprocessor">#  define RI_SCHEDULER_SIZE (256U)</span></div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160; </div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160; </div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="preprocessor">#ifndef RI_TIMER_ENABLED</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga5ce3f6fbc1410e1a60baa4901e2f9109">  173</a></span>&#160;<span class="preprocessor">#   define RI_TIMER_ENABLED (1U)</span></div>
+<div class="line"><a name="l00175"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga4d31ccae3c55336f155ab6bd843fae32">  175</a></span>&#160;<span class="preprocessor">#   define RI_TIMER_MAX_INSTANCES (5U)</span></div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160; </div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="preprocessor">#ifndef RI_UART_ENABLED</span></div>
+<div class="line"><a name="l00180"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga9ec455581c5934c3bed4df792abb8513">  180</a></span>&#160;<span class="preprocessor">#   define RI_UART_ENABLED (1U)</span></div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160; </div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="preprocessor">#ifndef RI_YIELD_ENABLED</span></div>
+<div class="line"><a name="l00185"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga820e587dde6a72c3e76bcfe387e4ff0d">  185</a></span>&#160;<span class="preprocessor">#   define RI_YIELD_ENABLED (1U)</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160; </div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="preprocessor">#ifndef RI_WATCHDOG_ENABLED</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga2402dcb401292bed0f9999e8101d1f97">  190</a></span>&#160;<span class="preprocessor">#   define RI_WATCHDOG_ENABLED (1U)</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160; </div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="preprocessor">#ifndef APP_FW_NAME</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gaf0b3d65827c9965bcea7defc3c1528b9">  195</a></span>&#160;<span class="preprocessor">#   define APP_FW_NAME &quot;Ruuvi GW&quot;</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160; </div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="preprocessor">#ifndef RI_LOG_ENABLED</span></div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<span class="preprocessor">#   ifdef DEBUG</span></div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<span class="preprocessor">#       define RI_LOG_ENABLED ((RB_APP_PAGES &gt; 0U))</span></div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="preprocessor">#       define APP_LOG_LEVEL RI_LOG_LEVEL_INFO</span></div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="preprocessor">#   else</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gab55b9376f1e8e8ee5205a96b20f796ae">  205</a></span>&#160;<span class="preprocessor">#       define RI_LOG_ENABLED (0)</span></div>
+<div class="line"><a name="l00207"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gacba659841b897024f7d12dafd1fd706b">  207</a></span>&#160;<span class="preprocessor">#       define APP_LOG_LEVEL RI_LOG_LEVEL_NONE</span></div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;<span class="preprocessor">#   endif</span></div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160; </div>
+<div class="line"><a name="l00212"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga438e218324684a3e78879d24638bceb0">  212</a></span>&#160;<span class="preprocessor">#define RI_LIS2DH12_ENABLED 0</span></div>
+<div class="line"><a name="l00214"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#gade28ed24c83aeb15c586dc4fb1335290">  214</a></span>&#160;<span class="preprocessor">#define RI_BME280_ENABLED 0</span></div>
+<div class="line"><a name="l00216"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga2b83343acccea92093f9043d587b57fa">  216</a></span>&#160;<span class="preprocessor">#define RI_SHTCX_ENABLED 0</span></div>
+<div class="line"><a name="l00218"></a><span class="lineno"><a class="line" href="group___s_d_k15.html#ga214d47181fba09e64199eef8bacb4e7e">  218</a></span>&#160;<span class="preprocessor">#define RI_DPS310_ENABLED 0</span></div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160; </div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

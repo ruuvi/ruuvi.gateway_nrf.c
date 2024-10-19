@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['current_5fmodulation_32',['current_modulation',['../structapp__ble__scan__t.html#a459cfb56dff79341d8a86d353b98dddb',1,'app_ble_scan_t']]]
+  ['buf_33',['buf',['../structmac__addr__str__t.html#a5a673d461d9643d7195cbd3d1e4dbe20',1,'mac_addr_str_t']]]
 ];

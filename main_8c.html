@@ -93,9 +93,6 @@ $(document).ready(function(){initNavTree('main_8c.html',''); initResizable(); })
 <code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="app__config_8h_source.html">app_config.h</a>&quot;</code><br />
-<code>#include &quot;main.h&quot;</code><br />
-<code>#include &quot;<a class="el" href="app__ble_8h_source.html">app_ble.h</a>&quot;</code><br />
-<code>#include &quot;app_uart.h&quot;</code><br />
 <code>#include &quot;ruuvi_driver_error.h&quot;</code><br />
 <code>#include &quot;ruuvi_interface_communication_ble_advertising.h&quot;</code><br />
 <code>#include &quot;ruuvi_interface_gpio.h&quot;</code><br />
@@ -104,8 +101,12 @@ $(document).ready(function(){initNavTree('main_8c.html',''); initResizable(); })
 <code>#include &quot;ruuvi_interface_timer.h&quot;</code><br />
 <code>#include &quot;ruuvi_interface_watchdog.h&quot;</code><br />
 <code>#include &quot;ruuvi_interface_yield.h&quot;</code><br />
-<code>#include &quot;ruuvi_interface_communication_radio.h&quot;</code><br />
 <code>#include &quot;ruuvi_task_led.h&quot;</code><br />
+<code>#include &quot;ruuvi_endpoint_ca_uart.h&quot;</code><br />
+<code>#include &quot;main.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="app__ble_8h_source.html">app_ble.h</a>&quot;</code><br />
+<code>#include &quot;app_uart.h&quot;</code><br />
+<code>#include &quot;nrf_log.h&quot;</code><br />
 </div>
 <p><a href="main_8c_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -118,6 +119,9 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a34dfad244377dd48a33d942c67c74eda"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmac__addr__str__t.html">mac_addr_str_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a34dfad244377dd48a33d942c67c74eda">mac_addr_to_str</a> (const uint8_t *const p_mac)</td></tr>
+<tr class="memdesc:a34dfad244377dd48a33d942c67c74eda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert MAC address to string.  <a href="main_8c.html#a34dfad244377dd48a33d942c67c74eda">More...</a><br /></td></tr>
+<tr class="separator:a34dfad244377dd48a33d942c67c74eda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a840291bc02cba5474a4cb46a9b9566fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a> (void)</td></tr>
 <tr class="memdesc:a840291bc02cba5474a4cb46a9b9566fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Application main.  <a href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe">More...</a><br /></td></tr>
 <tr class="separator:a840291bc02cba5474a4cb46a9b9566fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,6 +134,35 @@ Functions</h2></td></tr>
 
 <p class="definition">Definition in file <a class="el" href="main_8c_source.html">main.c</a>.</p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a34dfad244377dd48a33d942c67c74eda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34dfad244377dd48a33d942c67c74eda">&#9670;&nbsp;</a></span>mac_addr_to_str()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structmac__addr__str__t.html">mac_addr_str_t</a> mac_addr_to_str </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *const&#160;</td>
+          <td class="paramname"><em>p_mac</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert MAC address to string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_mac</td><td>Pointer to array of 6 bytes with MAC address.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>MAC address as string. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="main_8c_source.html#l00043">43</a> of file <a class="el" href="main_8c_source.html">main.c</a>.</p>
+
+</div>
+</div>
 <a id="a840291bc02cba5474a4cb46a9b9566fe"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a840291bc02cba5474a4cb46a9b9566fe">&#9670;&nbsp;</a></span>main()</h2>
 
@@ -154,7 +187,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="main_8c_source.html#l00078">78</a> of file <a class="el" href="main_8c_source.html">main.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8c_source.html#l00117">117</a> of file <a class="el" href="main_8c_source.html">main.c</a>.</p>
 
 </div>
 </div>

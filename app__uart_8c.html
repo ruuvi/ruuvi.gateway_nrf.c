@@ -92,7 +92,10 @@ $(document).ready(function(){initNavTree('app__uart_8c.html',''); initResizable(
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="app__config_8h_source.html">app_config.h</a>&quot;</code><br />
 <code>#include &quot;app_uart.h&quot;</code><br />
+<code>#include &lt;string.h&gt;</code><br />
+<code>#include &quot;ble_gap.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="app__ble_8h_source.html">app_ble.h</a>&quot;</code><br />
+<code>#include &quot;main.h&quot;</code><br />
 <code>#include &quot;ruuvi_boards.h&quot;</code><br />
 <code>#include &quot;ruuvi_driver_error.h&quot;</code><br />
 <code>#include &quot;ruuvi_endpoint_ca_uart.h&quot;</code><br />
@@ -105,7 +108,7 @@ $(document).ready(function(){initNavTree('app__uart_8c.html',''); initResizable(
 <code>#include &quot;ruuvi_library_ringbuffer.h&quot;</code><br />
 <code>#include &quot;ruuvi_interface_yield.h&quot;</code><br />
 <code>#include &quot;ruuvi_task_led.h&quot;</code><br />
-<code>#include &lt;string.h&gt;</code><br />
+<code>#include &quot;nrf_log.h&quot;</code><br />
 </div>
 <p><a href="app__uart_8c_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
