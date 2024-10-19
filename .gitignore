@@ -81,4 +81,5 @@ doxygen/*
 
 .idea/
 .vscode/
+.venv/
 

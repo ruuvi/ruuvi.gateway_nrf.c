@@ -217,8 +217,6 @@ COMMON_INCLUDES= \
   $(SDK_ROOT)/components/nfc/ndef/uri \
   $(SDK_ROOT)/components/nfc/t4t_lib \
   $(SDK_ROOT)/components/softdevice/common \
-  $(SDK_ROOT)/components/softdevice/s132/headers \
-  $(SDK_ROOT)/components/softdevice/s132/headers/nrf52 \
   $(SDK_ROOT)/components/toolchain/gcc \
   $(SDK_ROOT)/components/toolchain \
   $(SDK_ROOT)/components/toolchain/cmsis/include \
@@ -241,6 +239,7 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/adc \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/atomic \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/communication \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/crypto \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/flash \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/gpio \

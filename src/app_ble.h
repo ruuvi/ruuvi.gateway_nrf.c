@@ -18,13 +18,14 @@
 /** @brief definition of application scan parameters */
 typedef struct
 {
+    uint16_t manufacturer_id;          //!< Set to manufacturer id to scan, in MSB format. e.g. 0x0499 for Ruuvi.
     ri_radio_channels_t scan_channels; //!< Channels to scan, not applicable on 2 MBit / s
     bool modulation_125kbps_enabled;   //!< True to enable scanning BLE Long Range
     bool modulation_1mbit_enabled;     //!< True to enable "classic" scanning
     bool modulation_2mbit_enabled;     //!< True to enable scanning for extended advs at 2 MBit/s.
     bool manufacturer_filter_enabled;  //!< True to scan only data of one manufacturer.
-    uint16_t manufacturer_id;          //!< Set to manufacturer id to scan, in MSB format. e.g. 0x0499 for Ruuvi.
-    ri_radio_modulation_t current_modulation; //!< Modulation used currently.
+    bool is_current_modulation_125kbps; //!< Modulation used currently.
+    uint8_t max_adv_length;            //!< Maximum length of advertisement data
 } app_ble_scan_t;
 
 /**
@@ -63,6 +64,12 @@ rd_status_t app_ble_channels_get (ri_radio_channels_t * p_channels);
  * @retval RD_ERROR_INVALID_PARAM If no channels are enabled.
  */
 rd_status_t app_ble_channels_set (const ri_radio_channels_t channels);
+
+/**
+ * @brief Set maximum advertisement length.
+ * @param[in] max_adv_length Maximum length of advertisement data.
+ */
+void app_ble_set_max_adv_len (uint8_t max_adv_length);
 
 /**
  * @brief Enable or disable given modulation.

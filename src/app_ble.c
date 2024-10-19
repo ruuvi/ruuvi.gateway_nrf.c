@@ -8,6 +8,7 @@
  */
 
 #include "app_ble.h"
+#include <string.h>
 #include "app_uart.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_boards.h"
@@ -20,8 +21,12 @@
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_task_advertisement.h"
 #include "ruuvi_task_led.h"
-
-#include <string.h>
+#if !defined(CEEDLING) && !defined(SONAR)
+#include "nrf_log.h"
+#else
+#define NRF_LOG_INFO(fmt, ...)
+#define NRF_LOG_ERROR(fmt, ...)
+#endif
 
 #define RB_BLE_UNKNOWN_MANUFACTURER_ID  0xFFFF                  //!< Unknown id
 #define RB_BLE_DEFAULT_CH37_STATE       0                       //!< Default channel 37 state
@@ -32,7 +37,6 @@
 #define RB_BLE_DEFAULT_2MBIT_STATE      false                   //!< Default 2mbit state
 #define RB_BLE_DEFAULT_FLTR_STATE       true                    //!< Default filter id state
 #define RB_BLE_DEFAULT_MANUFACTURER_ID  RB_BLE_MANUFACTURER_ID  //!< Default id
-#define RB_BLE_DEFAULT_MODULATION       RI_RADIO_BLE_2MBPS      //!< Default modulation
 
 static inline void LOG (const char * const msg)
 {
@@ -52,15 +56,15 @@ static inline bool scan_is_enabled (const app_ble_scan_t * const params)
 
 static app_ble_scan_t m_scan_params =
 {
+    .manufacturer_id = RB_BLE_DEFAULT_MANUFACTURER_ID,
     .scan_channels.channel_37 = RB_BLE_DEFAULT_CH37_STATE,
     .scan_channels.channel_38 = RB_BLE_DEFAULT_CH38_STATE,
     .scan_channels.channel_39 = RB_BLE_DEFAULT_CH39_STATE,
     .modulation_125kbps_enabled = RB_BLE_DEFAULT_125KBPS_STATE,
     .modulation_1mbit_enabled = RB_BLE_DEFAULT_1MBIT_STATE,
     .modulation_2mbit_enabled = RB_BLE_DEFAULT_2MBIT_STATE,
+    .is_current_modulation_125kbps = false,
     .manufacturer_filter_enabled = RB_BLE_DEFAULT_FLTR_STATE,
-    .manufacturer_id = RB_BLE_DEFAULT_MANUFACTURER_ID,
-    .current_modulation =  RB_BLE_DEFAULT_MODULATION,
 };
 
 #ifndef CEEDLING
@@ -113,7 +117,7 @@ rd_status_t on_scan_isr (const ri_comm_evt_t evt, void * p_data, // -V2009
             break;
 
         case RI_COMM_TIMEOUT:
-            LOGD ("Timeout\r\n");
+            LOG ("Timeout\r\n");
             err_code |= app_ble_scan_start();
             break;
 
@@ -173,6 +177,11 @@ rd_status_t app_ble_channels_set (const ri_radio_channels_t channels)
     return err_code;
 }
 
+void app_ble_set_max_adv_len (uint8_t max_adv_length)
+{
+    m_scan_params.max_adv_length = max_adv_length;
+}
+
 rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
                                        const bool enable)
 {
@@ -210,59 +219,28 @@ rd_status_t app_ble_modulation_enable (const ri_radio_modulation_t modulation,
 
 static inline void next_modulation_select (void)
 {
-    switch (m_scan_params.current_modulation)
+    if (m_scan_params.is_current_modulation_125kbps)
     {
-        case RI_RADIO_BLE_125KBPS:
-            if (m_scan_params.modulation_1mbit_enabled)
-            {
-                m_scan_params.current_modulation = RI_RADIO_BLE_1MBPS;
-            }
-            else if (m_scan_params.modulation_2mbit_enabled)
-            {
-                m_scan_params.current_modulation = RI_RADIO_BLE_2MBPS;
-            }
-            else
-            {
-                // No action needed.
-            }
-
-            break;
-
-        case RI_RADIO_BLE_1MBPS:
-            if (m_scan_params.modulation_2mbit_enabled)
-            {
-                m_scan_params.current_modulation = RI_RADIO_BLE_2MBPS;
-            }
-            else if (m_scan_params.modulation_125kbps_enabled)
-            {
-                m_scan_params.current_modulation = RI_RADIO_BLE_125KBPS;
-            }
-            else
-            {
-                // No action needed.
-            }
-
-            break;
-
-        case RI_RADIO_BLE_2MBPS:
-            if (m_scan_params.modulation_125kbps_enabled)
-            {
-                m_scan_params.current_modulation = RI_RADIO_BLE_125KBPS;
-            }
-            else if (m_scan_params.modulation_1mbit_enabled)
-            {
-                m_scan_params.current_modulation = RI_RADIO_BLE_1MBPS;
-            }
-            else
-            {
-                // No action needed.
-            }
-
-            break;
-
-        default:
+        if (m_scan_params.modulation_1mbit_enabled ||
+                m_scan_params.modulation_2mbit_enabled)
+        {
+            m_scan_params.is_current_modulation_125kbps = false;
+        }
+        else
+        {
             // No action needed.
-            break;
+        }
+    }
+    else
+    {
+        if (m_scan_params.modulation_125kbps_enabled)
+        {
+            m_scan_params.is_current_modulation_125kbps = true;
+        }
+        else
+        {
+            // No action needed.
+        }
     }
 }
 
@@ -286,6 +264,7 @@ static rd_status_t pa_lna_ctrl (void)
 
 rd_status_t app_ble_scan_start (void)
 {
+    NRF_LOG_INFO ("app_ble_scan_start");
     rd_status_t err_code = RD_SUCCESS;
 
     if (scan_is_enabled (&m_scan_params))
@@ -305,18 +284,50 @@ rd_status_t app_ble_scan_start (void)
             adv_params.manufacturer_id = RB_BLE_UNKNOWN_MANUFACTURER_ID;
         }
 
+        /* When BLE extended advertisement is used, then
+         * 1. The primary channel LE 1M PHY (37, 38, 39) is used to notify
+         *    the receiver about the subsequent advertisement on the secondary
+         *    channel.
+         * 2. The receiver switches to the secondary channel 0..36 (LE 2M PHY)
+         *
+         * So, it is not possible to use only secondary channel 'LE 2M PHY'
+         * because we don't know which channel the receiver should listen to.
+         *
+         * Therefore, we need to enable both primary and secondary channels
+         * when extended advertisement is enabled.
+         *
+         * When Coded PHY (125kbps) is enabled, the data is sent
+         * as an extended advertisement only.
+         */
+        adv_params.is_rx_le_1m_phy_enabled = m_scan_params.modulation_1mbit_enabled;
+        adv_params.is_rx_le_2m_phy_enabled = m_scan_params.modulation_2mbit_enabled;
+        adv_params.is_rx_le_coded_phy_enabled = m_scan_params.modulation_125kbps_enabled;
+        adv_params.max_adv_length = m_scan_params.max_adv_length;
+
         if (RD_SUCCESS == err_code)
         {
+            NRF_LOG_INFO ("PHYs enabled: LE 1M PHY=%d, LE 2M PHY=%d, LE Coded PHY=%d",
+                          m_scan_params.modulation_1mbit_enabled,
+                          m_scan_params.modulation_2mbit_enabled,
+                          m_scan_params.modulation_125kbps_enabled);
             next_modulation_select();
+            NRF_LOG_INFO ("Current PHY: %s",
+                          m_scan_params.is_current_modulation_125kbps
+                          ? "LE Coded PHY"
+                          : "LE 1M PHY");
             err_code |= pa_lna_ctrl();
-            err_code |= ri_radio_init (m_scan_params.current_modulation);
+            err_code |= ri_radio_init (m_scan_params.is_current_modulation_125kbps ?
+                                       RI_RADIO_BLE_125KBPS : RI_RADIO_BLE_1MBPS);
 
             if (RD_SUCCESS == err_code)
             {
                 err_code |= rt_adv_init (&adv_params);
                 err_code |= rt_adv_scan_start (&on_scan_isr);
-                err_code |= ri_watchdog_feed();
             }
+        }
+        else
+        {
+            NRF_LOG_ERROR ("rt_adv_uninit or ri_radio_uninit failed, err=%d", err_code);
         }
     }
     else

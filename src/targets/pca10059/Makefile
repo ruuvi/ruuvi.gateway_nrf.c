@@ -1,5 +1,5 @@
 PROJECT_NAME     := ruuvigw
-TARGETS          := nrf52832_xxaa
+TARGETS          := nrf52840_xxaa
 OUTPUT_DIRECTORY := _build
 
 SDK_ROOT := ../../../nRF5_SDK_15.3.0_59ac345
@@ -10,11 +10,11 @@ LINKER_PATH := $(SDK_ROOT)/modules/nrfx/mdk
 include ${PROJ_DIR}/gcc_sources.make
 
 COMMON_INCLUDES+= \
-  $(SDK_ROOT)/components/softdevice/s132/headers \
-  $(SDK_ROOT)/components/softdevice/s132/headers/nrf52
+  $(SDK_ROOT)/components/softdevice/s140/headers \
+  $(SDK_ROOT)/components/softdevice/s140/headers/nrf52
 
-$(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
-  LINKER_SCRIPT  := pca10040.ld
+$(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
+  LINKER_SCRIPT  := pca10059.ld
 
 # make DEBUG=1 for debug build with traces
 DEBUG ?= 1
@@ -56,14 +56,14 @@ endif
 CFLAGS += $(INTOPT)
 CFLAGS += -DAPPLICATION_DRIVER_CONFIGURED
 CFLAGS += -DBOARD_CUSTOM
-CFLAGS += -DBOARD_PCA10040
+CFLAGS += -DBOARD_PCA10059
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DNRF52
-CFLAGS += -DNRF52832_XXAA
+CFLAGS += -DNRF52840_XXAA
 CFLAGS += -DNRF52_PAN_74
 CFLAGS += -DNRF_SD_BLE_API_VERSION=6
-CFLAGS += -DS132
+CFLAGS += -DS140
 CFLAGS += -DSOFTDEVICE_PRESENT
 CFLAGS += -DSWI_DISABLE0
 CFLAGS += -DUSE_APP_CONFIG
@@ -88,14 +88,14 @@ ASMFLAGS += -mcpu=cortex-m4
 ASMFLAGS += -mthumb -mabi=aapcs
 ASMFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 ASMFLAGS += -DBOARD_CUSTOM
-ASMFLAGS += -DBOARD_PCA10040
+ASMFLAGS += -DBOARD_PCA10059
 ASMFLAGS += -DCONFIG_GPIO_AS_PINRESET
 ASMFLAGS += -DFLOAT_ABI_HARD
 ASMFLAGS += -DNRF52
-ASMFLAGS += -DNRF52832_XXAA
+ASMFLAGS += -DNRF52840_XXAA
 ASMFLAGS += -DNRF52_PAN_74
 ASMFLAGS += -DNRF_SD_BLE_API_VERSION=6
-ASMFLAGS += -DS132
+ASMFLAGS += -DS140
 ASMFLAGS += -DSOFTDEVICE_PRESENT
 ASMFLAGS += -DSWI_DISABLE0
 ASMFLAGS += -DUSE_APP_CONFIG
@@ -113,10 +113,10 @@ LDFLAGS += --specs=nano.specs
 LDFLAGS += -DUSE_APP_CONFIG
 LDFLAGS += $(CUSTOM_LDFLAGS)
 
-nrf52832_xxaa: CFLAGS += -D__HEAP_SIZE=8192
-nrf52832_xxaa: CFLAGS += -D__STACK_SIZE=8192
-nrf52832_xxaa: ASMFLAGS += -D__HEAP_SIZE=8192
-nrf52832_xxaa: ASMFLAGS += -D__STACK_SIZE=8192
+nrf52840_xxaa: CFLAGS += -D__HEAP_SIZE=8192
+nrf52840_xxaa: CFLAGS += -D__STACK_SIZE=8192
+nrf52840_xxaa: ASMFLAGS += -D__HEAP_SIZE=8192
+nrf52840_xxaa: ASMFLAGS += -D__STACK_SIZE=8192
 
 # Add standard libraries at the very end of the linker input, after all objects
 # that may need symbols provided by these libraries.
@@ -126,7 +126,7 @@ LIB_FILES += -lc -lnosys -lm
 .PHONY: default
 
 # Default target - first one defined
-default: nrf52832_xxaa
+default: nrf52840_xxaa
 
 
 TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc

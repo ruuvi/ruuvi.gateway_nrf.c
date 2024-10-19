@@ -20,13 +20,11 @@ v) VERSION=${OPTARG};;
 *)
 esac
 done
+BINNAME=pca10059\_armgcc\_${NAME}\_${VERSION}
 
-BINNAME=ruuvigw_nrf_armgcc_${NAME}_${VERSION}
+rm pca10059_armgcc*${NAME}*
 
-rm ruuvigw_nrf*${NAME}*
-
-mergehex -m ../../../nRF5_SDK_15.3.0_59ac345/components/softdevice/s140/hex/s140_nrf52_6.1.1_softdevice.hex _build/nrf52811_xxaa.hex -o packet.hex
-
+mergehex -m ../../../nRF5_SDK_15.3.0_59ac345/components/softdevice/s140/hex/s140_nrf52_6.1.1_softdevice.hex  _build/nrf52840_xxaa.hex -o packet.hex
 # Check if the version was obtained from a git tag
 if [ $GIT_DESCRIBE_EXIT_STATUS -eq 0 ]; then
   # Version is from a git tag,
@@ -37,5 +35,5 @@ if [ $GIT_DESCRIBE_EXIT_STATUS -eq 0 ]; then
 else
   mv packet.hex ${BINNAME}\_full.hex
 fi
-mv _build/nrf52811_xxaa.map ${BINNAME}\_app.map
-mv _build/nrf52811_xxaa.hex ${BINNAME}\_app.hex
+mv _build/nrf52840_xxaa.map ${BINNAME}\_app.map
+mv _build/nrf52840_xxaa.hex ${BINNAME}\_app.hex

@@ -1,5 +1,6 @@
 #include "unity.h"
 
+#include "ble_gap.h"
 #include "app_uart.h"
 #include "mock_app_ble.h"
 #include "ruuvi_boards.h"
@@ -27,14 +28,16 @@ STATIC_ASSERT (MEMBER_SIZE (ri_adv_scan_t, addr) == MEMBER_SIZE (re_ca_uart_ble_
                mac), \
                Size_mismatch);
 
-const uint8_t mock_mac[BLE_MAC_ADDRESS_LENGTH] = {0xFA, 0xEB, 0xDC, 0xCD, 0xBE, 0xAF};
-const uint8_t mock_data[] =
-{
-    0x05U, 0x0FU, 0x27U, 0x40U,
-    0x35U, 0xC4U, 0x54U, 0x54U, 0x50U, 0x00U, 0xC8U, 0xFCU,
-    0x20U, 0xA4U, 0x56U, 0xF0U, 0x30U, 0xE5U, 0xC9U, 0x44U, 0x54U, 0x29U, 0xE3U,
-    0x8DU
-};
+#define MOCK_MAC_ADDR_INIT() {0xFA, 0xEB, 0xDC, 0xCD, 0xBE, 0xAF}
+const uint8_t mock_mac[BLE_MAC_ADDRESS_LENGTH] = MOCK_MAC_ADDR_INIT();
+#define MOCK_DATA_INIT() \
+    { \
+        0x05U, 0x0FU, 0x27U, 0x40U, \
+        0x35U, 0xC4U, 0x54U, 0x54U, 0x50U, 0x00U, 0xC8U, 0xFCU, \
+        0x20U, 0xA4U, 0x56U, 0xF0U, 0x30U, 0xE5U, 0xC9U, 0x44U, 0x54U, 0x29U, 0xE3U, \
+        0x8DU \
+    }
+const uint8_t mock_data[] = MOCK_DATA_INIT();
 const uint16_t mock_manuf_id = 0x0499;
 
 static uint8_t t_ring_buffer[128] = {0};
@@ -107,7 +110,6 @@ void tearDown (void)
 {
 }
 
-
 /**
  * @brief Initialize UART peripheral with values read from ruuvi_boards.h.
  *
@@ -133,7 +135,7 @@ void test_app_uart_init_ok (void)
     ri_uart_init_ReturnThruPtr_channel (&mock_uart);
     ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
     rd_status_t err_code = app_uart_init();
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 void test_app_uart_init_twice (void)
 {
@@ -166,22 +168,104 @@ void test_app_uart_init_twice (void)
  * @retval RD_ERROR_DATA_SIZE If scan had larger advertisement size than allowed by
  *                            encoding module.
  */
-void test_app_uart_send_broadcast_ok (void)
+void test_app_uart_send_broadcast_ok_regular (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    ri_adv_scan_t scan = {0};
-    memcpy (scan.addr, &mock_mac, sizeof (scan.addr));
-    scan.rssi = -50;
-    memcpy (scan.data, &mock_data, sizeof (mock_data));
-    scan.data_len = sizeof (mock_data);
+    const ri_adv_scan_t scan =
+    {
+        .addr = MOCK_MAC_ADDR_INIT(),
+        .rssi = -50,
+        .data = MOCK_DATA_INIT(),
+        .data_len = sizeof (mock_data),
+        .is_coded_phy = false,
+        .primary_phy = RE_CA_UART_BLE_PHY_1MBPS,
+        .secondary_phy = RE_CA_UART_BLE_PHY_NOT_SET,
+        .ch_index = 37,
+        .tx_power = BLE_GAP_POWER_LEVEL_INVALID,
+    };
     test_app_uart_init_ok();
-    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
     uint16_t manufacturer_id = 0x0499;
     app_ble_manufacturer_filter_enabled_ExpectAndReturn (&manufacturer_id, true);
-    err_code |= app_uart_send_broadcast (&scan);
-    TEST_ASSERT (RD_SUCCESS == err_code);
-    TEST_ASSERT (1 == mock_sends);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_send_broadcast (&scan); // Call the function under test
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (1, mock_sends);
+}
+
+void test_app_uart_send_broadcast_ok_coded_phy (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const ri_adv_scan_t scan =
+    {
+        .addr = MOCK_MAC_ADDR_INIT(),
+        .rssi = -51,
+        .data = MOCK_DATA_INIT(),
+        .data_len = sizeof (mock_data),
+        .is_coded_phy = true,
+        .primary_phy = RE_CA_UART_BLE_PHY_CODED,
+        .secondary_phy = RE_CA_UART_BLE_PHY_CODED,
+        .ch_index = 10,
+        .tx_power = 8,
+    };
+    test_app_uart_init_ok();
+    ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
+    uint16_t manufacturer_id = 0x0499;
+    app_ble_manufacturer_filter_enabled_ExpectAndReturn (&manufacturer_id, true);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_send_broadcast (&scan); // Call the function under test
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (1, mock_sends);
+}
+
+void test_app_uart_send_broadcast_ok_extended_adv_2m_phy (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const ri_adv_scan_t scan =
+    {
+        .addr = MOCK_MAC_ADDR_INIT(),
+        .rssi = -52,
+        .data = MOCK_DATA_INIT(),
+        .data_len = sizeof (mock_data),
+        .is_coded_phy = false,
+        .primary_phy = RE_CA_UART_BLE_PHY_1MBPS,
+        .secondary_phy = RE_CA_UART_BLE_PHY_2MBPS,
+        .ch_index = 39,
+        .tx_power = 0,
+    };
+    test_app_uart_init_ok();
+    ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
+    uint16_t manufacturer_id = 0x0499;
+    app_ble_manufacturer_filter_enabled_ExpectAndReturn (&manufacturer_id, true);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_send_broadcast (&scan); // Call the function under test
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (1, mock_sends);
+}
+
+void test_app_uart_send_broadcast_ok_phy_auto (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const ri_adv_scan_t scan =
+    {
+        .addr = MOCK_MAC_ADDR_INIT(),
+        .rssi = -53,
+        .data = MOCK_DATA_INIT(),
+        .data_len = sizeof (mock_data),
+        .is_coded_phy = false,
+        .primary_phy = RE_CA_UART_BLE_PHY_AUTO,
+        .secondary_phy = RE_CA_UART_BLE_PHY_AUTO,
+        .ch_index = 40,
+        .tx_power = -1,
+    };
+    test_app_uart_init_ok();
+    ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
+    uint16_t manufacturer_id = 0x0499;
+    app_ble_manufacturer_filter_enabled_ExpectAndReturn (&manufacturer_id, true);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    err_code |= app_uart_send_broadcast (&scan); // Call the function under test
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (1, mock_sends);
 }
 
 void test_app_uart_send_broadcast_null (void)
@@ -189,8 +273,8 @@ void test_app_uart_send_broadcast_null (void)
     rd_status_t err_code = RD_SUCCESS;
     test_app_uart_init_ok();
     err_code |= app_uart_send_broadcast (NULL);
-    TEST_ASSERT (RD_ERROR_NULL == err_code);
-    TEST_ASSERT (0 == mock_sends);
+    TEST_ASSERT_EQUAL (RD_ERROR_NULL, err_code);
+    TEST_ASSERT_EQUAL (0, mock_sends);
 }
 
 void test_app_uart_send_broadcast_encoding_error (void)
@@ -202,11 +286,13 @@ void test_app_uart_send_broadcast_encoding_error (void)
     memcpy (scan.data, &mock_data, sizeof (mock_data));
     scan.data_len = sizeof (mock_data);
     test_app_uart_init_ok();
-    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_ERROR_INTERNAL);
     ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
+    uint16_t manufacturer_id = 0x0499;
+    app_ble_manufacturer_filter_enabled_ExpectAndReturn (&manufacturer_id, true);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_ERROR_INTERNAL);
     err_code |= app_uart_send_broadcast (&scan);
-    TEST_ASSERT (RD_ERROR_INVALID_DATA == err_code);
-    TEST_ASSERT (0 == mock_sends);
+    TEST_ASSERT_EQUAL (RD_ERROR_INVALID_DATA, err_code);
+    TEST_ASSERT_EQUAL (0, mock_sends);
 }
 
 void test_app_uart_send_broadcast_error_size (void)
@@ -219,8 +305,8 @@ void test_app_uart_send_broadcast_error_size (void)
     scan.data_len = 255U;
     test_app_uart_init_ok();
     err_code |= app_uart_send_broadcast (&scan);
-    TEST_ASSERT (RD_ERROR_DATA_SIZE == err_code);
-    TEST_ASSERT (0 == mock_sends);
+    TEST_ASSERT_EQUAL (RD_ERROR_DATA_SIZE, err_code);
+    TEST_ASSERT_EQUAL (0, mock_sends);
 }
 
 /**
@@ -248,13 +334,13 @@ void test_app_uart_poll_configuration_ok (void)
     ri_uart_init_ReturnThruPtr_channel (&dummy_uart_success);
     ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
     err_code = app_uart_init();
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
     ri_yield_ExpectAndReturn (RD_SUCCESS);
     err_code |= app_uart_poll_configuration();
-    TEST_ASSERT (RD_SUCCESS == err_code);
-    TEST_ASSERT (0 == mock_sends);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (0, mock_sends);
 }
 
 void test_app_uart_poll_configuration_encoding_error (void)
@@ -263,8 +349,8 @@ void test_app_uart_poll_configuration_encoding_error (void)
     test_app_uart_init_ok();
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_ERROR_INTERNAL);
     err_code |= app_uart_poll_configuration();
-    TEST_ASSERT (RD_ERROR_INVALID_DATA == err_code);
-    TEST_ASSERT (0 == mock_sends);
+    TEST_ASSERT_EQUAL (RD_ERROR_INVALID_DATA, err_code);
+    TEST_ASSERT_EQUAL (0, mock_sends);
 }
 
 /**
@@ -303,7 +389,7 @@ void test_app_uart_parser_get_device_id_ok (void)
     re_ca_uart_payload_t expect_payload = {.cmd = RE_CA_UART_GET_DEVICE_ID};
     re_ca_uart_decode_ExpectAndReturn ((uint8_t *) &data[0],
                                        (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
-    re_ca_uart_decode_ReturnThruPtr_cmd ((re_ca_uart_payload_t *) &expect_payload);
+    re_ca_uart_decode_ReturnThruPtr_payload ((re_ca_uart_payload_t *) &expect_payload);
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_send_device_id,
                                             RD_SUCCESS);
@@ -337,7 +423,7 @@ void test_app_uart_isr_received (void)
     rd_error_check_ExpectAnyArgs();
     err_code |= app_uart_isr (RI_COMM_RECEIVED,
                               (void *) &data[0], 8);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_isr_unknown (void)
@@ -345,7 +431,7 @@ void test_app_uart_isr_unknown (void)
     rd_status_t err_code = RD_SUCCESS;
     rd_error_check_ExpectAnyArgs();
     err_code |= app_uart_isr (RI_COMM_TIMEOUT, NULL, 0);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_fltr_tags (void)
@@ -358,7 +444,7 @@ void test_app_uart_apply_config_fltr_tags (void)
     };
     app_ble_manufacturer_filter_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_fltr_id (void)
@@ -371,7 +457,7 @@ void test_app_uart_apply_config_fltr_id (void)
     };
     app_ble_manufacturer_id_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_coded_phy (void)
@@ -384,7 +470,7 @@ void test_app_uart_apply_config_coded_phy (void)
     };
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_scan_1mb (void)
@@ -397,20 +483,20 @@ void test_app_uart_apply_config_scan_1mb (void)
     };
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
-void test_app_uart_apply_config_ext_payload (void)
+void test_app_uart_apply_config_scan_2mb (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     re_ca_uart_payload_t payload =
     {
-        .cmd = RE_CA_UART_SET_EXT_PAYLOAD,
+        .cmd = RE_CA_UART_SET_SCAN_2MB_PHY,
         .params.bool_param.state = 1,
     };
     app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_ch_37 (void)
@@ -424,7 +510,7 @@ void test_app_uart_apply_config_ch_37 (void)
     app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_ch_38 (void)
@@ -438,7 +524,7 @@ void test_app_uart_apply_config_ch_38 (void)
     app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 void test_app_uart_apply_config_ch_39 (void)
@@ -452,10 +538,10 @@ void test_app_uart_apply_config_ch_39 (void)
     app_ble_channels_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
-void test_app_uart_apply_config_all (void)
+void test_app_uart_apply_config_all_max_adv_len_zero (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     re_ca_uart_payload_t payload =
@@ -463,21 +549,58 @@ void test_app_uart_apply_config_all (void)
         .cmd = RE_CA_UART_SET_ALL,
         .params.all_params.fltr_id.id = 0x101,
         .params.all_params.bools.fltr_tags.state = 1,
-        .params.all_params.bools.coded_phy.state = 0,
-        .params.all_params.bools.scan_phy.state = 0,
-        .params.all_params.bools.ext_payload.state = 0,
+        .params.all_params.bools.use_coded_phy.state = 0,
+        .params.all_params.bools.use_1m_phy.state = 1,
+        .params.all_params.bools.use_2m_phy.state = 0,
         .params.all_params.bools.ch_37.state = 1,
-        .params.all_params.bools.ch_38.state = 1,
+        .params.all_params.bools.ch_38.state = 0,
         .params.all_params.bools.ch_39.state = 1,
+        .params.all_params.max_adv_len = 0,
     };
-    app_ble_manufacturer_id_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    app_ble_manufacturer_filter_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    app_ble_channels_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    app_ble_modulation_enable_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    app_ble_manufacturer_id_set_ExpectAndReturn (0x101, RD_SUCCESS);
+    app_ble_manufacturer_filter_set_ExpectAndReturn (true, RD_SUCCESS);
+    app_ble_set_max_adv_len_Expect (0);
+    ri_radio_channels_t channels = { 0 };
+    channels.channel_37 = 1;
+    channels.channel_38 = 0;
+    channels.channel_39 = 1;
+    app_ble_channels_set_ExpectAndReturn (channels, RD_SUCCESS);
+    app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_125KBPS, false, RD_SUCCESS);
+    app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_1MBPS, true, RD_SUCCESS);
+    app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_2MBPS, false, RD_SUCCESS);
     err_code |= app_uart_apply_config (&payload);
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+}
+
+void test_app_uart_apply_config_all_max_adv_len_non_zero (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    re_ca_uart_payload_t payload =
+    {
+        .cmd = RE_CA_UART_SET_ALL,
+        .params.all_params.fltr_id.id = 0x102,
+        .params.all_params.bools.fltr_tags.state = 1,
+        .params.all_params.bools.use_coded_phy.state = 1,
+        .params.all_params.bools.use_1m_phy.state = 0,
+        .params.all_params.bools.use_2m_phy.state = 1,
+        .params.all_params.bools.ch_37.state = 0,
+        .params.all_params.bools.ch_38.state = 1,
+        .params.all_params.bools.ch_39.state = 0,
+        .params.all_params.max_adv_len = 48,
+    };
+    app_ble_manufacturer_id_set_ExpectAndReturn (0x102, RD_SUCCESS);
+    app_ble_manufacturer_filter_set_ExpectAndReturn (true, RD_SUCCESS);
+    app_ble_set_max_adv_len_Expect (48);
+    ri_radio_channels_t channels = { 0 };
+    channels.channel_37 = 0;
+    channels.channel_38 = 1;
+    channels.channel_39 = 0;
+    app_ble_channels_set_ExpectAndReturn (channels, RD_SUCCESS);
+    app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_125KBPS, true, RD_SUCCESS);
+    app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_1MBPS, false, RD_SUCCESS);
+    app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_2MBPS, true, RD_SUCCESS);
+    err_code |= app_uart_apply_config (&payload);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
 
@@ -581,7 +704,7 @@ void test_app_uart_parser_part_1_ok (void)
     rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
     ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
     app_uart_parser ((void *) data_part1, 3);
-    TEST_ASSERT (0 == mock_sends);
+    TEST_ASSERT_EQUAL (0, mock_sends);
 }
 
 void test_app_uart_parser_part_2_ok (void)

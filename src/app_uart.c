@@ -12,7 +12,10 @@
  */
 #include "app_config.h"
 #include "app_uart.h"
+#include <string.h>
+#include "ble_gap.h"
 #include "app_ble.h"
+#include "main.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_endpoint_ca_uart.h"
@@ -25,8 +28,14 @@
 #include "ruuvi_library_ringbuffer.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_task_led.h"
-
-#include <string.h>
+#if !defined(CEEDLING) && !defined(SONAR)
+#include "nrf_log.h"
+#else
+#define NRF_LOG_DEBUG(fmt, ...)
+#define NRF_LOG_INFO(fmt, ...)
+#define NRF_LOG_ERROR(fmt, ...)
+#define NRF_LOG_HEXDUMP_INFO(data, len)
+#endif
 
 #define APP_UART_RING_BUFFER_MAX_LEN     (128U) //!< Ring buffer len       
 #define APP_UART_RING_DEQ_BUFFER_MAX_LEN (APP_UART_RING_BUFFER_MAX_LEN >>1) //!< Decode buffer len
@@ -54,6 +63,7 @@ static bool g_flag_uart_tx_in_progress;
 static app_uart_resp_type_e g_resp_type;
 static re_ca_uart_cmd_t g_resp_ack_cmd;
 static bool g_resp_ack_state;
+static re_ca_uart_payload_t m_uart_payload;
 
 #ifndef CEEDLING
 static
@@ -120,45 +130,47 @@ static rd_status_t app_uart_send_msg (ri_comm_message_t * const p_msg)
 static rd_status_t app_uart_send_device_id (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    re_ca_uart_payload_t uart_payload = {0};
-    ri_comm_message_t msg = {0};
-    msg.data_length = sizeof (msg.data);
+    ri_comm_message_t m_msg;
+    memset (&m_msg, 0, sizeof (m_msg));
+    m_msg.data_length = sizeof (m_msg.data);
     uint64_t mac;
     err_code |= ri_radio_address_get (&mac);
     uint64_t id;
     err_code |= ri_comm_id_get (&id);
-    uart_payload.cmd = RE_CA_UART_DEVICE_ID;
-    uart_payload.params.device_id.id = id;
-    uart_payload.params.device_id.addr = mac;
-    err_code |= re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
-    msg.repeat_count = 1;
-    err_code |= app_uart_send_msg (&msg);
+    memset (&m_uart_payload, 0, sizeof (m_uart_payload));
+    m_uart_payload.cmd = RE_CA_UART_DEVICE_ID;
+    m_uart_payload.params.device_id.id = id;
+    m_uart_payload.params.device_id.addr = mac;
+    err_code |= re_ca_uart_encode (m_msg.data, &m_msg.data_length, &m_uart_payload);
+    m_msg.repeat_count = 1;
+    err_code |= app_uart_send_msg (&m_msg);
     return err_code;
 }
 
 static rd_status_t app_uart_send_ack (const re_ca_uart_cmd_t cmd, const bool is_ok)
 {
-    re_ca_uart_payload_t uart_payload = {0};
-    uart_payload.cmd = RE_CA_UART_ACK;
-    uart_payload.params.ack.cmd = cmd;
+    m_uart_payload.cmd = RE_CA_UART_ACK;
+    m_uart_payload.params.ack.cmd = cmd;
 
     if (is_ok)
     {
-        uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
+        m_uart_payload.params.ack.ack_state.state = RE_CA_ACK_OK;
     }
     else
     {
-        uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
+        m_uart_payload.params.ack.ack_state.state = RE_CA_ACK_ERROR;
     }
 
-    ri_comm_message_t msg = {0};
-    msg.data_length = sizeof (msg.data);
-    re_status_t err_code = re_ca_uart_encode (msg.data, &msg.data_length, &uart_payload);
-    msg.repeat_count = 1;
+    ri_comm_message_t m_msg;
+    memset (&m_msg, 0, sizeof (m_msg));
+    m_msg.data_length = sizeof (m_msg.data);
+    re_status_t err_code = re_ca_uart_encode (m_msg.data, &m_msg.data_length,
+                           &m_uart_payload);
+    m_msg.repeat_count = 1;
 
     if (RE_SUCCESS == err_code)
     {
-        err_code |= app_uart_send_msg (&msg);
+        err_code |= app_uart_send_msg (&m_msg);
     }
     else
     {
@@ -236,7 +248,7 @@ rd_status_t app_uart_apply_config (void * v_uart_payload)
 #endif
     rd_status_t err_code = RD_SUCCESS;
     ri_radio_modulation_t modulation;
-    ri_radio_channels_t channels;
+    ri_radio_channels_t channels = {0};
 
     switch (p_uart_payload->cmd)
     {
@@ -261,7 +273,7 @@ rd_status_t app_uart_apply_config (void * v_uart_payload)
                                                    (bool) p_uart_payload->params.bool_param.state);
             break;
 
-        case RE_CA_UART_SET_EXT_PAYLOAD:
+        case RE_CA_UART_SET_SCAN_2MB_PHY:
             modulation = RI_RADIO_BLE_2MBPS;
             err_code |= app_ble_modulation_enable (modulation,
                                                    (bool) p_uart_payload->params.bool_param.state);
@@ -292,16 +304,17 @@ rd_status_t app_uart_apply_config (void * v_uart_payload)
             channels.channel_37 = p_uart_payload->params.all_params.bools.ch_37.state;
             channels.channel_38 = p_uart_payload->params.all_params.bools.ch_38.state;
             channels.channel_39 = p_uart_payload->params.all_params.bools.ch_39.state;
+            app_ble_set_max_adv_len (p_uart_payload->params.all_params.max_adv_len);
             err_code |= app_ble_channels_set (channels);
             modulation = RI_RADIO_BLE_125KBPS;
             err_code |= app_ble_modulation_enable (modulation,
-                                                   (bool) p_uart_payload->params.all_params.bools.coded_phy.state);
+                                                   (bool) p_uart_payload->params.all_params.bools.use_coded_phy.state);
             modulation = RI_RADIO_BLE_1MBPS;
             err_code |= app_ble_modulation_enable (modulation,
-                                                   (bool) p_uart_payload->params.all_params.bools.scan_phy.state);
+                                                   (bool) p_uart_payload->params.all_params.bools.use_1m_phy.state);
             modulation = RI_RADIO_BLE_2MBPS;
             err_code |= app_ble_modulation_enable (modulation,
-                                                   (bool) p_uart_payload->params.all_params.bools.ext_payload.state);
+                                                   (bool) p_uart_payload->params.all_params.bools.use_2m_phy.state);
             break;
 
         default:
@@ -343,11 +356,11 @@ static
 void app_uart_parser (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
-    re_ca_uart_payload_t uart_payload = {0};
     uint8_t dequeue_data[APP_UART_RING_DEQ_BUFFER_MAX_LEN] = {0};
     rl_status_t status = RL_SUCCESS;
     size_t index = 0;
-    err_code = re_ca_uart_decode ((uint8_t *) p_data, &uart_payload);
+    memset (&m_uart_payload, 0, sizeof (m_uart_payload));
+    err_code = re_ca_uart_decode ((uint8_t *) p_data, &m_uart_payload);
 
     if (RD_SUCCESS == err_code)
     {
@@ -387,7 +400,8 @@ void app_uart_parser (void * p_data, uint16_t data_len)
             }
         } while (RL_SUCCESS == status);
 
-        err_code = re_ca_uart_decode ((uint8_t *) dequeue_data, &uart_payload);
+        memset (&m_uart_payload, 0, sizeof (m_uart_payload));
+        err_code = re_ca_uart_decode ((uint8_t *) dequeue_data, &m_uart_payload);
 
         if (RD_SUCCESS != err_code)
         {
@@ -405,29 +419,29 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
     if (RD_SUCCESS == err_code)
     {
-        if (RE_CA_UART_GET_DEVICE_ID == uart_payload.cmd)
+        if (RE_CA_UART_GET_DEVICE_ID == m_uart_payload.cmd)
         {
             ri_scheduler_event_put (NULL, (uint16_t) 0, app_uart_on_evt_send_device_id);
         }
-        else if (RE_CA_UART_LED_CTRL == uart_payload.cmd)
+        else if (RE_CA_UART_LED_CTRL == m_uart_payload.cmd)
         {
             (void) rt_led_blink_stop (RB_LED_ACTIVITY);
 
-            if (0 != uart_payload.params.led_ctrl_param.time_interval_ms)
+            if (0 != m_uart_payload.params.led_ctrl_param.time_interval_ms)
             {
                 (void) rt_led_blink_once (RB_LED_ACTIVITY,
-                                          uart_payload.params.led_ctrl_param.time_interval_ms);
+                                          m_uart_payload.params.led_ctrl_param.time_interval_ms);
             }
 
-            g_resp_ack_cmd = uart_payload.cmd;
+            g_resp_ack_cmd = m_uart_payload.cmd;
             g_resp_ack_state = true;
             ri_scheduler_event_put (NULL, (uint16_t) 0, app_uart_on_evt_send_ack);
         }
         else
         {
-            g_resp_ack_cmd = uart_payload.cmd;
+            g_resp_ack_cmd = m_uart_payload.cmd;
 
-            if (RD_SUCCESS == app_uart_apply_config (&uart_payload))
+            if (RD_SUCCESS == app_uart_apply_config (&m_uart_payload))
             {
                 g_resp_ack_state = true;
             }
@@ -438,17 +452,17 @@ void app_uart_parser (void * p_data, uint16_t data_len)
 
             ri_scheduler_event_put (NULL, (uint16_t) 0, app_uart_on_evt_send_ack);
 
-            if (RE_CA_UART_SET_ALL == uart_payload.cmd)
+            if (RE_CA_UART_SET_ALL == m_uart_payload.cmd)
             {
                 m_uart_ack = true;
                 err_code |= app_ble_scan_start(); // Applies new scanning settings.
+
+                if (RD_SUCCESS == err_code)
+                {
+                    ri_watchdog_feed();
+                }
             }
         }
-    }
-
-    if (RD_SUCCESS == err_code)
-    {
-        ri_watchdog_feed();
     }
 }
 
@@ -542,6 +556,36 @@ rd_status_t app_uart_init (void)
     return err_code;
 }
 
+static re_ca_uart_ble_phy_e re_ca_uart_encode_ble_phy (const uint8_t phy)
+{
+    re_ca_uart_ble_phy_e encoded_phy = RE_CA_UART_BLE_PHY_NOT_SET;
+
+    switch (phy)
+    {
+        case BLE_GAP_PHY_AUTO:
+            encoded_phy = RE_CA_UART_BLE_PHY_AUTO;
+            break;
+
+        case BLE_GAP_PHY_1MBPS:
+            encoded_phy = RE_CA_UART_BLE_PHY_1MBPS;
+            break;
+
+        case BLE_GAP_PHY_2MBPS:
+            encoded_phy = RE_CA_UART_BLE_PHY_2MBPS;
+            break;
+
+        case BLE_GAP_PHY_CODED:
+            encoded_phy = RE_CA_UART_BLE_PHY_CODED;
+            break;
+
+        case BLE_GAP_PHY_NOT_SET:
+            encoded_phy = RE_CA_UART_BLE_PHY_NOT_SET;
+            break;
+    }
+
+    return encoded_phy;
+}
+
 rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
 {
     re_ca_uart_payload_t adv = {0};
@@ -560,42 +604,75 @@ rd_status_t app_uart_send_broadcast (const ri_adv_scan_t * const scan)
         memcpy (adv.params.adv.mac, scan->addr, sizeof (adv.params.adv.mac));
         memcpy (adv.params.adv.adv, scan->data, scan->data_len);
         memcpy (m_scan.data, scan->data, scan->data_len);
-        memcpy (&m_scan.data_len, &scan->data_len, sizeof (size_t));
+        m_scan.data_len = scan->data_len;
         adv.params.adv.rssi_db = scan->rssi;
+        adv.params.adv.primary_phy = re_ca_uart_encode_ble_phy (scan->primary_phy);
+        adv.params.adv.secondary_phy = re_ca_uart_encode_ble_phy (scan->secondary_phy);
+        adv.params.adv.ch_index = scan->ch_index;
+        adv.params.adv.is_coded_phy = scan->is_coded_phy;
+        adv.params.adv.tx_power =
+            ((BLE_GAP_POWER_LEVEL_INVALID != scan->tx_power) &&
+             (scan->tx_power > -64) &&
+             (scan->tx_power <= 63)) // check that tx_power will fit into 7 bits
+            ? scan->tx_power
+            : RE_CA_UART_BLE_GAP_POWER_LEVEL_INVALID;
         adv.params.adv.adv_len = scan->data_len;
-        adv.cmd = RE_CA_UART_ADV_RPRT;
-        msg.data_length = sizeof (msg);
-        re_code = re_ca_uart_encode (msg.data, &msg.data_length, &adv);
-        msg.repeat_count = 1;
+        adv.cmd = RE_CA_UART_ADV_RPRT2;
         manuf_id = ri_adv_parse_manuid (m_scan.data, m_scan.data_len);
+        uint16_t filter_id = RB_BLE_MANUFACTURER_ID;
+        bool flag_discard = false;
 
-        if (RE_SUCCESS == re_code)
+        if (app_ble_manufacturer_filter_enabled (&filter_id) &&
+                (manuf_id != filter_id))
         {
-            uint16_t filter_id = RB_BLE_MANUFACTURER_ID;
-            bool flag_discard = false;
+            flag_discard = true;
+        }
 
-            if (app_ble_manufacturer_filter_enabled (&filter_id) &&
-                    (manuf_id != filter_id))
-            {
-                flag_discard = true;
-            }
-
-            if (flag_discard)
-            {
-                err_code |= RD_ERROR_INVALID_DATA;
-            }
-            else
-            {
-                err_code |= app_uart_send_msg (&msg);
-            }
+        if (flag_discard)
+        {
+            err_code |= RD_ERROR_INVALID_DATA;
+            NRF_LOG_DEBUG ("app_uart_send_broadcast: discard: manufacturer_id=0x%04x: addr=%s: len=%d",
+                           manuf_id,
+                           mac_addr_to_str (scan->addr).buf,
+                           scan->data_len,
+                           scan->primary_phy,
+                           scan->secondary_phy,
+                           scan->ch_index);
         }
         else
         {
-            err_code |= RD_ERROR_INVALID_DATA;
+            _Static_assert (sizeof (msg.data) <= UINT8_MAX, "sizeof (msg) <= UINT8_MAX");
+            msg.data_length = (uint8_t)sizeof (msg.data);
+            re_code = re_ca_uart_encode (msg.data, &msg.data_length, &adv);
+            msg.repeat_count = 1;
+
+            if (RE_SUCCESS == re_code)
+            {
+                NRF_LOG_INFO ("app_uart_send_broadcast: addr=%s: len=%d, primary_phy=%d, secondary_phy=%d, chan=%d, tx_power=%d",
+                              mac_addr_to_str (scan->addr).buf,
+                              scan->data_len,
+                              scan->primary_phy,
+                              scan->secondary_phy,
+                              scan->ch_index,
+                              scan->tx_power);
+                //NRF_LOG_HEXDUMP_INFO (scan->data, scan->data_len);
+                NRF_LOG_INFO ("app_uart_send_broadcast: encoded: len=%d", msg.data_length);
+                NRF_LOG_HEXDUMP_INFO (msg.data, msg.data_length);
+                err_code |= app_uart_send_msg (&msg);
+            }
+            else
+            {
+                NRF_LOG_ERROR ("%s: re_ca_uart_encode failed", __func__);
+                err_code |= RD_ERROR_INVALID_DATA;
+            }
         }
     }
     else
     {
+        NRF_LOG_ERROR ("%s: addr=%s: data len=%d > RE_CA_UART_ADV_BYTES (%d)",
+                       __func__,
+                       mac_addr_to_str (scan->addr).buf,
+                       scan->data_len, RE_CA_UART_ADV_BYTES);
         err_code |= RD_ERROR_DATA_SIZE;
     }
 
@@ -608,7 +685,7 @@ rd_status_t app_uart_poll_configuration (void)
     ri_comm_message_t msg = {0};
     rd_status_t err_code = RD_SUCCESS;
     re_status_t re_code = RE_SUCCESS;
-    msg.data_length = sizeof (msg);
+    msg.data_length = sizeof (msg.data);
     cfg.cmd = RE_CA_UART_GET_ALL;
     re_code = re_ca_uart_encode (msg.data, &msg.data_length, &cfg);
     msg.repeat_count = RI_COMM_MSG_REPEAT_FOREVER;

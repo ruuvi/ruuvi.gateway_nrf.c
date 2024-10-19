@@ -12,6 +12,10 @@ $(OUTPUT_DIRECTORY)/nrf52811_xxaa.out: \
 
 include ${PROJ_DIR}/gcc_sources.make
 
+COMMON_INCLUDES+= \
+  $(SDK_ROOT)/components/softdevice/s140/headers \
+  $(SDK_ROOT)/components/softdevice/s140/headers/nrf52
+
 # Source files
 SRC_FILES += \
   $(COMMON_SOURCES) \
@@ -44,6 +48,9 @@ CFLAGS += -DNRF_SD_BLE_API_VERSION=6
 CFLAGS += -DS140
 CFLAGS += -DSOFTDEVICE_PRESENT
 CFLAGS += -DSWI_DISABLE0
+CFLAGS += -DRI_RE_CA_UART_ENABLED=1
+CFLAGS += -DRI_ADV_EXTENDED_ENABLED=1
+CFLAGS += -DRI_COMM_BLE_PAYLOAD_MAX_LENGTH=192
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
 CFLAGS += -Wall -Werror

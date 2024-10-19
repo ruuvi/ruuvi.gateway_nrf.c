@@ -33,8 +33,26 @@ jobs:
     - name: Install Ceedling
       run: gem install ceedling
 
+    - name: Cache nRF5_SDK_15.3.0_59ac345
+      id: cache-nRF5_SDK
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/nRF5_SDK_15.3.0_59ac345
+        key: nRF5_SDK-${{ hashFiles('.github/workflows/build-fw.yml') }}
+
+    - name: Download and install Nordic SDK nRF5_SDK_15.3.0_59ac345
+      if: steps.cache-nRF5_SDK.outputs.cache-hit != 'true'
+      run: |
+        wget -q https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip
+        unzip -q nRF5_SDK_15.3.0_59ac345.zip -d ~
+
     # Runs a set of commands using the runners shell
     - name: Run unit tests
       run: |
+        uname -a
+        ln -s ~/nRF5_SDK_15.3.0_59ac345 nRF5_SDK_15.3.0_59ac345
+        pwd
+        ls -la
         make test_all
 
