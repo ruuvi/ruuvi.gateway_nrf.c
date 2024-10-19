@@ -23,10 +23,17 @@ jobs:
             sudo apt-get install -y jq
           fi
 
-      - name: Set Python 3.8 as default
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
+
+      - name: Install Python dependencies
         run: |
-          echo "alias python=python3.8" >> ~/.bashrc
-          source ~/.bashrc
+          python --version
+          pip --version
+          python3 -m pip install --upgrade pip
+          pip3 install -r scripts/requirements.txt
 
       - name: Install nRF Command Line Tools
         run: |
@@ -82,14 +89,14 @@ jobs:
         id: release-info
         run: |
           VERSION="${{ env.git_version }}"
-          MESSAGE=$(git for-each-ref refs/tags/${VERSION} --format='\%(contents)')
+          MESSAGE=$(git for-each-ref refs/tags/${VERSION} --format='%(contents)')
           
           # Get the title and the description as separated variables
           NAME=$(echo "${MESSAGE}" | head -n1)
           DESCRIPTION=$(echo "${MESSAGE}" | tail -n +3)
     
           # Escape line breaks in description to prevent JSON parsing issues
-          DESCRIPTION=$(echo "${DESCRIPTION}" | jq -s -R '.')
+          # DESCRIPTION=$(echo "${DESCRIPTION}" | jq -s -R '.')
 
           echo "TAG=${VERSION}" >> $GITHUB_ENV
           echo "RELEASE_TITLE=${NAME}" >> $GITHUB_ENV
