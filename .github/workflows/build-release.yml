@@ -23,6 +23,11 @@ jobs:
             sudo apt-get install -y jq
           fi
 
+      - name: Set Python 3.8 as default
+        run: |
+          echo "alias python=python3.8" >> ~/.bashrc
+          source ~/.bashrc
+
       - name: Install nRF Command Line Tools
         run: |
           wget -q https://nsscprodmedia.blob.core.windows.net/prod/software-and-other-downloads/desktop-software/nrf-command-line-tools/sw/versions-10-x-x/10-24-2/nrf-command-line-tools_10.24.2_amd64.deb

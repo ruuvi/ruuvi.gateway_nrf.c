@@ -26,6 +26,18 @@ jobs:
             sudo apt-get install -y jq
           fi
 
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
+
+      - name: Install Python dependencies
+        run: |
+          python --version
+          pip --version
+          python3 -m pip install --upgrade pip
+          pip3 install -r scripts/requirements.txt
+
       - name: Install nRF Command Line Tools
         run: |
           wget -q https://nsscprodmedia.blob.core.windows.net/prod/software-and-other-downloads/desktop-software/nrf-command-line-tools/sw/versions-10-x-x/10-24-2/nrf-command-line-tools_10.24.2_amd64.deb
