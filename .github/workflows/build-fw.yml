@@ -58,7 +58,7 @@ jobs:
         if: steps.cache-nRF5_SDK.outputs.cache-hit != 'true'
         run: |
           wget -q -P ~ https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip
-          unzip -q nRF5_SDK_15.3.0_59ac345.zip -d ~
+          unzip -q ~/nRF5_SDK_15.3.0_59ac345.zip -d ~
           rm -f ~/nRF5_SDK_15.3.0_59ac345.zip
 
       - name: Get short commit hash if no tags
