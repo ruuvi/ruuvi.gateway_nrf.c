@@ -3,7 +3,10 @@ set -x #echo on
 cd "$(dirname "$0")"
 NAME="ruuvigw"
 
-VERSION=$(git describe --exact-match --always --tags --dirty)
+VERSION=$(git describe --exact-match --tags HEAD 2>/dev/null || git rev-parse --short HEAD)
+if [ -n "$(git status --porcelain)" ]; then
+  VERSION="${VERSION}-dirty"
+fi
 
 while getopts "n:v:" option;
 do
