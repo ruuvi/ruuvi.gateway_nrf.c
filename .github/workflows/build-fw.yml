@@ -62,7 +62,7 @@ jobs:
       - name: Get short commit hash if no tags
         id: get-version
         run: |
-          VERSION=$(git describe --exact-match --tags HEAD 2>/dev/null || git rev-parse --short HEAD)
+          VERSION=$(git describe --exact-match --always --tags --dirty)
           echo "git_version=$VERSION" >> $GITHUB_ENV
 
       - name: Run build

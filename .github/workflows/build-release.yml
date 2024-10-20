@@ -59,7 +59,7 @@ jobs:
       - name: Get Version from Tag
         id: get-version
         run: |
-          VERSION=$(git describe --exact-match --tags HEAD)
+          VERSION=$(git describe --exact-match --always --tags --dirty)
           echo "git_version=$VERSION" >> $GITHUB_ENV
 
       - name: Run build
