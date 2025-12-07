@@ -102,6 +102,7 @@ static void setup (void)
 #else
     NRF_LOG_INFO ("Waiting for receiving the initial configuration via UART");
     err_code |= app_uart_poll_configuration();
+    NRF_LOG_INFO ("Initial configuration received, err_code=%d", err_code);
 #endif
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
