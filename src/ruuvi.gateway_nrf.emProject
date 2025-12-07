@@ -65,14 +65,6 @@
     <folder Name="Docs">
       <file file_name="README.md" />
     </folder>
-    <folder Name="Segger Startup Files">
-      <file file_name="$(StudioDir)/source/thumb_crt0.s" />
-    </folder>
-    <folder Name="System">
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf52.s" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf_common.s" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/system_nrf52.c" />
-    </folder>
     <folder Name="nRF_BLE">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/common/ble_advdata.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_advertising/ble_advertising.c" />
@@ -137,12 +129,12 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c">
         <configuration Name="Debug" build_exclude_from_build="No" />
       </file>
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT_printf.c">
+        <configuration Name="Debug" build_exclude_from_build="No" />
+      </file>
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT_Syscalls_SES.c">
         <configuration Name="Debug" build_exclude_from_build="Yes" />
         <configuration Name="Release" build_exclude_from_build="Yes" />
-      </file>
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT_printf.c">
-        <configuration Name="Debug" build_exclude_from_build="No" />
       </file>
     </folder>
     <folder Name="nRF_SoftDevice">
@@ -194,6 +186,14 @@
       filter="*.c;*.h"
       path="ruuvi.libraries.c/src"
       recurse="Yes" />
+    <folder Name="Segger Startup Files">
+      <file file_name="$(StudioDir)/source/thumb_crt0.s" />
+    </folder>
+    <folder Name="System">
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf52.s" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf_common.s" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/system_nrf52.c" />
+    </folder>
   </project>
   <project Name="pca10059 (nRF52840-DK)">
     <configuration
@@ -244,14 +244,6 @@
     <folder Name="Docs">
       <file file_name="README.md" />
     </folder>
-    <folder Name="Segger Startup Files">
-      <file file_name="$(StudioDir)/source/thumb_crt0.s" />
-    </folder>
-    <folder Name="System">
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf52.s" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf_common.s" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/system_nrf52.c" />
-    </folder>
     <folder Name="nRF_BLE">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/common/ble_advdata.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_advertising/ble_advertising.c" />
@@ -316,12 +308,12 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c">
         <configuration Name="Debug" build_exclude_from_build="No" />
       </file>
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT_printf.c">
+        <configuration Name="Debug" build_exclude_from_build="No" />
+      </file>
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT_Syscalls_SES.c">
         <configuration Name="Debug" build_exclude_from_build="Yes" />
         <configuration Name="Release" build_exclude_from_build="Yes" />
-      </file>
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT_printf.c">
-        <configuration Name="Debug" build_exclude_from_build="No" />
       </file>
     </folder>
     <folder Name="nRF_SoftDevice">
@@ -373,6 +365,14 @@
       filter="*.c;*.h"
       path="ruuvi.libraries.c/src"
       recurse="Yes" />
+    <folder Name="Segger Startup Files">
+      <file file_name="$(StudioDir)/source/thumb_crt0.s" />
+    </folder>
+    <folder Name="System">
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf52.s" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf_common.s" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/system_nrf52.c" />
+    </folder>
   </project>
   <project Name="ruuvigw_nrf">
     <configuration
@@ -424,14 +424,6 @@
     </folder>
     <folder Name="Docs">
       <file file_name="README.md" />
-    </folder>
-    <folder Name="Segger Startup Files">
-      <file file_name="$(StudioDir)/source/thumb_crt0.s" />
-    </folder>
-    <folder Name="System">
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf52811.s" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf_common.s" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/system_nrf52811.c" />
     </folder>
     <folder Name="nRF_BLE">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/common/ble_advdata.c" />
@@ -506,12 +498,12 @@
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT_printf.c">
+        <configuration Name="Debug" build_exclude_from_build="No" />
+      </file>
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT_Syscalls_SES.c">
         <configuration Name="Debug" build_exclude_from_build="Yes" />
         <configuration Name="Release" build_exclude_from_build="Yes" />
-      </file>
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT_printf.c">
-        <configuration Name="Debug" build_exclude_from_build="No" />
       </file>
     </folder>
     <folder Name="nRF_SoftDevice">
@@ -532,6 +524,18 @@
         filter="*.c"
         path="ruuvi.drivers.c/BME280_driver"
         recurse="Yes" />
+      <folder
+        Name="interfaces"
+        exclude=""
+        filter="*.c;*.h"
+        path="ruuvi.drivers.c/src/interfaces"
+        recurse="Yes" />
+      <folder
+        Name="nrf5_sdk15_platform"
+        exclude="nrf_bootloader_wdt.c"
+        filter="*.c;*.h"
+        path="ruuvi.drivers.c/src/nrf5_sdk15_platform"
+        recurse="Yes" />
       <folder Name="SHTCx">
         <folder Name="embedded-common">
           <file file_name="ruuvi.drivers.c/embedded-sht/embedded-common/sensirion_arch_config.h" />
@@ -551,18 +555,6 @@
         <file file_name="ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c" />
         <file file_name="ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.h" />
       </folder>
-      <folder
-        Name="interfaces"
-        exclude=""
-        filter="*.c;*.h"
-        path="ruuvi.drivers.c/src/interfaces"
-        recurse="Yes" />
-      <folder
-        Name="nrf5_sdk15_platform"
-        exclude="nrf_bootloader_wdt.c"
-        filter="*.c;*.h"
-        path="ruuvi.drivers.c/src/nrf5_sdk15_platform"
-        recurse="Yes" />
       <folder
         Name="tasks"
         exclude=""
@@ -588,5 +580,13 @@
       filter="*.c;*.h"
       path="ruuvi.libraries.c/src"
       recurse="Yes" />
+    <folder Name="Segger Startup Files">
+      <file file_name="$(StudioDir)/source/thumb_crt0.s" />
+    </folder>
+    <folder Name="System">
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf52811.s" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf_common.s" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/system_nrf52811.c" />
+    </folder>
   </project>
 </solution>
