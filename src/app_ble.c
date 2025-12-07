@@ -32,7 +32,7 @@
 #define RB_BLE_DEFAULT_CH37_STATE       0                       //!< Default channel 37 state
 #define RB_BLE_DEFAULT_CH38_STATE       0                       //!< Default channel 38 state
 #define RB_BLE_DEFAULT_CH39_STATE       0                       //!< Default channel 39 state
-#define RB_BLE_DEFAULT_125KBPS_STATE    false                   //!< Default 125kbps state
+#define RB_BLE_DEFAULT_125KBPS_STATE    (false && RB_BLE_CODED_SUPPORTED) //!< Default 125kbps state
 #define RB_BLE_DEFAULT_1MBIT_STATE      false                   //!< Default 1mbit state
 #define RB_BLE_DEFAULT_2MBIT_STATE      false                   //!< Default 2mbit state
 #define RB_BLE_DEFAULT_FLTR_STATE       true                    //!< Default filter id state
@@ -60,7 +60,7 @@ static app_ble_scan_t m_scan_params =
     .scan_channels.channel_37 = RB_BLE_DEFAULT_CH37_STATE,
     .scan_channels.channel_38 = RB_BLE_DEFAULT_CH38_STATE,
     .scan_channels.channel_39 = RB_BLE_DEFAULT_CH39_STATE,
-    .modulation_125kbps_enabled = RB_BLE_DEFAULT_125KBPS_STATE,
+    .modulation_125kbps_enabled = RB_BLE_DEFAULT_125KBPS_STATE && RB_BLE_CODED_SUPPORTED,
     .modulation_1mbit_enabled = RB_BLE_DEFAULT_1MBIT_STATE,
     .modulation_2mbit_enabled = RB_BLE_DEFAULT_2MBIT_STATE,
     .is_current_modulation_125kbps = false,

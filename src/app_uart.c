@@ -306,9 +306,22 @@ rd_status_t app_uart_apply_config (void * v_uart_payload)
             channels.channel_39 = p_uart_payload->params.all_params.bools.ch_39.state;
             app_ble_set_max_adv_len (p_uart_payload->params.all_params.max_adv_len);
             err_code |= app_ble_channels_set (channels);
-            modulation = RI_RADIO_BLE_125KBPS;
-            err_code |= app_ble_modulation_enable (modulation,
-                                                   (bool) p_uart_payload->params.all_params.bools.use_coded_phy.state);
+
+            if (RB_BLE_CODED_SUPPORTED)
+            {
+                modulation = RI_RADIO_BLE_125KBPS;
+                err_code |= app_ble_modulation_enable (modulation,
+                                                       (bool) p_uart_payload->params.all_params.bools.use_coded_phy.state);
+            }
+            else
+            {
+                if ((bool) p_uart_payload->params.all_params.bools.use_coded_phy.state)
+                {
+                    NRF_LOG_ERROR ("%s: BLE_125KBPS not supported", __func__);
+                    err_code |= RD_ERROR_NOT_SUPPORTED;
+                }
+            }
+
             modulation = RI_RADIO_BLE_1MBPS;
             err_code |= app_ble_modulation_enable (modulation,
                                                    (bool) p_uart_payload->params.all_params.bools.use_1m_phy.state);
@@ -440,14 +453,17 @@ void app_uart_parser (void * p_data, uint16_t data_len)
         else
         {
             g_resp_ack_cmd = m_uart_payload.cmd;
+            err_code = app_uart_apply_config (&m_uart_payload);
 
-            if (RD_SUCCESS == app_uart_apply_config (&m_uart_payload))
+            if (RD_SUCCESS == err_code)
             {
                 g_resp_ack_state = true;
+                NRF_LOG_INFO ("%s: ACK %d", __func__, g_resp_ack_state);
             }
             else
             {
                 g_resp_ack_state = false;
+                NRF_LOG_ERROR ("%s: ACK %d, err=%d", __func__, g_resp_ack_state, err_code);
             }
 
             ri_scheduler_event_put (NULL, (uint16_t) 0, app_uart_on_evt_send_ack);
@@ -486,6 +502,7 @@ rd_status_t app_uart_isr (ri_comm_evt_t evt,
 
         default:
             // No action needed on connect/disconnect events.
+            NRF_LOG_INFO ("%s: event %d", __func__, evt);
             break;
     }
 
@@ -694,10 +711,29 @@ rd_status_t app_uart_poll_configuration (void)
     {
         err_code |= app_uart_send_msg (&msg);
 
+        if (RD_SUCCESS != err_code)
+        {
+            NRF_LOG_ERROR ("%s failed, err=%d", "app_uart_send_msg", err_code);
+            return err_code;
+        }
+
         do
         {
-            ri_scheduler_execute();
-            ri_yield();
+            err_code |= ri_scheduler_execute();
+
+            if (RD_SUCCESS != err_code)
+            {
+                NRF_LOG_ERROR ("%s failed, err=%d", "ri_scheduler_execute", err_code);
+                return err_code;
+            }
+
+            err_code |= ri_yield();
+
+            if (RD_SUCCESS != err_code)
+            {
+                NRF_LOG_ERROR ("%s failed, err=%d", "ri_yield", err_code);
+                return err_code;
+            }
         } while (!m_uart_ack);
     }
     else
