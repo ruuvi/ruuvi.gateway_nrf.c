@@ -4,8 +4,9 @@ OUTPUT_DIRECTORY := _build
 
 SDK_ROOT := ../../../nRF5_SDK_15.3.0_59ac345
 PROJ_DIR := ../..
-TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
-LINKER_PATH := $(SDK_ROOT)/modules/nrfx/mdk
+
+$(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
+  LINKER_SCRIPT  := pca10059.ld
 
 include ${PROJ_DIR}/gcc_sources.make
 
@@ -13,13 +14,11 @@ COMMON_INCLUDES+= \
   $(SDK_ROOT)/components/softdevice/s140/headers \
   $(SDK_ROOT)/components/softdevice/s140/headers/nrf52
 
-$(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
-  LINKER_SCRIPT  := pca10059.ld
 
 # make DEBUG=1 for debug build with traces
 DEBUG ?= 1
 # make OPT=0 for non-optimized binary
-OPT ?= 3
+OPTLVL ?= s
 # make DBGSYM=1 to include debug symbols
 DBGSYM ?=0
 
@@ -29,16 +28,18 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S
 
 # Include folders common to all targets
-INC_FOLDERS += $(COMMON_INCLUDES)
+INC_FOLDERS += ${COMMON_INCLUDES}
 
 # Libraries common to all targets
-LIB_FILES += \
+LIB_FILES += 
 
 # Optimization flags
-INTOPT = -O$(OPT)
+OPT ?= -O$(OPTLVL)
+# Uncomment the line below to enable link time optimization
+#OPT += -flto
 
 ifeq ($(DEBUG), 1)
-    INTOPT += -g3
+    OPT += -g3
     CUSTOM_CFLAGS += -DRUUVI_TRACES=1
     CUSTOM_CFLAGS += -DDEBUG_NRF
     CUSTOM_CFLAGS += -DDEBUG_NRFX
@@ -48,12 +49,12 @@ ifeq ($(DEBUG), 1)
     CUSTOM_ASMFLAGS += -DDEBUG
 else
 ifeq ($(DBGSYM), 1)
-    INTOPT += -g3
+    OPT += -g3
 endif
 endif
 
 # C flags common to all targets
-CFLAGS += $(INTOPT)
+CFLAGS += $(OPT)
 CFLAGS += -DAPPLICATION_DRIVER_CONFIGURED
 CFLAGS += -DBOARD_CUSTOM
 CFLAGS += -DBOARD_PCA10059
@@ -70,6 +71,10 @@ CFLAGS += -DUSE_APP_CONFIG
 CFLAGS += -DRI_RE_CA_UART_ENABLED=1
 CFLAGS += -DRI_ADV_EXTENDED_ENABLED=1
 CFLAGS += -DRI_COMM_BLE_PAYLOAD_MAX_LENGTH=192
+CFLAGS += -DRI_LOG_ENABLED=0
+CFLAGS += -DAPP_LOG_LEVEL=0
+CFLAGS += -DRUUVI_GW_NRF_POLL_CONFIG_DISABLED=0
+CFLAGS += -DAPP_USBUART_ENABLED=0
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
 CFLAGS += -Wall -Werror
@@ -80,7 +85,8 @@ CFLAGS += -fno-builtin -fshort-enums
 CFLAGS += $(CUSTOM_CFLAGS)
 
 # C++ flags common to all targets
-CXXFLAGS += $(INTOPT)
+CXXFLAGS += $(OPT)
+
 
 # Assembler flags common to all targets
 ASMFLAGS += -g3
@@ -102,7 +108,7 @@ ASMFLAGS += -DUSE_APP_CONFIG
 ASMFLAGS += $(CUSTOM_ASMFLAGS)
 
 # Linker flags
-LDFLAGS += $(INTOPT)
+LDFLAGS += $(OPT)
 LDFLAGS += -mthumb -mabi=aapcs -L$(SDK_ROOT)/modules/nrfx/mdk -T$(LINKER_SCRIPT)
 LDFLAGS += -mcpu=cortex-m4
 LDFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
@@ -113,24 +119,25 @@ LDFLAGS += --specs=nano.specs
 LDFLAGS += -DUSE_APP_CONFIG
 LDFLAGS += $(CUSTOM_LDFLAGS)
 
-nrf52840_xxaa: CFLAGS += -D__HEAP_SIZE=8192
-nrf52840_xxaa: CFLAGS += -D__STACK_SIZE=8192
-nrf52840_xxaa: ASMFLAGS += -D__HEAP_SIZE=8192
-nrf52840_xxaa: ASMFLAGS += -D__STACK_SIZE=8192
+nrf52840_xxaa: CFLAGS += -D__HEAP_SIZE=2048
+nrf52840_xxaa: CFLAGS += -D__STACK_SIZE=2048
+nrf52840_xxaa: ASMFLAGS += -D__HEAP_SIZE=2048
+nrf52840_xxaa: ASMFLAGS += -D__STACK_SIZE=2048
 
 # Add standard libraries at the very end of the linker input, after all objects
 # that may need symbols provided by these libraries.
 LIB_FILES += -lc -lnosys -lm
 
-
-.PHONY: default
+.PHONY: default print_cflags
 
 # Default target - first one defined
 default: nrf52840_xxaa
 
-
 TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
 
 include $(TEMPLATE_PATH)/Makefile.common
-
 $(foreach target, $(TARGETS), $(call define_target, $(target)))
+
+print_cflags:
+	@echo "CFLAGS: " $(CFLAGS) "\n"
+
