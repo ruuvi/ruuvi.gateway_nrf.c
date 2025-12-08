@@ -909,3 +909,41 @@ void test_app_uart_send_ack_encode_error_false_branch (void)
     // Verify that no data was sent over UART
     TEST_ASSERT_EQUAL (0, mock_sends);
 }
+
+// app_uart_on_evt_send_ack: cover false branch of `if (!g_flag_uart_tx_in_progress)`
+// When TX is already in progress, the function must NOT schedule TX finish event.
+void test_app_uart_on_evt_send_ack_when_tx_in_progress_does_not_schedule (void)
+{
+    // Initialize UART to use mock_uart (which increments mock_sends on send)
+    static ri_uart_init_t config =
+    {
+        .hwfc_enabled = RB_HWFC_ENABLED,
+        .parity_enabled = RB_PARITY_ENABLED,
+        .cts  = RB_UART_CTS_PIN,
+        .rts  = RB_UART_RTS_PIN,
+        .tx   = RB_UART_TX_PIN,
+        .rx   = RB_UART_RX_PIN,
+        .baud = RI_UART_BAUD_115200
+    };
+
+    ri_uart_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_uart_init_ReturnThruPtr_channel (&mock_uart);
+    ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, app_uart_init());
+
+    // First ACK request when TX is not in progress should schedule TX finish
+    ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_tx_finish, RD_SUCCESS);
+    // Encoding succeeds so the ACK will be sent during tx_finish handler
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+
+    // Request to send ACK and handle TX finish, which triggers actual UART send
+    app_uart_on_evt_send_ack (NULL, 0);
+    app_uart_on_evt_tx_finish (NULL, 0);
+
+    // Verify one UART send happened and TX is now in progress
+    TEST_ASSERT_EQUAL (1, mock_sends);
+
+    // Now request to send ACK again while TX is in progress — must NOT schedule TX finish.
+    // We set no expectation for ri_scheduler_event_put here; any call would fail the test.
+    app_uart_on_evt_send_ack (NULL, 0);
+}
