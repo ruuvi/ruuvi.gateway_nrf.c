@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['nrf_20sdk15_20configuration_46',['nRF SDK15 Configuration',['../group___s_d_k15.html',1,'']]],
-  ['nrf5_5fsdk15_5fapp_5fconfig_2eh_47',['nrf5_sdk15_app_config.h',['../nrf5__sdk15__app__config_8h.html',1,'']]],
-  ['nrf5_5fsdk15_5fconfigured_48',['NRF5_SDK15_CONFIGURED',['../nrf5__sdk15__app__config_8h.html#a78d2fe783ce2c2843dd058adef0f5584',1,'nrf5_sdk15_app_config.h']]]
+  ['is_5fcurrent_5fmodulation_5f125kbps_0',['is_current_modulation_125kbps',['../structapp__ble__scan__t.html#a76968cd97b2a29c4033e4042037b091d',1,'app_ble_scan_t']]]
 ];

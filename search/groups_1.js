@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nrf_20sdk15_20configuration_137',['nRF SDK15 Configuration',['../group___s_d_k15.html',1,'']]]
+  ['configuration_0',['configuration',['../group__app__config.html',1,'Application configuration'],['../group___configuration.html',1,'Application configuration.'],['../group___s_d_k15.html',1,'nRF SDK15 Configuration']]]
 ];

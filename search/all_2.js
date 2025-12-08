@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['is_5fcurrent_5fmodulation_5f125kbps_34',['is_current_modulation_125kbps',['../structapp__ble__scan__t.html#a76968cd97b2a29c4033e4042037b091d',1,'app_ble_scan_t']]]
+  ['c_0',['ruuvi.gateway_nrf.c',['../index.html',1,'']]],
+  ['configuration_1',['configuration',['../group__app__config.html',1,'Application configuration'],['../group___configuration.html',1,'Application configuration.'],['../group___s_d_k15.html',1,'nRF SDK15 Configuration']]]
 ];

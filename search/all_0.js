@@ -30,7 +30,6 @@ var searchData=
   ['app_5fuart_5fsend_5fbroadcast_27',['app_uart_send_broadcast',['../group___a_p_p___u_a_r_t.html#ga723d2ccb97f86b0cb9e6063db3be7e0b',1,'app_uart.c']]],
   ['app_5fusbuart_5fenabled_28',['APP_USBUART_ENABLED',['../group___s_d_k15.html#ga2089b255897d2b3a07c724321c06afbb',1,'app_config.h']]],
   ['app_5fwdt_5finterval_5fms_29',['APP_WDT_INTERVAL_MS',['../group___s_d_k15.html#ga25d771b6d2f753e677805a4177cdaaa1',1,'app_config.h']]],
-  ['application_20configuration_30',['Application configuration',['../group__app__config.html',1,'']]],
-  ['application_20configuration_2e_31',['Application configuration.',['../group___configuration.html',1,'']]],
-  ['application_20uart_20functionality_2e_32',['Application UART functionality.',['../group___a_p_p___u_a_r_t.html',1,'']]]
+  ['application_20configuration_30',['application configuration',['../group__app__config.html',1,'Application configuration'],['../group___configuration.html',1,'Application configuration.']]],
+  ['application_20uart_20functionality_31',['Application UART functionality.',['../group___a_p_p___u_a_r_t.html',1,'']]]
 ];
