@@ -40,7 +40,7 @@ jobs:
       # Runs a single command using the runners shell
     - name: Install Ceedling and GCovr
       run: |
-        gem install ceedling
+        gem install ceedling -v 0.31.1
         sudo pip install gcovr
 
     - name: Install Build Wrapper
