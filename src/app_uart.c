@@ -71,7 +71,6 @@ static
 volatile bool m_uart_ack = false;
 
 static rl_ringbuffer_t m_uart_ring_buffer =
-    (rl_ringbuffer_t)
 {
     .head = 0,
     .tail = 0,
@@ -310,8 +309,9 @@ rd_status_t app_uart_apply_config (void * v_uart_payload)
             if (RB_BLE_CODED_SUPPORTED)
             {
                 modulation = RI_RADIO_BLE_125KBPS;
-                err_code |= app_ble_modulation_enable (modulation,
-                                                       (bool) p_uart_payload->params.all_params.bools.use_coded_phy.state);
+                err_code |= app_ble_modulation_enable (
+                                modulation,
+                                (bool) p_uart_payload->params.all_params.bools.use_coded_phy.state);
             }
             else
             {

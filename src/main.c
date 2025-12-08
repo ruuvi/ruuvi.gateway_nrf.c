@@ -100,7 +100,7 @@ static void setup (void)
     // Set default configuration by updating macro `RB_BLE_DEFAULT_...` in app_ble.c
     NRF_LOG_INFO ("Use default settings as the initial configuration");
 #else
-    NRF_LOG_INFO ("Waiting for receiving the initial configuration via UART");
+    NRF_LOG_INFO ("%s: Waiting for receiving the initial configuration via UART", __func__);
     err_code |= app_uart_poll_configuration();
     NRF_LOG_INFO ("Initial configuration received, err_code=%d", err_code);
 #endif
