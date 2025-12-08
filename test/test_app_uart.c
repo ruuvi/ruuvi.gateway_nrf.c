@@ -213,7 +213,6 @@ void test_app_uart_on_evt_send_device_id_when_tx_in_progress_does_not_schedule (
 {
     // Initialize UART
     test_app_uart_init_ok();
-
     // Trigger a successful send to set g_flag_uart_tx_in_progress = true
     const ri_adv_scan_t scan =
     {
@@ -227,14 +226,12 @@ void test_app_uart_on_evt_send_device_id_when_tx_in_progress_does_not_schedule (
         .ch_index = 37,
         .tx_power = BLE_GAP_POWER_LEVEL_INVALID,
     };
-
     ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
     uint16_t manufacturer_id = 0x0499;
     app_ble_manufacturer_filter_enabled_ExpectAndReturn (&manufacturer_id, true);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
     TEST_ASSERT_EQUAL (RD_SUCCESS, app_uart_send_broadcast (&scan));
     TEST_ASSERT_EQUAL (1, mock_sends);
-
     // Now TX is in progress. Calling app_uart_on_evt_send_device_id should NOT
     // schedule app_uart_on_evt_tx_finish. We deliberately set no expectation for
     // ri_scheduler_event_put so any call would fail the test.
@@ -255,20 +252,16 @@ void test_app_uart_send_msg_error_path (void)
         .rx   = RB_UART_RX_PIN,
         .baud = RI_UART_BAUD_115200
     };
-
     ri_uart_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     // Inject our erroring UART channel
     ri_uart_init_ReturnThruPtr_channel (&dummy_uart_error);
     ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
     TEST_ASSERT_EQUAL (RD_SUCCESS, app_uart_init());
-
     // Encode succeeds so that app_uart_poll_configuration will attempt to send
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
-
     // Call function that internally calls app_uart_send_msg and should return error
     rd_status_t err_code = app_uart_poll_configuration();
     TEST_ASSERT_EQUAL (RD_ERROR_INTERNAL, err_code);
-
     // Verify that TX in-progress flag was cleared by checking that
     // app_uart_on_evt_send_device_id schedules TX finish immediately
     // (this only happens if not in progress)
@@ -842,13 +835,12 @@ void test_app_uart_send_ack_is_ok_true (void)
     // which sets g_resp_ack_state = true and schedules ACK send.
     // First, ensure UART is initialized so messages can be sent via mock_uart
     test_app_uart_init_ok();
-
     // Prepare dummy incoming data buffer and expectations for scheduling parser
     uint8_t data[] = { 0x02, 0x00, 0x00 };
-    ri_scheduler_event_put_ExpectAndReturn (data, sizeof (data), &app_uart_parser, RD_SUCCESS);
+    ri_scheduler_event_put_ExpectAndReturn (data, sizeof (data), &app_uart_parser,
+                                            RD_SUCCESS);
     rd_error_check_ExpectAnyArgs();
     app_uart_isr (RI_COMM_RECEIVED, (void *) data, sizeof (data));
-
     // app_uart_parser should decode a LED_CTRL payload and then:
     // - stop activity LED
     // - blink once (non-zero interval)
@@ -864,16 +856,13 @@ void test_app_uart_send_ack_is_ok_true (void)
     rt_led_blink_stop_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
     rt_led_blink_once_ExpectAndReturn (RB_LED_ACTIVITY, 10, RD_SUCCESS);
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_send_ack, RD_SUCCESS);
-
     // When ACK event is handled, it schedules TX finish
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_tx_finish, RD_SUCCESS);
     // Encoding succeeds, so UART send should be called once
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
-
     app_uart_parser (data, sizeof (data));
     app_uart_on_evt_send_ack (NULL, 0);
     app_uart_on_evt_tx_finish (NULL, 0);
-
     TEST_ASSERT_EQUAL (1, mock_sends);
 }
 
@@ -890,22 +879,17 @@ void test_app_uart_send_ack_encode_error_false_branch (void)
         .rx   = RB_UART_RX_PIN,
         .baud = RI_UART_BAUD_115200
     };
-
     ri_uart_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_uart_init_ReturnThruPtr_channel (&mock_uart);
     ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
     TEST_ASSERT_EQUAL (RD_SUCCESS, app_uart_init());
-
     // Directly request to send ACK (g_resp_ack_state default is false after init)
     // app_uart_on_evt_send_ack should schedule TX finish
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_tx_finish, RD_SUCCESS);
-
     // Force encode error so (RE_SUCCESS == err_code) is false and no UART send happens
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_ERROR_INTERNAL);
-
     app_uart_on_evt_send_ack (NULL, 0);
     app_uart_on_evt_tx_finish (NULL, 0);
-
     // Verify that no data was sent over UART
     TEST_ASSERT_EQUAL (0, mock_sends);
 }
@@ -915,32 +899,25 @@ void test_app_uart_parser_led_ctrl_zero_interval (void)
 {
     // Drive parser directly with a decoded LED_CTRL payload where interval == 0
     uint8_t data[] = { 0xAA, 0xBB, 0xCC }; // dummy buffer, not used by decode stub
-
     re_ca_uart_payload_t payload = {0};
     re_ca_uart_payload_t expect_payload = {0};
     expect_payload.cmd = RE_CA_UART_LED_CTRL;
     expect_payload.params.led_ctrl_param.time_interval_ms = 0;
-
     // app_uart_parser first tries to decode and then drains ringbuffer
     re_ca_uart_decode_ExpectAndReturn ((uint8_t *) data,
                                        (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
     re_ca_uart_decode_ReturnThruPtr_payload ((re_ca_uart_payload_t *) &expect_payload);
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
-
     // LED activity should be stopped, and no blink_once because interval == 0
     rt_led_blink_stop_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
-
     // ACK event should be scheduled
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_send_ack, RD_SUCCESS);
-
     // When ACK is handled, TX finish is scheduled and encoding succeeds -> one send
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_tx_finish, RD_SUCCESS);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
-
     app_uart_parser (data, sizeof (data));
     app_uart_on_evt_send_ack (NULL, 0);
     app_uart_on_evt_tx_finish (NULL, 0);
-
     TEST_ASSERT_EQUAL (1, mock_sends);
 }
 
@@ -949,10 +926,10 @@ void test_app_uart_parser_set_all_triggers_scan_start (void)
 {
     // Prepare ISR to schedule parser
     uint8_t data[] = { RE_CA_UART_STX, 0x00, 0x00 }; // dummy; content not used beyond decode stub
-    ri_scheduler_event_put_ExpectAndReturn (data, sizeof (data), &app_uart_parser, RD_SUCCESS);
+    ri_scheduler_event_put_ExpectAndReturn (data, sizeof (data), &app_uart_parser,
+                                            RD_SUCCESS);
     rd_error_check_ExpectAnyArgs();
     app_uart_isr (RI_COMM_RECEIVED, (void *) data, sizeof (data));
-
     // Prepare decoded payload for SET_ALL that results in successful apply_config
     re_ca_uart_payload_t payload = {0};
     re_ca_uart_payload_t expect_payload = {0};
@@ -966,12 +943,10 @@ void test_app_uart_parser_set_all_triggers_scan_start (void)
     expect_payload.params.all_params.bools.ch_38.state = 0;
     expect_payload.params.all_params.bools.ch_39.state = 1;
     expect_payload.params.all_params.max_adv_len = 16;
-
     re_ca_uart_decode_ExpectAndReturn ((uint8_t *) data,
                                        (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
     re_ca_uart_decode_ReturnThruPtr_payload ((re_ca_uart_payload_t *) &expect_payload);
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
-
     // Expectations for app_uart_apply_config called inside parser for SET_ALL
     app_ble_manufacturer_id_set_ExpectAndReturn (0x1234, RD_SUCCESS);
     app_ble_manufacturer_filter_set_ExpectAndReturn (true, RD_SUCCESS);
@@ -984,22 +959,17 @@ void test_app_uart_parser_set_all_triggers_scan_start (void)
     app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_125KBPS, true, RD_SUCCESS);
     app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_1MBPS, true, RD_SUCCESS);
     app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_2MBPS, false, RD_SUCCESS);
-
     // ACK event will be scheduled
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_send_ack, RD_SUCCESS);
-
     // After SET_ALL, scan should start and watchdog fed on success
     app_ble_scan_start_ExpectAndReturn (RD_SUCCESS);
     ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
-
     // ACK handling and encode/send flow
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_tx_finish, RD_SUCCESS);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
-
     app_uart_parser (data, sizeof (data));
     app_uart_on_evt_send_ack (NULL, 0);
     app_uart_on_evt_tx_finish (NULL, 0);
-
     TEST_ASSERT_EQUAL (1, mock_sends);
 }
 
@@ -1018,24 +988,19 @@ void test_app_uart_on_evt_send_ack_when_tx_in_progress_does_not_schedule (void)
         .rx   = RB_UART_RX_PIN,
         .baud = RI_UART_BAUD_115200
     };
-
     ri_uart_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_uart_init_ReturnThruPtr_channel (&mock_uart);
     ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
     TEST_ASSERT_EQUAL (RD_SUCCESS, app_uart_init());
-
     // First ACK request when TX is not in progress should schedule TX finish
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_tx_finish, RD_SUCCESS);
     // Encoding succeeds so the ACK will be sent during tx_finish handler
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
-
     // Request to send ACK and handle TX finish, which triggers actual UART send
     app_uart_on_evt_send_ack (NULL, 0);
     app_uart_on_evt_tx_finish (NULL, 0);
-
     // Verify one UART send happened and TX is now in progress
     TEST_ASSERT_EQUAL (1, mock_sends);
-
     // Now request to send ACK again while TX is in progress — must NOT schedule TX finish.
     // We set no expectation for ri_scheduler_event_put here; any call would fail the test.
     app_uart_on_evt_send_ack (NULL, 0);
