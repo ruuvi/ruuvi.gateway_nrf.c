@@ -31,7 +31,7 @@ jobs:
 
     # Runs a single command using the runners shell
     - name: Install Ceedling
-      run: gem install ceedling
+      run: gem install ceedling -v 0.31.1
 
     - name: Cache nRF5_SDK_15.3.0_59ac345
       id: cache-nRF5_SDK
