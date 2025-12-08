@@ -503,6 +503,17 @@ void test_app_uart_isr_received (void)
     TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
 }
 
+void test_app_uart_isr_sent (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    // Expect scheduling of TX finish handler when RI_COMM_SENT occurs
+    ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_tx_finish,
+                                            RD_SUCCESS);
+    rd_error_check_ExpectAnyArgs();
+    err_code |= app_uart_isr (RI_COMM_SENT, NULL, 0);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+}
+
 void test_app_uart_isr_unknown (void)
 {
     rd_status_t err_code = RD_SUCCESS;
