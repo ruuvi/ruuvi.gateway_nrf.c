@@ -1002,12 +1002,10 @@ void test_app_uart_parser_set_all_scan_start_error_no_watchdog (void)
     expect_payload.params.all_params.bools.ch_38.state = 1;
     expect_payload.params.all_params.bools.ch_39.state = 1;
     expect_payload.params.all_params.max_adv_len = 31;
-
     re_ca_uart_decode_ExpectAndReturn ((uint8_t *) data,
                                        (re_ca_uart_payload_t *) &payload, RD_SUCCESS);
     re_ca_uart_decode_ReturnThruPtr_payload ((re_ca_uart_payload_t *) &expect_payload);
     rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
-
     // Expectations for app_uart_apply_config called inside parser for SET_ALL
     app_ble_manufacturer_id_set_ExpectAndReturn (0x2222, RD_SUCCESS);
     app_ble_manufacturer_filter_set_ExpectAndReturn (true, RD_SUCCESS);
@@ -1020,22 +1018,17 @@ void test_app_uart_parser_set_all_scan_start_error_no_watchdog (void)
     app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_125KBPS, false, RD_SUCCESS);
     app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_1MBPS, true, RD_SUCCESS);
     app_ble_modulation_enable_ExpectAndReturn (RI_RADIO_BLE_2MBPS, true, RD_SUCCESS);
-
     // ACK event will be scheduled regardless of scan_start result
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_send_ack, RD_SUCCESS);
-
     // After SET_ALL, scan should start but fail; watchdog must NOT be called
     app_ble_scan_start_ExpectAndReturn (RD_ERROR_INVALID_STATE);
     // Do not set any expectation for ri_watchdog_feed — a call would fail the test
-
     // ACK handling and encode/send flow
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_tx_finish, RD_SUCCESS);
     re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
-
     app_uart_parser (data, sizeof (data));
     app_uart_on_evt_send_ack (NULL, 0);
     app_uart_on_evt_tx_finish (NULL, 0);
-
     // Verify one UART send happened for ACK
     TEST_ASSERT_EQUAL (1, mock_sends);
 }
