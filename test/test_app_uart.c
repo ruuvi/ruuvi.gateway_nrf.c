@@ -207,6 +207,40 @@ void test_app_uart_send_broadcast_ok_regular (void)
     TEST_ASSERT_EQUAL (1, mock_sends);
 }
 
+// In app_uart_on_evt_send_device_id cover the false case of
+// if (!g_flag_uart_tx_in_progress): when TX is in progress, it must NOT schedule tx finish
+void test_app_uart_on_evt_send_device_id_when_tx_in_progress_does_not_schedule (void)
+{
+    // Initialize UART
+    test_app_uart_init_ok();
+
+    // Trigger a successful send to set g_flag_uart_tx_in_progress = true
+    const ri_adv_scan_t scan =
+    {
+        .addr = MOCK_MAC_ADDR_INIT(),
+        .rssi = -50,
+        .data = MOCK_DATA_INIT(),
+        .data_len = sizeof (mock_data),
+        .is_coded_phy = false,
+        .primary_phy = RE_CA_UART_BLE_PHY_1MBPS,
+        .secondary_phy = RE_CA_UART_BLE_PHY_NOT_SET,
+        .ch_index = 37,
+        .tx_power = BLE_GAP_POWER_LEVEL_INVALID,
+    };
+
+    ri_adv_parse_manuid_ExpectAnyArgsAndReturn (mock_manuf_id);
+    uint16_t manufacturer_id = 0x0499;
+    app_ble_manufacturer_filter_enabled_ExpectAndReturn (&manufacturer_id, true);
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, app_uart_send_broadcast (&scan));
+    TEST_ASSERT_EQUAL (1, mock_sends);
+
+    // Now TX is in progress. Calling app_uart_on_evt_send_device_id should NOT
+    // schedule app_uart_on_evt_tx_finish. We deliberately set no expectation for
+    // ri_scheduler_event_put so any call would fail the test.
+    app_uart_on_evt_send_device_id (NULL, 0);
+}
+
 // Cover branch in app_uart_send_msg: if (RD_SUCCESS != err_code)
 void test_app_uart_send_msg_error_path (void)
 {
