@@ -80,6 +80,14 @@ static rd_status_t dummy_send_fail (ri_comm_message_t * const msg)
 }
 
 
+// Send function that returns an error to trigger error path in app_uart_send_msg
+static rd_status_t dummy_send_error (ri_comm_message_t * const msg)
+{
+    (void)msg;
+    return RD_ERROR_INTERNAL;
+}
+
+
 static ri_comm_channel_t mock_uart =
 {
     .send = &mock_send,
@@ -95,6 +103,12 @@ static ri_comm_channel_t dummy_uart_success =
 static ri_comm_channel_t dummy_uart_fail =
 {
     .send = &dummy_send_fail,
+    .on_evt = app_uart_isr
+};
+
+static ri_comm_channel_t dummy_uart_error =
+{
+    .send = &dummy_send_error,
     .on_evt = app_uart_isr
 };
 
@@ -191,6 +205,42 @@ void test_app_uart_send_broadcast_ok_regular (void)
     err_code |= app_uart_send_broadcast (&scan); // Call the function under test
     TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
     TEST_ASSERT_EQUAL (1, mock_sends);
+}
+
+// Cover branch in app_uart_send_msg: if (RD_SUCCESS != err_code)
+void test_app_uart_send_msg_error_path (void)
+{
+    // Initialize app_uart with a UART channel whose send returns an error
+    static ri_uart_init_t config =
+    {
+        .hwfc_enabled = RB_HWFC_ENABLED,
+        .parity_enabled = RB_PARITY_ENABLED,
+        .cts  = RB_UART_CTS_PIN,
+        .rts  = RB_UART_RTS_PIN,
+        .tx   = RB_UART_TX_PIN,
+        .rx   = RB_UART_RX_PIN,
+        .baud = RI_UART_BAUD_115200
+    };
+
+    ri_uart_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    // Inject our erroring UART channel
+    ri_uart_init_ReturnThruPtr_channel (&dummy_uart_error);
+    ri_uart_config_ExpectWithArrayAndReturn (&config, 1, RD_SUCCESS);
+    TEST_ASSERT_EQUAL (RD_SUCCESS, app_uart_init());
+
+    // Encode succeeds so that app_uart_poll_configuration will attempt to send
+    re_ca_uart_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+
+    // Call function that internally calls app_uart_send_msg and should return error
+    rd_status_t err_code = app_uart_poll_configuration();
+    TEST_ASSERT_EQUAL (RD_ERROR_INTERNAL, err_code);
+
+    // Verify that TX in-progress flag was cleared by checking that
+    // app_uart_on_evt_send_device_id schedules TX finish immediately
+    // (this only happens if not in progress)
+    ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_tx_finish,
+                                            RD_SUCCESS);
+    app_uart_on_evt_send_device_id (NULL, 0);
 }
 
 void test_app_uart_send_broadcast_ok_coded_phy (void)
