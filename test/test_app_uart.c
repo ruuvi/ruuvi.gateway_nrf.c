@@ -112,6 +112,39 @@ static ri_comm_channel_t dummy_uart_error =
     .on_evt = app_uart_isr
 };
 
+// --- Unit tests for app_uart_ringbuffer_lock_dummy ---
+void test_app_uart_ringbuffer_lock_sets_true_from_false (void)
+{
+    volatile uint32_t flag = 0U;
+    bool changed = app_uart_ringbuffer_lock_dummy (&flag, true);
+    TEST_ASSERT_TRUE (changed);
+    TEST_ASSERT_EQUAL_UINT32 (1U, flag);
+}
+
+void test_app_uart_ringbuffer_lock_no_change_when_already_true (void)
+{
+    volatile uint32_t flag = 1U;
+    bool changed = app_uart_ringbuffer_lock_dummy (&flag, true);
+    TEST_ASSERT_FALSE (changed);
+    TEST_ASSERT_EQUAL_UINT32 (1U, flag);
+}
+
+void test_app_uart_ringbuffer_lock_sets_false_from_true (void)
+{
+    volatile uint32_t flag = 1U;
+    bool changed = app_uart_ringbuffer_lock_dummy (&flag, false);
+    TEST_ASSERT_TRUE (changed);
+    TEST_ASSERT_EQUAL_UINT32 (0U, flag);
+}
+
+void test_app_uart_ringbuffer_lock_no_change_when_already_false (void)
+{
+    volatile uint32_t flag = 0U;
+    bool changed = app_uart_ringbuffer_lock_dummy (&flag, false);
+    TEST_ASSERT_FALSE (changed);
+    TEST_ASSERT_EQUAL_UINT32 (0U, flag);
+}
+
 
 
 void setUp (void)
