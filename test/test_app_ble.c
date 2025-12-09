@@ -273,6 +273,42 @@ void test_app_ble_scan_start_all_channels_2mbps (void)
 }
 
 /**
+ * Verify error path: rt_adv_uninit() fails. In this case, app_ble_scan_start()
+ * must not proceed to PA/LNA control, radio init, adv init, or scan start.
+ */
+void test_app_ble_scan_start_error_on_rt_adv_uninit (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    // Enable scanning so that we take the scan path, not stop path
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    // First uninit fails, second succeeds
+    rt_adv_uninit_ExpectAndReturn (RD_ERROR_INTERNAL);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    // No further expectations should be set; if code calls any, the test will fail
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_ERROR_INTERNAL, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+/**
+ * Verify error path: ri_radio_uninit() fails. In this case, app_ble_scan_start()
+ * must not proceed to PA/LNA control, radio init, adv init, or scan start.
+ */
+void test_app_ble_scan_start_error_on_ri_radio_uninit (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    // Enable scanning so that we take the scan path, not stop path
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    // First uninit succeeds, second fails
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_ERROR_INTERNAL);
+    // No further expectations should be set; if code calls any, the test will fail
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_ERROR_INTERNAL, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+/**
  * Verify that when manufacturer filter is disabled,
  * app_ble_scan_start() passes RB_BLE_UNKNOWN_MANUFACTURER_ID to rt_adv_init().
  */
