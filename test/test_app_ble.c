@@ -273,6 +273,62 @@ void test_app_ble_scan_start_all_channels_2mbps (void)
 }
 
 /**
+ * Verify error path: pa_lna_ctrl() fails. In this case, app_ble_scan_start()
+ * still calls ri_radio_init(...), but must not proceed to rt_adv_init() nor
+ * rt_adv_scan_start(), and must return the error.
+ */
+void test_app_ble_scan_start_error_on_pa_lna_ctrl (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    // Enable scanning so that we take the scan path, not stop path
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    // Uninit paths succeed
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    // PA/LNA control fails on first configure, but continues executing
+    ri_gpio_is_init_ExpectAndReturn (false);
+    ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP,
+                                       RD_ERROR_INTERNAL);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    // ri_radio_init is still called even if pa_lna_ctrl failed
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_SUCCESS);
+    // No expectations for rt_adv_init/scan_start as they must NOT be called on error
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_ERROR_INTERNAL, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+/**
+ * Verify error path: ri_radio_init() fails. In this case, app_ble_scan_start()
+ * must not proceed to rt_adv_init() nor rt_adv_scan_start(), and must return the error.
+ */
+void test_app_ble_scan_start_error_on_ri_radio_init (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    // Enable scanning so that we take the scan path, not stop path
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    // Uninit paths succeed
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    // PA/LNA control succeeds fully
+    ri_gpio_is_init_ExpectAndReturn (false);
+    ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    // ri_radio_init fails
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_ERROR_INTERNAL);
+    // No expectations for rt_adv_init/scan_start as they must NOT be called on error
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_ERROR_INTERNAL, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+/**
  * Verify error path: rt_adv_uninit() fails. In this case, app_ble_scan_start()
  * must not proceed to PA/LNA control, radio init, adv init, or scan start.
  */
