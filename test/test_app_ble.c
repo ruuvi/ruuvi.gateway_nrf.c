@@ -272,6 +272,40 @@ void test_app_ble_scan_start_all_channels_2mbps (void)
     TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
 }
 
+/**
+ * Verify that when manufacturer filter is disabled,
+ * app_ble_scan_start() passes RB_BLE_UNKNOWN_MANUFACTURER_ID to rt_adv_init().
+ */
+void test_app_ble_scan_start_manufacturer_filter_disabled_sets_unknown_id (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    // Disable manufacturer filter to trigger the `if (!manufacturer_filter_enabled)` branch
+    app_ble_manufacturer_filter_set (false);
+    // Enable a single modulation to allow scanning to start
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    // Expect radio/adv uninit before re-init
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    // PA/LNA control expectations
+    ri_gpio_is_init_ExpectAndReturn (false);
+    ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    // Radio init with current PHY (1M since we enabled 1M and 125kbps is disabled)
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_SUCCESS);
+    // Expect rt_adv_init to be called with unknown manufacturer id (0xFFFF)
+    rt_adv_init_t expected_params = scan_params;
+    expected_params.manufacturer_id = 0xFFFF;
+    rt_adv_init_ExpectWithArrayAndReturn (&expected_params, 1, RD_SUCCESS);
+    // Start scanning
+    rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
 void test_app_ble_set_max_adv_len_zero (void)
 {
     rd_status_t err_code = RD_SUCCESS;
