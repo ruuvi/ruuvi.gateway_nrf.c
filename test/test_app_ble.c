@@ -423,6 +423,24 @@ void test_app_ble_on_scan_isr_unknown (void)
     TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
 }
 
+void test_app_ble_scan_stop_ok (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rt_adv_scan_stop_ExpectAndReturn (RD_SUCCESS);
+    err_code |= app_ble_scan_stop();
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+void test_app_ble_scan_stop_error_propagates (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rt_adv_scan_stop_ExpectAndReturn (RD_ERROR_INTERNAL);
+    err_code |= app_ble_scan_stop();
+    TEST_ASSERT_EQUAL (RD_ERROR_INTERNAL, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
 void test_repeat_adv_ok (void)
 {
     rd_status_t err_code = RD_SUCCESS;
