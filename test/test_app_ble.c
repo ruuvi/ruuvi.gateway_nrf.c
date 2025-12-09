@@ -309,6 +309,21 @@ void test_app_ble_scan_start_all_channels_lr_2mbps (void)
 }
 
 /**
+ * Ensure that when all modulations are disabled, scan_is_enabled returns false
+ * and app_ble_scan_start() takes the false branch which calls app_ble_scan_stop().
+ */
+void test_app_ble_scan_start_no_modulations_calls_stop (void)
+{
+    // setUp() already disables all modulations
+    rd_status_t err_code = RD_SUCCESS;
+    // Expect scan stop to be called
+    rt_adv_scan_stop_ExpectAndReturn (RD_SUCCESS);
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+/**
  * @brief Handle Scan events.
  *
  * Received data is put to scheduler queue, new scan with new PHY is started on timeout.
