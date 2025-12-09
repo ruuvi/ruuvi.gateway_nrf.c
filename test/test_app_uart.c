@@ -1081,6 +1081,82 @@ void test_app_uart_parser_set_all_scan_start_error_no_watchdog (void)
     TEST_ASSERT_EQUAL (1, mock_sends);
 }
 
+// Additional coverage: exercise both termination conditions of do-while loops
+// after rl_ringbuffer_queue() inside app_uart_parser.
+// Case 1: First queue loop exits due to non-success status, and the re-queue
+// loop (after failed re-decode) also exits immediately due to non-success
+// with len == 0 (do-while executes once).
+void test_app_uart_parser_initial_queue_failure_and_requeue_zero_len_failure (void)
+{
+    uint8_t data[] = { 0x11, 0x22, 0x33 };
+    // ISR schedules parser
+    ri_scheduler_event_put_ExpectAndReturn (data, sizeof (data), &app_uart_parser,
+                                            RD_SUCCESS);
+    rd_error_check_ExpectAnyArgs();
+    app_uart_isr (RI_COMM_RECEIVED, (void *) data, sizeof (data));
+    // Initial decode fails -> enters first queue loop
+    re_ca_uart_payload_t payload = {0};
+    re_ca_uart_decode_ExpectAndReturn ((uint8_t *) &data[0],
+                                       (re_ca_uart_payload_t *) &payload,
+                                       RE_ERROR_DECODING_CRC);
+    // First queue attempt fails -> loop exits by status != RL_SUCCESS
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_ERROR_NO_MEM);
+    // Dequeue finds no data
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
+    // Decode of empty dequeue buffer fails again
+    re_ca_uart_decode_ExpectAnyArgsAndReturn (RE_ERROR_DECODING_CRC);
+    // Re-queue loop with len == 0 still executes body once; force failure exit
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_ERROR_NO_MEM);
+    // No sends expected
+    ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
+    app_uart_parser ((void *) data, (uint16_t) sizeof (data));
+    TEST_ASSERT_EQUAL (0, mock_sends);
+}
+
+// Case 2: First queue loop exits by reaching index == data_len (all successes),
+// then re-decode fails and the second queue loop exits due to non-success status.
+void test_app_uart_parser_requeue_loop_exit_by_failure (void)
+{
+    uint8_t data_part1[] =
+    {
+        RE_CA_UART_STX,
+        (uint8_t) (2 + CMD_IN_LEN),
+        RE_CA_UART_SET_CH_37,
+    };
+    uint8_t * p_data_0 = &data_part1[0];
+    uint8_t * p_data_1 = &data_part1[1];
+    uint8_t * p_data_2 = &data_part1[2];
+    // Schedule parser via ISR
+    ri_scheduler_event_put_ExpectAndReturn (data_part1, 3, &app_uart_parser, RD_SUCCESS);
+    rd_error_check_ExpectAnyArgs();
+    app_uart_isr (RI_COMM_RECEIVED, (void *) &data_part1[0], 3);
+    // Initial decode fails
+    re_ca_uart_payload_t payload = {0};
+    re_ca_uart_decode_ExpectAndReturn ((uint8_t *) &data_part1[0],
+                                       (re_ca_uart_payload_t *) &payload, RE_ERROR_DECODING_CRC);
+    // First queue loop succeeds for all bytes -> exit by index < data_len becoming false
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    // Dequeue previously queued bytes
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnMemThruPtr_data (&p_data_0, sizeof (uint8_t *));
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnMemThruPtr_data (&p_data_1, sizeof (uint8_t *));
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_dequeue_ReturnMemThruPtr_data (&p_data_2, sizeof (uint8_t *));
+    rl_ringbuffer_dequeue_ExpectAnyArgsAndReturn (RL_ERROR_NO_DATA);
+    // Re-decode fails
+    re_ca_uart_decode_ExpectAnyArgsAndReturn (RE_ERROR_DECODING_CRC);
+    // Second queue loop: first success, then failure -> exit by status
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_SUCCESS);
+    rl_ringbuffer_queue_ExpectAnyArgsAndReturn (RL_ERROR_NO_MEM);
+    // No sends expected
+    ri_watchdog_feed_IgnoreAndReturn (RD_SUCCESS);
+    app_uart_parser ((void *) data_part1, 3);
+    TEST_ASSERT_EQUAL (0, mock_sends);
+}
+
 // app_uart_on_evt_send_ack: cover false branch of `if (!g_flag_uart_tx_in_progress)`
 // When TX is already in progress, the function must NOT schedule TX finish event.
 void test_app_uart_on_evt_send_ack_when_tx_in_progress_does_not_schedule (void)
