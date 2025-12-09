@@ -35,6 +35,9 @@ rd_status_t app_uart_apply_config (void * v_uart_payload);
 rd_status_t app_uart_isr (ri_comm_evt_t evt,
                           void * p_data, size_t data_len);
 
+// Test-only helpers to manipulate internal state for coverage
+void app_uart_test_set_resp_type (int32_t resp_type);
+void app_uart_test_set_tx_in_progress (bool in_progress);
 #endif
 
 /**

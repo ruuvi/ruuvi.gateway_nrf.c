@@ -13,8 +13,6 @@
 #include "mock_ruuvi_task_led.h"
 #include <string.h>
 
-static const ri_gpio_state_t led = 17U;
-
 extern int GlobalExpectCount;
 extern int GlobalVerifyOrder;
 
@@ -274,6 +272,177 @@ void test_app_ble_scan_start_all_channels_2mbps (void)
     TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
 }
 
+/**
+ * Verify error path: pa_lna_ctrl() fails. In this case, app_ble_scan_start()
+ * still calls ri_radio_init(...), but must not proceed to rt_adv_init() nor
+ * rt_adv_scan_start(), and must return the error.
+ */
+void test_app_ble_scan_start_error_on_pa_lna_ctrl (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    // Enable scanning so that we take the scan path, not stop path
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    // Uninit paths succeed
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    // PA/LNA control fails on first configure, but continues executing
+    ri_gpio_is_init_ExpectAndReturn (false);
+    ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP,
+                                       RD_ERROR_INTERNAL);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    // ri_radio_init is still called even if pa_lna_ctrl failed
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_SUCCESS);
+    // No expectations for rt_adv_init/scan_start as they must NOT be called on error
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_ERROR_INTERNAL, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+/**
+ * Verify error path: ri_radio_init() fails. In this case, app_ble_scan_start()
+ * must not proceed to rt_adv_init() nor rt_adv_scan_start(), and must return the error.
+ */
+void test_app_ble_scan_start_error_on_ri_radio_init (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    // Enable scanning so that we take the scan path, not stop path
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    // Uninit paths succeed
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    // PA/LNA control succeeds fully
+    ri_gpio_is_init_ExpectAndReturn (false);
+    ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    // ri_radio_init fails
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_ERROR_INTERNAL);
+    // No expectations for rt_adv_init/scan_start as they must NOT be called on error
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_ERROR_INTERNAL, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+/**
+ * Verify error path: rt_adv_uninit() fails. In this case, app_ble_scan_start()
+ * must not proceed to PA/LNA control, radio init, adv init, or scan start.
+ */
+void test_app_ble_scan_start_error_on_rt_adv_uninit (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    // Enable scanning so that we take the scan path, not stop path
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    // First uninit fails, second succeeds
+    rt_adv_uninit_ExpectAndReturn (RD_ERROR_INTERNAL);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    // No further expectations should be set; if code calls any, the test will fail
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_ERROR_INTERNAL, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+/**
+ * Verify error path: ri_radio_uninit() fails. In this case, app_ble_scan_start()
+ * must not proceed to PA/LNA control, radio init, adv init, or scan start.
+ */
+void test_app_ble_scan_start_error_on_ri_radio_uninit (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    // Enable scanning so that we take the scan path, not stop path
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    // First uninit succeeds, second fails
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_ERROR_INTERNAL);
+    // No further expectations should be set; if code calls any, the test will fail
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_ERROR_INTERNAL, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+/**
+ * Verify that when manufacturer filter is disabled,
+ * app_ble_scan_start() passes RB_BLE_UNKNOWN_MANUFACTURER_ID to rt_adv_init().
+ */
+void test_app_ble_scan_start_manufacturer_filter_disabled_sets_unknown_id (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    // Disable manufacturer filter to trigger the `if (!manufacturer_filter_enabled)` branch
+    app_ble_manufacturer_filter_set (false);
+    // Enable a single modulation to allow scanning to start
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    // Expect radio/adv uninit before re-init
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    // PA/LNA control expectations
+    ri_gpio_is_init_ExpectAndReturn (false);
+    ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    // Radio init with current PHY (1M since we enabled 1M and 125kbps is disabled)
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_SUCCESS);
+    // Expect rt_adv_init to be called with unknown manufacturer id (0xFFFF)
+    rt_adv_init_t expected_params = scan_params;
+    expected_params.manufacturer_id = 0xFFFF;
+    rt_adv_init_ExpectWithArrayAndReturn (&expected_params, 1, RD_SUCCESS);
+    // Start scanning
+    rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+void test_app_ble_set_max_adv_len_zero (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const uint8_t max_len = 0;
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    app_ble_set_max_adv_len (max_len);
+    scan_params.max_adv_length = max_len;
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (false);
+    ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&scan_params, 1, RD_SUCCESS);
+    rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+void test_app_ble_set_max_adv_len_255 (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const uint8_t max_len = 255;
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    app_ble_set_max_adv_len (max_len);
+    scan_params.max_adv_length = max_len;
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (true);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&scan_params, 1, RD_SUCCESS);
+    rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
 void test_app_ble_scan_start_all_channels_lr_2mbps (void)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -303,6 +472,21 @@ void test_app_ble_scan_start_all_channels_lr_2mbps (void)
     ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_SUCCESS);
     rt_adv_init_ExpectWithArrayAndReturn (&scan_params, 1, RD_SUCCESS);
     rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+/**
+ * Ensure that when all modulations are disabled, scan_is_enabled returns false
+ * and app_ble_scan_start() takes the false branch which calls app_ble_scan_stop().
+ */
+void test_app_ble_scan_start_no_modulations_calls_stop (void)
+{
+    // setUp() already disables all modulations
+    rd_status_t err_code = RD_SUCCESS;
+    // Expect scan stop to be called
+    rt_adv_scan_stop_ExpectAndReturn (RD_SUCCESS);
     err_code |= app_ble_scan_start();
     TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
     TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
@@ -365,9 +549,26 @@ void test_app_ble_on_scan_isr_unknown (void)
     TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
 }
 
+void test_app_ble_scan_stop_ok (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rt_adv_scan_stop_ExpectAndReturn (RD_SUCCESS);
+    err_code |= app_ble_scan_stop();
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+void test_app_ble_scan_stop_error_propagates (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rt_adv_scan_stop_ExpectAndReturn (RD_ERROR_INTERNAL);
+    err_code |= app_ble_scan_stop();
+    TEST_ASSERT_EQUAL (RD_ERROR_INTERNAL, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
 void test_repeat_adv_ok (void)
 {
-    uint16_t timer_ms = 10000U;
     rd_status_t err_code = RD_SUCCESS;
     app_uart_send_broadcast_ExpectAndReturn (&mock_scan, RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
@@ -391,4 +592,36 @@ void test_repeat_adv_send_error (void)
     repeat_adv (NULL, mock_scan_len);
     TEST_ASSERT_EQUAL (RD_ERROR_DATA_SIZE, err_code);
     TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+/**
+ * Tests for app_ble_manufacturer_filter_enabled()
+ */
+void test_app_ble_manufacturer_filter_enabled_default (void)
+{
+    uint16_t manufacturer_id = 0;
+    const bool enabled = app_ble_manufacturer_filter_enabled (&manufacturer_id);
+    TEST_ASSERT_TRUE (enabled);
+    TEST_ASSERT_EQUAL_UINT16 (RB_BLE_MANUFACTURER_ID, manufacturer_id);
+}
+
+void test_app_ble_manufacturer_filter_enabled_disabled (void)
+{
+    // Disable the filter and verify the state and that manufacturer ID remains unchanged
+    app_ble_manufacturer_filter_set (false);
+    uint16_t manufacturer_id = 0;
+    const bool enabled = app_ble_manufacturer_filter_enabled (&manufacturer_id);
+    TEST_ASSERT_FALSE (enabled);
+    TEST_ASSERT_EQUAL_UINT16 (RB_BLE_MANUFACTURER_ID, manufacturer_id);
+}
+
+void test_app_ble_manufacturer_filter_enabled_changed_id (void)
+{
+    // Change manufacturer ID and verify it is returned while keeping current enabled state
+    const uint16_t NEW_ID = 0x1234;
+    app_ble_manufacturer_id_set (NEW_ID);
+    uint16_t manufacturer_id = 0;
+    const bool enabled = app_ble_manufacturer_filter_enabled (&manufacturer_id);
+    TEST_ASSERT_TRUE (enabled); // setUp() enables the filter
+    TEST_ASSERT_EQUAL_UINT16 (NEW_ID, manufacturer_id);
 }

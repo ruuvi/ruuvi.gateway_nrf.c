@@ -71,7 +71,6 @@ static
 volatile bool m_uart_ack = false;
 
 static rl_ringbuffer_t m_uart_ring_buffer =
-    (rl_ringbuffer_t)
 {
     .head = 0,
     .tail = 0,
@@ -83,6 +82,18 @@ static rl_ringbuffer_t m_uart_ring_buffer =
     .writelock = &buffer_wlock,
     .readlock  = &buffer_rlock
 };
+
+#ifdef CEEDLING
+void app_uart_test_set_resp_type (int32_t resp_type)
+{
+    g_resp_type = (app_uart_resp_type_e) resp_type;
+}
+
+void app_uart_test_set_tx_in_progress (bool in_progress)
+{
+    g_flag_uart_tx_in_progress = in_progress;
+}
+#endif
 
 #ifndef CEEDLING
 static
@@ -192,7 +203,7 @@ void app_uart_on_evt_tx_finish (void * p_data, uint16_t data_len)
     switch (g_resp_type)
     {
         case APP_UART_RESP_TYPE_NONE:
-            break;
+            return;
 
         case APP_UART_RESP_TYPE_ACK:
             g_resp_type = APP_UART_RESP_TYPE_NONE;
@@ -204,6 +215,8 @@ void app_uart_on_evt_tx_finish (void * p_data, uint16_t data_len)
             app_uart_send_device_id();
             return;
     }
+
+    NRF_LOG_ERROR ("%s: unknown response type: %d", __func__, g_resp_type);
 }
 
 #ifndef CEEDLING
@@ -310,8 +323,9 @@ rd_status_t app_uart_apply_config (void * v_uart_payload)
             if (RB_BLE_CODED_SUPPORTED)
             {
                 modulation = RI_RADIO_BLE_125KBPS;
-                err_code |= app_ble_modulation_enable (modulation,
-                                                       (bool) p_uart_payload->params.all_params.bools.use_coded_phy.state);
+                err_code |= app_ble_modulation_enable (
+                                modulation,
+                                (bool) p_uart_payload->params.all_params.bools.use_coded_phy.state);
             }
             else
             {

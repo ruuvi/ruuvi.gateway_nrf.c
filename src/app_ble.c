@@ -264,7 +264,7 @@ static rd_status_t pa_lna_ctrl (void)
 
 rd_status_t app_ble_scan_start (void)
 {
-    NRF_LOG_INFO ("app_ble_scan_start");
+    NRF_LOG_INFO ("%s", __func__);
     rd_status_t err_code = RD_SUCCESS;
 
     if (scan_is_enabled (&m_scan_params))

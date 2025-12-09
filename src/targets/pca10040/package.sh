@@ -6,7 +6,7 @@ NAME="ruuvigw"
 VERSION=$(git describe --exact-match --tags HEAD 2>/dev/null)
 GIT_DESCRIBE_EXIT_STATUS=$?
 
-if [ $GIT_DESCRIBE_EXIT_STATUS -ne 0 ]; then
+if [[ $GIT_DESCRIBE_EXIT_STATUS -ne 0 ]]; then
   # No exact tag, use short commit hash
   VERSION=$(git rev-parse --short HEAD)
 fi
@@ -26,7 +26,7 @@ rm pca10040_armgcc*${NAME}*
 
 mergehex -m ../../../nRF5_SDK_15.3.0_59ac345/components/softdevice/s132/hex/s132_nrf52_6.1.1_softdevice.hex  _build/nrf52832_xxaa.hex -o packet.hex
 # Check if the version was obtained from a git tag
-if [ $GIT_DESCRIBE_EXIT_STATUS -eq 0 ]; then
+if [[ $GIT_DESCRIBE_EXIT_STATUS -eq 0 ]]; then
   # Version is from a git tag,
   # use generate_uicr_hex.py to generate the UICR HEX file
   python3 ../../../scripts/generate_uicr_hex.py "$VERSION" uicr_data.hex
