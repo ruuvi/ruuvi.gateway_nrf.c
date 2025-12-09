@@ -368,6 +368,26 @@ void test_app_uart_send_broadcast_ok_extended_adv_2m_phy (void)
     TEST_ASSERT_EQUAL (1, mock_sends);
 }
 
+// Cover default case in app_uart_on_evt_tx_finish: set an invalid g_resp_type
+// and verify that only TX-in-progress flag is cleared (no actions taken),
+// which we confirm by the fact that app_uart_on_evt_send_device_id schedules
+// tx finish immediately after.
+void test_app_uart_on_evt_tx_finish_with_unknown_resp_type_clears_tx_flag (void)
+{
+    // Reset globals to known state
+    app_uart_init_globs();
+    // Simulate that a TX was in progress and response type is invalid (-1)
+    app_uart_test_set_tx_in_progress (true);
+    app_uart_test_set_resp_type (-1);
+    // Call the function under test. It should only clear the TX flag and log error.
+    app_uart_on_evt_tx_finish (NULL, 0);
+    // Now when we request to send device id, scheduler should be invoked because
+    // TX is no longer in progress.
+    ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &app_uart_on_evt_tx_finish,
+                                            RD_SUCCESS);
+    app_uart_on_evt_send_device_id (NULL, 0);
+}
+
 void test_app_uart_send_broadcast_ok_phy_auto (void)
 {
     rd_status_t err_code = RD_SUCCESS;
