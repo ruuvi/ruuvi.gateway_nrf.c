@@ -407,3 +407,35 @@ void test_repeat_adv_send_error (void)
     TEST_ASSERT_EQUAL (RD_ERROR_DATA_SIZE, err_code);
     TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
 }
+
+/**
+ * Tests for app_ble_manufacturer_filter_enabled()
+ */
+void test_app_ble_manufacturer_filter_enabled_default (void)
+{
+    uint16_t manufacturer_id = 0;
+    const bool enabled = app_ble_manufacturer_filter_enabled (&manufacturer_id);
+    TEST_ASSERT_TRUE (enabled);
+    TEST_ASSERT_EQUAL_UINT16 (RB_BLE_MANUFACTURER_ID, manufacturer_id);
+}
+
+void test_app_ble_manufacturer_filter_enabled_disabled (void)
+{
+    // Disable the filter and verify the state and that manufacturer ID remains unchanged
+    app_ble_manufacturer_filter_set (false);
+    uint16_t manufacturer_id = 0;
+    const bool enabled = app_ble_manufacturer_filter_enabled (&manufacturer_id);
+    TEST_ASSERT_FALSE (enabled);
+    TEST_ASSERT_EQUAL_UINT16 (RB_BLE_MANUFACTURER_ID, manufacturer_id);
+}
+
+void test_app_ble_manufacturer_filter_enabled_changed_id (void)
+{
+    // Change manufacturer ID and verify it is returned while keeping current enabled state
+    const uint16_t NEW_ID = 0x1234;
+    app_ble_manufacturer_id_set (NEW_ID);
+    uint16_t manufacturer_id = 0;
+    const bool enabled = app_ble_manufacturer_filter_enabled (&manufacturer_id);
+    TEST_ASSERT_TRUE (enabled); // setUp() enables the filter
+    TEST_ASSERT_EQUAL_UINT16 (NEW_ID, manufacturer_id);
+}
