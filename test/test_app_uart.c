@@ -204,6 +204,21 @@ void test_app_uart_init_twice (void)
 }
 
 /**
+ * @brief app_uart_on_evt_tx_finish with no response pending should do nothing.
+ *
+ * Verifies the NONE branch: no scheduler calls and no UART sends are triggered.
+ */
+void test_app_uart_on_evt_tx_finish_none_does_nothing (void)
+{
+    // Ensure UART is initialized so that any unintended send would be captured by mock_sends.
+    test_app_uart_init_ok();
+    size_t prev_sends = mock_sends;
+    // No expectations for scheduler event put here: if it gets called, test will fail.
+    app_uart_on_evt_tx_finish (NULL, 0);
+    TEST_ASSERT_EQUAL (prev_sends, mock_sends);
+}
+
+/**
  * @brief Send a scanned BLE broadcast through UART.
  *
  * The format is defined by ruuvi.endpoints.c/
