@@ -13,8 +13,6 @@
 #include "mock_ruuvi_task_led.h"
 #include <string.h>
 
-static const ri_gpio_state_t led = 17U;
-
 extern int GlobalExpectCount;
 extern int GlobalVerifyOrder;
 
@@ -274,6 +272,51 @@ void test_app_ble_scan_start_all_channels_2mbps (void)
     TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
 }
 
+void test_app_ble_set_max_adv_len_zero (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const uint8_t max_len = 0;
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    app_ble_set_max_adv_len (max_len);
+    scan_params.max_adv_length = max_len;
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (false);
+    ri_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&scan_params, 1, RD_SUCCESS);
+    rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
+void test_app_ble_set_max_adv_len_255 (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const uint8_t max_len = 255;
+    app_ble_modulation_enable (RI_RADIO_BLE_1MBPS, true);
+    app_ble_set_max_adv_len (max_len);
+    scan_params.max_adv_length = max_len;
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_radio_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (true);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CRX_PIN, RI_GPIO_MODE_INPUT_PULLUP, RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_PA_CSD_PIN, RI_GPIO_MODE_OUTPUT_STANDARD,
+                                       RD_SUCCESS);
+    ri_gpio_write_ExpectAndReturn (RB_PA_CSD_PIN, RB_PA_CSD_ACTIVE, RD_SUCCESS);
+    ri_radio_init_ExpectAndReturn (RI_RADIO_BLE_1MBPS, RD_SUCCESS);
+    rt_adv_init_ExpectWithArrayAndReturn (&scan_params, 1, RD_SUCCESS);
+    rt_adv_scan_start_ExpectAndReturn (&on_scan_isr, RD_SUCCESS);
+    err_code |= app_ble_scan_start();
+    TEST_ASSERT_EQUAL (RD_SUCCESS, err_code);
+    TEST_ASSERT_EQUAL (GlobalExpectCount, GlobalVerifyOrder);
+}
+
 void test_app_ble_scan_start_all_channels_lr_2mbps (void)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -382,7 +425,6 @@ void test_app_ble_on_scan_isr_unknown (void)
 
 void test_repeat_adv_ok (void)
 {
-    uint16_t timer_ms = 10000U;
     rd_status_t err_code = RD_SUCCESS;
     app_uart_send_broadcast_ExpectAndReturn (&mock_scan, RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
