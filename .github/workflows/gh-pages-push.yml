@@ -13,12 +13,12 @@ jobs:
   # This workflow contains a single job called "build"
   doxygen:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         submodules: recursive
 
@@ -41,13 +41,13 @@ jobs:
           fi
 
     - name: Install SSH Client 🔑
-      uses: webfactory/ssh-agent@v0.5.2
+      uses: webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555 # v0.10.0
       with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
     # Deploy documents
     - name: Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@4.1.1
+      uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
       with:
           SSH: true
           BRANCH: gh-pages # The branch the action should deploy to.

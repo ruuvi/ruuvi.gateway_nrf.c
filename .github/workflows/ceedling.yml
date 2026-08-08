@@ -15,17 +15,17 @@ jobs:
   # This workflow contains a single job called "unit-test"
   unit-test:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         submodules: recursive
 
     - name: Set up Ruby 2.7
-      uses: ruby/setup-ruby@v1
+      uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
       with:
         ruby-version: '2.7'
 
@@ -35,7 +35,7 @@ jobs:
 
     - name: Cache nRF5_SDK_15.3.0_59ac345
       id: cache-nRF5_SDK
-      uses: actions/cache@v4
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: |
           ~/nRF5_SDK_15.3.0_59ac345
@@ -55,4 +55,3 @@ jobs:
         pwd
         ls -la
         make test_all
-
