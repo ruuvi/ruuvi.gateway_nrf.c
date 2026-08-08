@@ -255,6 +255,7 @@ static void sha256_final (sha256_ctx_t * const p_ctx,
 
 // ------------------------- entrypoint -------------------------
 
+#ifndef CEEDLING
 __attribute__ ((naked, used, section (".text.stub_reset")))
 void stub_reset (void)
 {
@@ -308,3 +309,4 @@ void stub_entry (void)
     {
     }
 }
+#endif
