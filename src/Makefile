@@ -8,7 +8,7 @@ VARIANTS = debug release
 
 .PHONY: all sync ${BOARDS} analysis publish clean 
 
-all: sync clean ${BOARDS}
+all: sync clean ${BOARDS} sha256_stub
 
 sync:
 	@echo Synchronizing GIT...
@@ -41,6 +41,10 @@ ruuvigw_nrf:
 	$(MAKE) -j1 -C targets/ruuvigw_nrf clean
 	$(MAKE) -j1 -C targets/ruuvigw_nrf DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/ruuvigw_nrf/package.sh -n ruuvigw_release
+
+sha256_stub:
+	$(MAKE) -j1 -C targets/sha256_stub clean
+	$(MAKE) -j1 -C targets/sha256_stub DEBUG=-DNDEBUG
 
 analysis:
 	@echo build FW ${VERSION}
