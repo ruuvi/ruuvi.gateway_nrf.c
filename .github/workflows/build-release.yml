@@ -7,17 +7,19 @@ on:
 jobs:
   build:
     name: Build release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           submodules: recursive
 
       - name: Set up Python 3.8
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: 3.8
 
@@ -35,7 +37,7 @@ jobs:
           rm -f ~/nrf-command-line-tools_10.24.2_amd64.deb
 
       - name: Install Arm GNU Toolchain (arm-none-eabi-gcc)
-        uses: carlosperate/arm-none-eabi-gcc-action@v1
+        uses: carlosperate/arm-none-eabi-gcc-action@98c40e51546516419841748d3210c290df0d2c6c # v1.13.0
         with:
           release: '7-2018-q2'
 
@@ -46,7 +48,7 @@ jobs:
 
       - name: Cache nRF5_SDK_15.3.0_59ac345
         id: cache-nRF5_SDK
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/nRF5_SDK_15.3.0_59ac345
           key: nRF5_SDK-${{ hashFiles('.github/workflows/build-fw.yml') }}
@@ -81,24 +83,44 @@ jobs:
           echo "app_hex=${BINNAME}_app.hex" >> $GITHUB_ENV
 
       - name: Upload artifact full.hex
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ env.full_hex }}
           path: src/targets/ruuvigw_nrf/${{ env.full_hex }}
 
       - name: Upload artifact app.hex
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ env.app_hex }}
           path: src/targets/ruuvigw_nrf/${{ env.app_hex }}
 
       - name: Create GitHub Release
-        id: create_release
-        uses: ncipollo/release-action@v1.14.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          draft: false
-          prerelease: true
-          generateReleaseNotes: true
-          artifacts: "src/targets/ruuvigw_nrf/${{ env.full_hex }},src/targets/ruuvigw_nrf/${{ env.app_hex }}"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -xeuo pipefail
+          command -v gh >/dev/null 2>&1 || { echo "gh CLI not found"; exit 1; }
+          TAG="${{ env.git_version }}"
+          ASSETS=(
+            "src/targets/ruuvigw_nrf/${{ env.full_hex }}"
+            "src/targets/ruuvigw_nrf/${{ env.app_hex }}"
+          )
+          for asset in "${ASSETS[@]}"; do
+            if [ ! -f "$asset" ]; then
+              echo "Release asset not found: $asset" >&2
+              exit 1
+            fi
+          done
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            if ! gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+              --title "$TAG" --generate-notes --prerelease; then
+              echo "Create failed; rechecking..."
+              if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+                echo "Release still missing; aborting."
+                exit 1
+              fi
+            fi
+          fi
+          gh release upload "$TAG" "${ASSETS[@]}" \
+            --repo "$GITHUB_REPOSITORY" --clobber
