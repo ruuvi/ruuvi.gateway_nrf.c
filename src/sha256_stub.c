@@ -26,13 +26,19 @@
 #include <stdint.h>
 #include <stddef.h>
 
+/** @brief Base address used to convert flash offsets to absolute addresses. */
 #define FLASH_BASE_ADDR (0x00000000U)
 
+/** @brief Maximum number of flash segments that can be hashed. */
 #define SHA256_STUB_MAX_SEGMENTS (8U)
+/** @brief Size of a SHA-256 digest in bytes. */
 #define SHA256_STUB_DIGEST_SIZE_BYTES (32U)
 
+/** @brief Status value indicating that hashing is in progress. */
 #define SHA256_STUB_STATUS_RUNNING  (0U)
+/** @brief Status value indicating that hashing completed successfully. */
 #define SHA256_STUB_STATUS_FINISHED (1U)
+/** @brief Status value indicating invalid input parameters. */
 #define SHA256_STUB_STATUS_ERROR    (2U)
 
 typedef struct
@@ -63,9 +69,11 @@ typedef struct
 
 // ---------------------- Global variables ------------------------
 
+/** @brief Input parameters populated by the host before starting the stub. */
 __attribute__ ((used, section (".stub_params"))) /* Placed by linker script */
 volatile stub_params_t g_stub_params;
 
+/** @brief Hashing status and digest read by the host after running the stub. */
 __attribute__ ((used, section (".stub_result"))) /* Placed by linker script */
 stub_result_t g_stub_result;
 
@@ -256,6 +264,7 @@ static void sha256_final (sha256_ctx_t * const p_ctx,
 // ------------------------- entrypoint -------------------------
 
 #ifndef CEEDLING
+/** @brief Reset handler that initializes the stack and starts the hashing stub. */
 __attribute__ ((naked, used, section (".text.stub_reset")))
 void stub_reset (void)
 {
@@ -267,6 +276,7 @@ void stub_reset (void)
     );
 }
 
+/** @brief Hashes the configured flash segments and publishes the result. */
 __attribute__ ((used, section (".text.stub_entry")))
 void stub_entry (void)
 {
