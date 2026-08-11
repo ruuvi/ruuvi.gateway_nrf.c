@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nrf5_5fsdk15_5fconfigured_124',['NRF5_SDK15_CONFIGURED',['../nrf5__sdk15__app__config_8h.html#a78d2fe783ce2c2843dd058adef0f5584',1,'nrf5_sdk15_app_config.h']]]
+  ['led_5fon_5ftime_5fafter_5freboot_5fms_140',['LED_ON_TIME_AFTER_REBOOT_MS',['../main_8c.html#abeffa28a3111b550397be94419f00141',1,'main.c']]]
 ];

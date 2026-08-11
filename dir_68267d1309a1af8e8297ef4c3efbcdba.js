@@ -6,5 +6,6 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "app_uart.c", "app__uart_8c.html", "app__uart_8c" ],
     [ "app_uart.h", "app__uart_8h_source.html", null ],
     [ "main.c", "main_8c.html", "main_8c" ],
-    [ "main.h", "main_8h_source.html", null ]
+    [ "main.h", "main_8h_source.html", null ],
+    [ "sha256_stub.c", "sha256__stub_8c.html", "sha256__stub_8c" ]
 ];
